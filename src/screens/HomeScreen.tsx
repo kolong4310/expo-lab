@@ -1,21 +1,25 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-
-// 임시 데이터 (나중에 DB연동 예정)
-const dummyData = [
-  { id: '1', title: 'React Native 네비게이션 설정', date: '2026-06-04', category: '개발' },
-  { id: '2', title: 'SQLite 기초 공사 완료', date: '2026-06-04', category: 'DB' },
-];
+import { getAllLogs, WorkLog } from '../database/db';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
+  const [logs, setLogs] = useState<WorkLog[]>([]);
 
-  const renderItem = ({ item }: any) => (
+  // 화면이 보일 때마다 DB에서 데이터 새로고침
+  useFocusEffect(
+    useCallback(() => {
+      const data = getAllLogs();
+      setLogs(data);
+    }, [])
+  );
+
+  const renderItem = ({ item }: { item: WorkLog }) => (
     <TouchableOpacity 
       style={styles.card}
-      onPress={() => alert('상세 화면 준비 중!')}
+      onPress={() => alert(`상세 내용:\n${item.content || '내용 없음'}`)}
     >
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle}>{item.title}</Text>
@@ -35,12 +39,15 @@ export default function HomeScreen() {
       </View>
 
       <FlatList
-        data={dummyData}
+        data={logs}
         renderItem={renderItem}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.id?.toString() || Math.random().toString()}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>오늘의 기록을 남겨보세요! ✨</Text>
+          <View style={styles.emptyContainer}>
+            <Ionicons name="document-text-outline" size={60} color="#EEE" />
+            <Text style={styles.emptyText}>오늘의 기록을 남겨보세요! ✨</Text>
+          </View>
         }
       />
 
@@ -101,9 +108,12 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#999',
   },
+  emptyContainer: {
+    alignItems: 'center',
+    marginTop: 100,
+  },
   emptyText: {
-    textAlign: 'center',
-    marginTop: 50,
+    marginTop: 15,
     color: '#999',
     fontSize: 16,
   },
