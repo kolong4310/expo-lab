@@ -6,13 +6,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { getAllLogs, WorkLog } from '../database/db';
 
 const COLORS = {
-  primary: '#4F46E5', // Indigo 600
-  background: '#F8FAFC', // Slate 50
-  surface: '#FFFFFF',
-  text: '#0F172A', // Slate 900
-  textSecondary: '#64748B', // Slate 500
-  border: '#E2E8F0', // Slate 200
-  indigoSubtle: '#EEF2FF',
+  primary: '#4F46E5', // Indigo
+  background: '#FFFFFF',
+  text: '#000000',
+  textSecondary: '#666666',
+  border: '#F2F2F2',
+  dot: '#E5E5E5',
 };
 
 const MOOD_MAP: any = {
@@ -33,29 +32,33 @@ export default function HomeScreen() {
     }, [])
   );
 
-  const renderItem = ({ item, index }: { item: WorkLog, index: number }) => (
+  const renderTimelineItem = ({ item, index }: { item: WorkLog, index: number }) => (
     <TouchableOpacity 
-      style={styles.card}
+      style={styles.timelineItem}
       onPress={() => navigation.navigate('Detail', { log: item })}
-      activeOpacity={0.6}
+      activeOpacity={0.5}
     >
-      <View style={styles.cardHeader}>
+      {/* Left Timeline Line */}
+      <View style={styles.leftLineArea}>
+        <View style={[styles.timelineLine, index === 0 && { top: 12 }, index === logs.length - 1 && { height: 12 }]} />
+        <View style={styles.timelineDot} />
+      </View>
+
+      <View style={styles.contentArea}>
         <View style={styles.dateMoodRow}>
-          <Text style={styles.cardDate}>{item.date.replace(/-/g, '. ')}</Text>
+          <Text style={styles.itemDate}>{item.date.replace(/-/g, '. ')}</Text>
           {item.mood && <Text style={styles.moodEmoji}>{MOOD_MAP[item.mood]}</Text>}
         </View>
-        <Ionicons name="ellipsis-horizontal" size={18} color={COLORS.textSecondary} />
-      </View>
-      
-      <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
-      
-      <Text style={styles.cardPreview} numberOfLines={3}>
-        {item.content || '기록된 내용이 없습니다.'}
-      </Text>
+        
+        <Text style={styles.itemTitle}>{item.title}</Text>
+        
+        <Text style={styles.itemSummary} numberOfLines={2}>
+          {item.content || '성장의 기록이 비어있습니다.'}
+        </Text>
 
-      <View style={styles.cardFooter}>
-        <View style={styles.tag}>
-          <Text style={styles.tagText}>#{index + 1}번째 성장</Text>
+        <View style={styles.footerRow}>
+          <Text style={styles.tagText}>#Log_{logs.length - index}</Text>
+          <Ionicons name="chevron-forward" size={14} color={COLORS.dot} />
         </View>
       </View>
     </TouchableOpacity>
@@ -67,35 +70,29 @@ export default function HomeScreen() {
       
       <View style={styles.header}>
         <View>
-          <Text style={styles.headerTitle}>기록</Text>
-          <Text style={styles.headerSubtitle}>{logs.length}개의 발자취</Text>
+          <Text style={styles.headerTitle}>Timeline</Text>
+          <Text style={styles.headerSubtitle}>성장의 궤적</Text>
         </View>
         <View style={styles.headerActions}>
           <TouchableOpacity 
             style={styles.iconButton}
             onPress={() => navigation.navigate('Calendar')}
           >
-            <Ionicons name="calendar-clear-outline" size={22} color={COLORS.text} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="search-outline" size={22} color={COLORS.text} />
+            <Ionicons name="archive-outline" size={22} color={COLORS.text} />
           </TouchableOpacity>
         </View>
       </View>
 
       <FlatList
         data={logs}
-        renderItem={renderItem}
+        renderItem={renderTimelineItem}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <View style={styles.emptyCircle}>
-              <Ionicons name="book-outline" size={32} color={COLORS.primary} />
-            </View>
-            <Text style={styles.emptyText}>첫 번째 기록을 남겨보세요</Text>
-            <Text style={styles.emptySubText}>오늘의 배움이 내일의 성장이 됩니다.</Text>
+            <Text style={styles.emptyText}>시작은 작게, 기록은 꾸준히.</Text>
+            <Text style={styles.emptySubText}>첫 번째 발자취를 남겨보세요.</Text>
           </View>
         }
       />
@@ -103,9 +100,9 @@ export default function HomeScreen() {
       <TouchableOpacity 
         style={styles.fab}
         onPress={() => navigation.navigate('Write')}
-        activeOpacity={0.8}
+        activeOpacity={0.9}
       >
-        <Ionicons name="add" size={32} color={COLORS.white} />
+        <Ionicons name="add" size={32} color={COLORS.background} />
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -120,146 +117,129 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    paddingHorizontal: 28,
-    paddingTop: 20,
-    paddingBottom: 24,
+    paddingHorizontal: 30,
+    paddingTop: 30,
+    paddingBottom: 20,
   },
   headerTitle: {
-    fontSize: 34,
+    fontSize: 40,
     fontWeight: '800',
     color: COLORS.text,
-    letterSpacing: -1,
+    letterSpacing: -1.5,
   },
   headerSubtitle: {
-    fontSize: 15,
+    fontSize: 16,
     color: COLORS.textSecondary,
-    fontWeight: '500',
-    marginTop: 2,
+    fontWeight: '400',
+    marginTop: -2,
+    letterSpacing: 0.5,
   },
   headerActions: {
-    flexDirection: 'row',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   iconButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: COLORS.surface,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: 10,
-    borderWidth: 1,
-    borderColor: COLORS.border,
   },
   list: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 0,
     paddingBottom: 120,
   },
-  card: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 28,
-    padding: 24,
-    marginBottom: 20,
-    shadowColor: COLORS.text,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
-    shadowRadius: 15,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: 'rgba(226, 232, 240, 0.6)',
-  },
-  cardHeader: {
+  timelineItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    paddingRight: 30,
+  },
+  leftLineArea: {
+    width: 60,
     alignItems: 'center',
-    marginBottom: 16,
+  },
+  timelineLine: {
+    position: 'absolute',
+    width: 1,
+    height: '100%',
+    backgroundColor: COLORS.border,
+  },
+  timelineDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: COLORS.dot,
+    marginTop: 12,
+    borderWidth: 2,
+    borderColor: COLORS.background,
+  },
+  contentArea: {
+    flex: 1,
+    paddingTop: 8,
+    paddingBottom: 32,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
   },
   dateMoodRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 6,
   },
-  cardDate: {
-    fontSize: 13,
+  itemDate: {
+    fontSize: 12,
     fontWeight: '600',
     color: COLORS.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
   },
   moodEmoji: {
-    fontSize: 16,
-    marginLeft: 8,
+    fontSize: 12,
+    marginLeft: 6,
   },
-  cardTitle: {
+  itemTitle: {
     fontSize: 20,
     fontWeight: '700',
     color: COLORS.text,
-    marginBottom: 10,
-    letterSpacing: -0.3,
+    marginBottom: 8,
+    letterSpacing: -0.5,
   },
-  cardPreview: {
+  itemSummary: {
     fontSize: 15,
     color: COLORS.textSecondary,
-    lineHeight: 24,
-    marginBottom: 20,
+    lineHeight: 22,
+    fontWeight: '400',
   },
-  cardFooter: {
+  footerRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  tag: {
-    backgroundColor: COLORS.indigoSubtle,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 10,
+    marginTop: 16,
   },
   tagText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
     color: COLORS.primary,
+    letterSpacing: 0.5,
   },
   emptyContainer: {
+    marginTop: 150,
     alignItems: 'center',
-    marginTop: 100,
-    paddingHorizontal: 40,
-  },
-  emptyCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: COLORS.surface,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: COLORS.border,
   },
   emptyText: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.text,
-    textAlign: 'center',
     marginBottom: 8,
   },
   emptySubText: {
     fontSize: 14,
     color: COLORS.textSecondary,
-    textAlign: 'center',
-    lineHeight: 20,
   },
   fab: {
     position: 'absolute',
-    right: 24,
+    right: 30,
     bottom: 40,
-    width: 68,
+    width: 64,
     height: 64,
-    borderRadius: 24,
-    backgroundColor: COLORS.text, // Dark primary button
+    borderRadius: 32,
+    backgroundColor: COLORS.text, // Pure Black
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: COLORS.text,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 15,
-    elevation: 10,
   },
 });

@@ -8,12 +8,10 @@ import { getLogsByDate, getLoggedDates, WorkLog } from '../database/db';
 
 const COLORS = {
   primary: '#4F46E5',
-  background: '#F8FAFC',
-  surface: '#FFFFFF',
-  text: '#0F172A',
-  textSecondary: '#64748B',
-  border: '#E2E8F0',
-  indigoSubtle: '#EEF2FF',
+  background: '#FFFFFF',
+  text: '#000000',
+  textSecondary: '#666666',
+  border: '#F2F2F2',
 };
 
 // 한국어 설정
@@ -46,31 +44,15 @@ export default function CalendarScreen() {
     });
     
     if (marks[selectedDate]) {
-      marks[selectedDate] = { ...marks[selectedDate], selected: true, selectedColor: COLORS.primary };
+      marks[selectedDate] = { ...marks[selectedDate], selected: true, selectedColor: COLORS.text };
     } else {
-      marks[selectedDate] = { selected: true, selectedColor: COLORS.primary };
+      marks[selectedDate] = { selected: true, selectedColor: COLORS.text };
     }
     setMarkedDates(marks);
 
     const dayLogs = getLogsByDate(selectedDate);
     setLogs(dayLogs);
   };
-
-  const renderItem = ({ item }: { item: WorkLog }) => (
-    <TouchableOpacity 
-      style={styles.logCard}
-      onPress={() => navigation.navigate('Detail', { log: item })}
-      activeOpacity={0.7}
-    >
-      <View style={styles.cardContent}>
-        <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
-        <Text style={styles.cardPreview} numberOfLines={1}>
-          {item.content || '기록 없음'}
-        </Text>
-      </View>
-      <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
-    </TouchableOpacity>
-  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -79,19 +61,19 @@ export default function CalendarScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="chevron-back" size={28} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>기록 보관소</Text>
+        <Text style={styles.headerTitle}>Archive</Text>
         <View style={{ width: 44 }} />
       </View>
 
-      <View style={styles.calendarWrapper}>
+      <View style={styles.calendarArea}>
         <Calendar
           onDayPress={(day: any) => setSelectedDate(day.dateString)}
           markedDates={markedDates}
           theme={{
-            selectedDayBackgroundColor: COLORS.primary,
-            selectedDayTextColor: '#ffffff',
+            selectedDayBackgroundColor: COLORS.text,
+            selectedDayTextColor: COLORS.background,
             todayTextColor: COLORS.primary,
-            arrowColor: COLORS.primary,
+            arrowColor: COLORS.text,
             monthTextColor: COLORS.text,
             textMonthFontWeight: '800',
             textDayHeaderFontWeight: '600',
@@ -102,23 +84,23 @@ export default function CalendarScreen() {
       </View>
 
       <View style={styles.listHeader}>
-        <Text style={styles.selectedDateText}>{selectedDate.replace(/-/g, '. ')}</Text>
-        <View style={styles.countBadge}>
-          <Text style={styles.countText}>{logs.length}개의 발자취</Text>
-        </View>
+        <Text style={styles.dateText}>{selectedDate.replace(/-/g, '. ')}</Text>
+        <Text style={styles.countText}>{logs.length} entries</Text>
       </View>
 
       <FlatList
         data={logs}
-        renderItem={renderItem}
+        renderItem={({ item }) => (
+          <TouchableOpacity 
+            style={styles.logItem}
+            onPress={() => navigation.navigate('Detail', { log: item })}
+          >
+            <Text style={styles.logTitle} numberOfLines={1}>{item.title}</Text>
+            <Ionicons name="chevron-forward" size={14} color={COLORS.border} />
+          </TouchableOpacity>
+        )}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
         contentContainerStyle={styles.list}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>이 날은 아직 비어있네요</Text>
-          </View>
-        }
       />
     </SafeAreaView>
   );
@@ -134,7 +116,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 10,
   },
   backButton: {
     width: 44,
@@ -147,77 +129,46 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.text,
   },
-  calendarWrapper: {
-    backgroundColor: COLORS.surface,
-    paddingBottom: 10,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-    shadowColor: COLORS.text,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.04,
-    shadowRadius: 20,
-    elevation: 5,
+  calendarArea: {
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
   },
   listHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 28,
-    marginTop: 32,
-    marginBottom: 16,
+    paddingHorizontal: 30,
+    marginTop: 30,
+    marginBottom: 20,
   },
-  selectedDateText: {
-    fontSize: 20,
+  dateText: {
+    fontSize: 18,
     fontWeight: '800',
     color: COLORS.text,
-    letterSpacing: -0.5,
-  },
-  countBadge: {
-    backgroundColor: COLORS.indigoSubtle,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
   },
   countText: {
     fontSize: 12,
-    fontWeight: '700',
-    color: COLORS.primary,
+    fontWeight: '600',
+    color: COLORS.textSecondary,
+    textTransform: 'uppercase',
   },
   list: {
-    paddingHorizontal: 24,
-    paddingBottom: 40,
+    paddingHorizontal: 30,
   },
-  logCard: {
-    backgroundColor: COLORS.surface,
-    padding: 18,
-    borderRadius: 20,
+  logItem: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
   },
-  cardContent: {
-    flex: 1,
-    marginRight: 8,
-  },
-  cardTitle: {
+  logTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.text,
-    marginBottom: 4,
-  },
-  cardPreview: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    marginTop: 40,
-  },
-  emptyText: {
-    fontSize: 15,
-    color: COLORS.textSecondary,
-    fontWeight: '500',
+    flex: 1,
+    marginRight: 10,
   },
 });
