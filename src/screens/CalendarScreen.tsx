@@ -1,11 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
 import { getLogsByDate, getLoggedDates, WorkLog } from '../database/db';
-import { Colors, Spacing, Typography } from '../theme/theme';
 
 // 한국어 설정
 LocaleConfig.locales['ko'] = {
@@ -23,7 +22,6 @@ export default function CalendarScreen() {
   const [markedDates, setMarkedDates] = useState<any>({});
   const [logs, setLogs] = useState<WorkLog[]>([]);
 
-  // 화면 진입 시 & 선택 날짜 변경 시 데이터 로드
   useFocusEffect(
     useCallback(() => {
       loadData();
@@ -31,187 +29,86 @@ export default function CalendarScreen() {
   );
 
   const loadData = () => {
-    // 1. 기록이 있는 날짜들 가져와서 마킹
     const dates = getLoggedDates();
     const marks: any = {};
     dates.forEach(date => {
-      marks[date] = { 
-        marked: true, 
-        dotColor: Colors.primary
-      };
+      marks[date] = { marked: true, dotColor: '#6366f1' };
     });
     
-    // 현재 선택된 날짜 강조
     if (marks[selectedDate]) {
-      marks[selectedDate] = { 
-        ...marks[selectedDate], 
-        selected: true, 
-        selectedColor: Colors.primary 
-      };
+      marks[selectedDate] = { ...marks[selectedDate], selected: true, selectedColor: '#6366f1' };
     } else {
-      marks[selectedDate] = { 
-        selected: true, 
-        selectedColor: Colors.primary 
-      };
+      marks[selectedDate] = { selected: true, selectedColor: '#6366f1' };
     }
     setMarkedDates(marks);
 
-    // 2. 선택된 날짜의 로그들 가져오기
     const dayLogs = getLogsByDate(selectedDate);
     setLogs(dayLogs);
   };
 
   const renderItem = ({ item }: { item: WorkLog }) => (
     <TouchableOpacity 
-      style={styles.card}
+      className="bg-white p-4 rounded-2xl flex-row items-center mb-3 border border-slate-100 shadow-sm"
       onPress={() => navigation.navigate('Detail', { log: item })}
       activeOpacity={0.7}
     >
-      <View style={styles.cardContent}>
-        <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
-        <Text style={styles.cardPreview} numberOfLines={1}>
+      <View className="flex-1 mr-2">
+        <Text className="text-base font-bold text-slate-900 mb-0.5" numberOfLines={1}>{item.title}</Text>
+        <Text className="text-xs text-slate-500" numberOfLines={1}>
           {item.content || '내용 없음'}
         </Text>
       </View>
-      <Ionicons name="chevron-forward" size={18} color={Colors.textSecondary} />
+      <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" />
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={Colors.text} />
+      <View className="flex-row justify-between items-center px-6 py-4 bg-white border-b border-slate-100">
+        <TouchableOpacity onPress={() => navigation.goBack()} className="w-10 h-10 justify-center">
+          <Ionicons name="arrow-back" size={26} color="#1e293b" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>캘린더</Text>
-        <View style={{ width: 40 }} />
+        <Text className="text-lg font-bold text-slate-900">캘린더</Text>
+        <View className="w-10" />
       </View>
 
-      <View style={styles.calendarContainer}>
+      <View className="bg-white pb-2 rounded-b-[40px] shadow-md shadow-slate-200">
         <Calendar
           onDayPress={(day: any) => setSelectedDate(day.dateString)}
           markedDates={markedDates}
           theme={{
-            selectedDayBackgroundColor: Colors.primary,
-            selectedDayTextColor: Colors.white,
-            todayTextColor: Colors.primary,
-            arrowColor: Colors.primary,
-            monthTextColor: Colors.text,
-            textMonthFontWeight: 'bold',
+            selectedDayBackgroundColor: '#6366f1',
+            selectedDayTextColor: '#ffffff',
+            todayTextColor: '#6366f1',
+            arrowColor: '#6366f1',
+            monthTextColor: '#1e293b',
+            textMonthFontWeight: '900',
             textDayHeaderFontWeight: '600',
-            dotColor: Colors.primary,
+            dotColor: '#6366f1',
+            calendarBackground: 'transparent',
           }}
         />
       </View>
 
-      <View style={styles.listHeader}>
-        <Text style={styles.listHeaderTitle}>{selectedDate.replace(/-/g, '. ')}</Text>
-        <Text style={styles.listHeaderCount}>{logs.length}개의 기록</Text>
+      <View className="flex-row justify-between items-center px-6 mt-8 mb-4">
+        <Text className="text-xl font-black text-slate-900">{selectedDate.replace(/-/g, '. ')}</Text>
+        <Text className="text-sm font-bold text-indigo-500 bg-indigo-50 px-3 py-1 rounded-full">
+          {logs.length}개의 기록
+        </Text>
       </View>
 
       <FlatList
         data={logs}
         renderItem={renderItem}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 40 }}
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>이 날은 기록이 없어요 💨</Text>
+          <View className="items-center mt-12">
+            <Text className="text-base text-slate-400 font-medium">이 날은 기록이 없어요 💨</Text>
           </View>
         }
       />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.text,
-  },
-  calendarContainer: {
-    backgroundColor: Colors.surface,
-    paddingBottom: Spacing.sm,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    shadowColor: Colors.black,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 5,
-  },
-  listHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    marginTop: Spacing.lg,
-    marginBottom: Spacing.sm,
-  },
-  listHeaderTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.text,
-  },
-  listHeaderCount: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-  },
-  list: {
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xl,
-  },
-  card: {
-    backgroundColor: Colors.surface,
-    padding: Spacing.md,
-    borderRadius: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: Spacing.sm,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  cardContent: {
-    flex: 1,
-    marginRight: Spacing.sm,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.text,
-    marginBottom: 2,
-  },
-  cardPreview: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    marginTop: 40,
-  },
-  emptyText: {
-    fontSize: 15,
-    color: Colors.textSecondary,
-  },
-});
