@@ -20,7 +20,7 @@ export default function HomeScreen() {
   const renderItem = ({ item }: { item: WorkLog }) => (
     <TouchableOpacity 
       style={styles.card}
-      onPress={() => alert(`상세 내용:\n${item.content || '내용 없음'}`)}
+      onPress={() => navigation.navigate('Detail', { log: item })}
       activeOpacity={0.7}
     >
       <View style={styles.cardContent}>
