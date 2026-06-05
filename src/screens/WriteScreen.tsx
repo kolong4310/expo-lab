@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { addLog, updateLog, WorkLog } from '../database/db';
+
+const COLORS = {
+  primary: '#6366f1',
+  background: '#f8fafc',
+  surface: '#ffffff',
+  text: '#0f172a',
+  textSecondary: '#64748b',
+  border: '#f1f5f9',
+  indigo50: '#eef2ff',
+};
 
 const MOODS = [
   { emoji: '🔥', label: '최고', value: 'best' },
@@ -75,59 +85,59 @@ export default function WriteScreen() {
   };
 
   const InputLabel = ({ icon, label }: { icon: any, label: string }) => (
-    <View className="flex-row items-center mt-6 mb-2">
-      <Ionicons name={icon} size={16} color="#6366f1" className="mr-1.5" />
-      <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest">{label}</Text>
+    <View style={styles.labelContainer}>
+      <Ionicons name={icon} size={16} color={COLORS.primary} style={styles.labelIcon} />
+      <Text style={styles.label}>{label}</Text>
     </View>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
+        style={{ flex: 1 }}
       >
-        <View className="flex-row justify-between items-center px-6 py-4 border-b border-slate-100">
+        <View style={styles.header}>
           <TouchableOpacity 
             onPress={() => navigation.goBack()}
-            className="w-10 h-10 rounded-full justify-center items-start"
+            style={styles.headerButton}
           >
-            <Ionicons name="close" size={26} color="#1e293b" />
+            <Ionicons name="close" size={26} color={COLORS.text} />
           </TouchableOpacity>
-          <Text className="text-lg font-bold text-slate-900">{editingLog ? '기록 수정' : '기록하기'}</Text>
+          <Text style={styles.headerTitle}>{editingLog ? '기록 수정' : '기록하기'}</Text>
           <TouchableOpacity onPress={handleSave}>
-            <Text className="text-base font-bold text-indigo-600">
-              {editingLog ? '완료' : '저장'}
-            </Text>
+            <Text style={styles.saveText}>{editingLog ? '완료' : '저장'}</Text>
           </TouchableOpacity>
         </View>
 
         <ScrollView 
-          className="px-6"
+          style={styles.content}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 40 }}
         >
           <InputLabel icon="happy-outline" label="오늘의 기분" />
-          <View className="flex-row justify-between mb-2">
+          <View style={styles.moodContainer}>
             {MOODS.map((item) => (
               <TouchableOpacity
                 key={item.value}
-                className={`flex-1 items-center py-3 rounded-2xl border mx-1 bg-slate-50 ${
-                  mood === item.value ? 'border-indigo-500 bg-white shadow-sm' : 'border-slate-100'
-                }`}
+                style={[
+                  styles.moodItem,
+                  mood === item.value && styles.moodItemSelected
+                ]}
                 onPress={() => setMood(item.value)}
               >
-                <Text className="text-2xl mb-1">{item.emoji}</Text>
-                <Text className={`text-xs font-bold ${mood === item.value ? 'text-indigo-600' : 'text-slate-400'}`}>
-                  {item.label}
-                </Text>
+                <Text style={styles.moodEmoji}>{item.emoji}</Text>
+                <Text style={[
+                  styles.moodLabel,
+                  mood === item.value && styles.moodLabelSelected
+                ]}>{item.label}</Text>
               </TouchableOpacity>
             ))}
           </View>
 
           <InputLabel icon="bookmark-outline" label="오늘 한 일 (제목)" />
           <TextInput 
-            className="bg-slate-50 rounded-xl p-4 text-base text-slate-900 border border-slate-100" 
+            style={styles.input} 
             value={title}
             onChangeText={setTitle}
             placeholder="핵심 내용을 적어주세요"
@@ -136,55 +146,50 @@ export default function WriteScreen() {
 
           <InputLabel icon="document-text-outline" label="상세 내용" />
           <TextInput 
-            className="bg-slate-50 rounded-xl p-4 text-base text-slate-900 border border-slate-100 h-32" 
+            style={[styles.input, styles.textArea]} 
             value={content}
             onChangeText={setContent}
             multiline 
-            textAlignVertical="top"
             placeholder="오늘 어떤 작업을 하셨나요?"
             placeholderTextColor="#94a3b8"
           />
 
           <InputLabel icon="bulb-outline" label="배운 것" />
           <TextInput 
-            className="bg-slate-50 rounded-xl p-4 text-base text-slate-900 border border-slate-100 h-32" 
+            style={[styles.input, styles.textArea]} 
             value={learned}
             onChangeText={setLearned}
             multiline 
-            textAlignVertical="top"
             placeholder="새롭게 알게 된 사실"
             placeholderTextColor="#94a3b8"
           />
 
           <InputLabel icon="alert-circle-outline" label="이슈" />
           <TextInput 
-            className="bg-slate-50 rounded-xl p-4 text-base text-slate-900 border border-slate-100 h-32" 
+            style={[styles.input, styles.textArea]} 
             value={issue}
             onChangeText={setIssue}
             multiline 
-            textAlignVertical="top"
             placeholder="어떤 문제가 있었나요?"
             placeholderTextColor="#94a3b8"
           />
 
           <InputLabel icon="checkmark-circle-outline" label="해결 방법" />
           <TextInput 
-            className="bg-slate-50 rounded-xl p-4 text-base text-slate-900 border border-slate-100 h-32" 
+            style={[styles.input, styles.textArea]} 
             value={solution}
             onChangeText={setSolution}
             multiline 
-            textAlignVertical="top"
             placeholder="어떻게 해결하셨나요?"
             placeholderTextColor="#94a3b8"
           />
 
           <InputLabel icon="attach-outline" label="메모" />
           <TextInput 
-            className="bg-slate-50 rounded-xl p-4 text-base text-slate-900 border border-slate-100 h-32" 
+            style={[styles.input, styles.textArea]} 
             value={memo}
             onChangeText={setMemo}
             multiline 
-            textAlignVertical="top"
             placeholder="기타 남기고 싶은 말"
             placeholderTextColor="#94a3b8"
           />
@@ -193,3 +198,104 @@ export default function WriteScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.surface,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  headerButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: COLORS.text,
+  },
+  saveText: {
+    fontSize: 16,
+    color: COLORS.primary,
+    fontWeight: 'bold',
+  },
+  content: {
+    paddingHorizontal: 24,
+  },
+  labelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 24,
+    marginBottom: 8,
+  },
+  labelIcon: {
+    marginRight: 6,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: COLORS.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  moodContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  moodItem: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginHorizontal: 4,
+    backgroundColor: COLORS.background,
+  },
+  moodItemSelected: {
+    borderColor: COLORS.primary,
+    backgroundColor: COLORS.surface,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  moodEmoji: {
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  moodLabel: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    fontWeight: '600',
+  },
+  moodLabelSelected: {
+    color: COLORS.primary,
+  },
+  input: {
+    backgroundColor: COLORS.background,
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 16,
+    color: COLORS.text,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  textArea: {
+    height: 120,
+    textAlignVertical: 'top',
+  },
+});

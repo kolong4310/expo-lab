@@ -1,9 +1,19 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StatusBar, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { WorkLog, deleteLog } from '../database/db';
+
+const COLORS = {
+  primary: '#6366f1',
+  background: '#f8fafc',
+  surface: '#ffffff',
+  text: '#0f172a',
+  textSecondary: '#64748b',
+  border: '#f1f5f9',
+  error: '#ef4444',
+};
 
 const MOOD_MAP: any = {
   best: { emoji: '🔥', label: '최고' },
@@ -40,64 +50,64 @@ export default function DetailScreen() {
   const InfoSection = ({ icon, label, content }: { icon: any, label: string, content: string }) => {
     if (!content || content.trim() === '') return null;
     return (
-      <View className="px-6 py-4">
-        <View className="flex-row items-center mb-3">
-          <Ionicons name={icon} size={18} color="#6366f1" className="mr-2" />
-          <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest">{label}</Text>
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Ionicons name={icon} size={18} color={COLORS.primary} style={styles.sectionIcon} />
+          <Text style={styles.sectionLabel}>{label}</Text>
         </View>
-        <View className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
-          <Text className="text-base text-slate-800 leading-7">{content}</Text>
+        <View style={styles.sectionContent}>
+          <Text style={styles.sectionText}>{content}</Text>
         </View>
       </View>
     );
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <View className="flex-row justify-between items-center px-6 py-4 border-b border-slate-100">
+      <View style={styles.header}>
         <TouchableOpacity 
           onPress={() => navigation.goBack()}
-          className="w-10 h-10 rounded-full justify-center items-start"
+          style={styles.backButton}
         >
-          <Ionicons name="arrow-back" size={26} color="#1e293b" />
+          <Ionicons name="arrow-back" size={26} color={COLORS.text} />
         </TouchableOpacity>
-        <Text className="text-lg font-bold text-slate-900">상세 보기</Text>
-        <View className="flex-row items-center">
+        <Text style={styles.headerTitle}>상세 보기</Text>
+        <View style={styles.headerActions}>
           <TouchableOpacity 
             onPress={() => navigation.navigate('Write', { log })}
-            className="p-2 ml-1"
+            style={styles.actionButton}
           >
-            <Ionicons name="create-outline" size={24} color="#6366f1" />
+            <Ionicons name="create-outline" size={24} color={COLORS.primary} />
           </TouchableOpacity>
           <TouchableOpacity 
             onPress={handleDelete}
-            className="p-2 ml-1"
+            style={styles.actionButton}
           >
-            <Ionicons name="trash-outline" size={24} color="#ef4444" />
+            <Ionicons name="trash-outline" size={24} color={COLORS.error} />
           </TouchableOpacity>
         </View>
       </View>
 
       <ScrollView 
-        className="flex-1"
+        style={styles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
       >
-        <View className="p-6">
-          <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-sm font-medium text-slate-400">{log.date}</Text>
+        <View style={styles.titleContainer}>
+          <View style={styles.dateMoodRow}>
+            <Text style={styles.dateText}>{log.date}</Text>
             {log.mood && MOOD_MAP[log.mood] && (
-              <View className="flex-row items-center bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
-                <Text className="text-sm mr-1.5">{MOOD_MAP[log.mood].emoji}</Text>
-                <Text className="text-xs font-bold text-slate-500">{MOOD_MAP[log.mood].label}</Text>
+              <View style={styles.moodBadge}>
+                <Text style={styles.moodEmoji}>{MOOD_MAP[log.mood].emoji}</Text>
+                <Text style={styles.moodLabel}>{MOOD_MAP[log.mood].label}</Text>
               </View>
             )}
           </View>
-          <Text className="text-2xl font-black text-slate-900 leading-tight">{log.title}</Text>
+          <Text style={styles.titleText}>{log.title}</Text>
         </View>
 
-        <View className="h-2 bg-slate-50 my-2" />
+        <View style={styles.divider} />
 
         <InfoSection icon="document-text-outline" label="상세 내용" content={log.content} />
         <InfoSection icon="bulb-outline" label="배운 것" content={log.learned} />
@@ -108,3 +118,117 @@ export default function DetailScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.surface,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: COLORS.text,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButton: {
+    padding: 8,
+    marginLeft: 4,
+  },
+  content: {
+    flex: 1,
+  },
+  titleContainer: {
+    padding: 24,
+  },
+  dateMoodRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  dateText: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    fontWeight: '500',
+  },
+  moodBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.background,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  moodEmoji: {
+    fontSize: 14,
+    marginRight: 6,
+  },
+  moodLabel: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    fontWeight: 'bold',
+  },
+  titleText: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: COLORS.text,
+    lineHeight: 32,
+  },
+  divider: {
+    height: 8,
+    backgroundColor: COLORS.background,
+    marginVertical: 8,
+  },
+  section: {
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sectionIcon: {
+    marginRight: 8,
+  },
+  sectionLabel: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: COLORS.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  sectionContent: {
+    backgroundColor: COLORS.background,
+    padding: 20,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  sectionText: {
+    fontSize: 16,
+    color: '#334155',
+    lineHeight: 26,
+  },
+});
