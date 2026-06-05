@@ -12,7 +12,7 @@ const COLORS = {
   text: '#0f172a',
   textSecondary: '#64748b',
   border: '#f1f5f9',
-  indigo50: '#eef2ff',
+  white: '#ffffff',
 };
 
 const MOODS = [

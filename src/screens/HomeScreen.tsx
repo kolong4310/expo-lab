@@ -6,12 +6,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { getAllLogs, WorkLog } from '../database/db';
 
 const COLORS = {
-  primary: '#6366f1',
-  background: '#f8fafc',
+  primary: '#6366f1', // Indigo 500
+  secondary: '#10b981', // Emerald 500
+  background: '#f8fafc', // Slate 50
   surface: '#ffffff',
-  text: '#0f172a',
-  textSecondary: '#64748b',
-  border: '#f1f5f9',
+  text: '#0f172a', // Slate 900
+  textSecondary: '#64748b', // Slate 500
+  border: '#f1f5f9', // Slate 100
+  error: '#ef4444', // Red 500
   white: '#ffffff',
 };
 
