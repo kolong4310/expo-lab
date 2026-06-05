@@ -4,21 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { WorkLog, deleteLog } from '../database/db';
-
-const COLORS = {
-  primary: '#4F46E5',
-  background: '#FFFFFF',
-  text: '#000000',
-  textSecondary: '#666666',
-  border: '#F2F2F2',
-  error: '#FF3B30',
-};
+import { DESIGN } from '../theme/design';
 
 const MOOD_MAP: any = {
-  best: '🔥 최고',
-  good: '😀 좋음',
-  normal: '🙂 보통',
-  hard: '😓 힘듦',
+  best: { emoji: '🔥', label: 'OPTIMAL' },
+  good: { emoji: '✨', label: 'BRIGHT' },
+  normal: { emoji: '☁️', label: 'NEUTRAL' },
+  hard: { emoji: '🌊', label: 'WAVY' },
 };
 
 export default function DetailScreen() {
@@ -28,12 +20,12 @@ export default function DetailScreen() {
 
   const handleDelete = () => {
     Alert.alert(
-      '기록 삭제',
-      '이 성장 기록을 지우시겠습니까?',
+      'Purge Log',
+      'This entry will be lost to the void. Continue?',
       [
-        { text: '취소', style: 'cancel' },
+        { text: 'ABORT', style: 'cancel' },
         { 
-          text: '삭제', 
+          text: 'PURGE', 
           style: 'destructive',
           onPress: () => {
             if (log.id) {
@@ -46,7 +38,7 @@ export default function DetailScreen() {
     );
   };
 
-  const ContentSection = ({ label, content }: { label: string, content: string }) => {
+  const InsightSection = ({ label, content }: { label: string, content: string }) => {
     if (!content || content.trim() === '') return null;
     return (
       <View style={styles.section}>
@@ -58,20 +50,20 @@ export default function DetailScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={28} color={COLORS.text} />
+          <Ionicons name="arrow-back-outline" size={24} color={DESIGN.colors.text} />
         </TouchableOpacity>
         <View style={styles.headerActions}>
           <TouchableOpacity 
             onPress={() => navigation.navigate('Write', { log })}
             style={styles.actionButton}
           >
-            <Ionicons name="create-outline" size={22} color={COLORS.text} />
+            <Ionicons name="pencil-outline" size={20} color={DESIGN.colors.primary} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleDelete} style={styles.actionButton}>
-            <Ionicons name="trash-outline" size={22} color={COLORS.error} />
+            <Ionicons name="trash-outline" size={20} color="#ef4444" />
           </TouchableOpacity>
         </View>
       </View>
@@ -81,23 +73,28 @@ export default function DetailScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 60 }}
       >
-        <View style={styles.titleArea}>
-          <View style={styles.metaRow}>
-            <Text style={styles.dateText}>{log.date.replace(/-/g, '. ')}</Text>
+        <View style={styles.heroArea}>
+          <View style={styles.metaHeader}>
+            <Text style={styles.dateText}>{log.date.replace(/-/g, ' / ')}</Text>
             {log.mood && MOOD_MAP[log.mood] && (
-              <Text style={styles.moodText}>{MOOD_MAP[log.mood]}</Text>
+              <View style={styles.moodBadge}>
+                <Text style={styles.moodEmoji}>{MOOD_MAP[log.mood].emoji}</Text>
+                <Text style={styles.moodLabel}>{MOOD_MAP[log.mood].label}</Text>
+              </View>
             )}
           </View>
-          <Text style={styles.mainTitle}>{log.title}</Text>
+          <Text style={styles.heroTitle}>{log.title}</Text>
         </View>
 
-        <View style={styles.divider} />
+        <View style={styles.dividerArea}>
+          <View style={styles.line} />
+        </View>
 
-        <ContentSection label="Today's Log" content={log.content} />
-        <ContentSection label="Learned" content={log.learned} />
-        <ContentSection label="Issue" content={log.issue} />
-        <ContentSection label="Solution" content={log.solution} />
-        <ContentSection label="Memo" content={log.memo} />
+        <InsightSection label="FLOW" content={log.content} />
+        <InsightSection label="INTEL" content={log.learned} />
+        <InsightSection label="BLOCK" content={log.issue} />
+        <InsightSection label="SOLVE" content={log.solution} />
+        <InsightSection label="NOTE" content={log.memo} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -106,91 +103,105 @@ export default function DetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: DESIGN.colors.bg,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingVertical: 10,
   },
   backButton: {
     width: 44,
     height: 44,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   headerActions: {
     flexDirection: 'row',
   },
   actionButton: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: DESIGN.colors.border,
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: 4,
+    marginLeft: 8,
   },
   content: {
     flex: 1,
   },
-  titleArea: {
-    paddingHorizontal: 30,
-    paddingTop: 10,
-    paddingBottom: 30,
+  heroArea: {
+    paddingHorizontal: 28,
+    paddingTop: 20,
+    paddingBottom: 40,
   },
-  metaRow: {
+  metaHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   dateText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-  },
-  moodText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: COLORS.textSecondary,
-    marginLeft: 12,
-    backgroundColor: COLORS.border,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    overflow: 'hidden',
-  },
-  mainTitle: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: COLORS.text,
-    lineHeight: 40,
-    letterSpacing: -1,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: COLORS.border,
-    marginHorizontal: 30,
-    marginBottom: 30,
-  },
-  section: {
-    paddingHorizontal: 30,
-    marginBottom: 40,
-  },
-  sectionLabel: {
     fontSize: 11,
     fontWeight: '800',
-    color: COLORS.primary,
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
-    marginBottom: 12,
+    color: DESIGN.colors.textDim,
+    letterSpacing: 2,
+  },
+  moodBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: DESIGN.colors.surface,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: DESIGN.colors.border,
+  },
+  moodEmoji: {
+    fontSize: 12,
+    marginRight: 6,
+  },
+  moodLabel: {
+    fontSize: 9,
+    color: DESIGN.colors.text,
+    fontWeight: '900',
+    letterSpacing: 1,
+  },
+  heroTitle: {
+    fontSize: 36,
+    fontWeight: '900',
+    color: DESIGN.colors.text,
+    lineHeight: 44,
+    letterSpacing: -1.5,
+  },
+  dividerArea: {
+    paddingHorizontal: 28,
+    marginBottom: 40,
+  },
+  line: {
+    height: 1,
+    backgroundColor: DESIGN.colors.border,
+    width: 40,
+  },
+  section: {
+    paddingHorizontal: 28,
+    marginBottom: 48,
+  },
+  sectionLabel: {
+    fontSize: 10,
+    fontWeight: '900',
+    color: DESIGN.colors.secondary,
+    letterSpacing: 2,
+    marginBottom: 16,
   },
   sectionText: {
-    fontSize: 17,
-    color: COLORS.text,
-    lineHeight: 28,
+    fontSize: 18,
+    color: DESIGN.colors.text,
+    lineHeight: 30,
     fontWeight: '400',
+    opacity: 0.9,
   },
 });

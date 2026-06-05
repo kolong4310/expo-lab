@@ -4,21 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { addLog, updateLog, WorkLog } from '../database/db';
-
-const COLORS = {
-  primary: '#4F46E5',
-  background: '#FFFFFF',
-  text: '#000000',
-  textSecondary: '#666666',
-  border: '#F2F2F2',
-  inputBg: '#FAFAFA',
-};
+import { DESIGN } from '../theme/design';
 
 const MOODS = [
-  { emoji: '🔥', label: '최고', value: 'best' },
-  { emoji: '😀', label: '좋음', value: 'good' },
-  { emoji: '🙂', label: '보통', value: 'normal' },
-  { emoji: '😓', label: '힘듦', value: 'hard' },
+  { emoji: '🔥', value: 'best' },
+  { emoji: '✨', value: 'good' },
+  { emoji: '☁️', value: 'normal' },
+  { emoji: '🌊', value: 'hard' },
 ];
 
 export default function WriteScreen() {
@@ -49,7 +41,7 @@ export default function WriteScreen() {
 
   const handleSave = () => {
     if (!title.trim()) {
-      Alert.alert('알림', '제목은 성장의 시작입니다.');
+      Alert.alert('Incomplete', 'Every journey needs a name.');
       return;
     }
 
@@ -68,33 +60,28 @@ export default function WriteScreen() {
 
       if (editingLog) {
         updateLog(logData);
-        Alert.alert('성공', '기록이 수정되었습니다.', [
-          { text: '확인', onPress: () => navigation.navigate('Detail', { log: logData }) }
-        ]);
+        navigation.navigate('Detail', { log: logData });
       } else {
         addLog(logData);
-        Alert.alert('성공', '새로운 발자취를 남겼습니다.', [
-          { text: '확인', onPress: () => navigation.goBack() }
-        ]);
+        navigation.goBack();
       }
     } catch (error) {
       console.error(error);
-      Alert.alert('오류', '저장 중 문제가 발생했습니다.');
     }
   };
 
-  const MinimalInput = ({ label, value, onChangeText, placeholder, height = 100 }: any) => (
-    <View style={styles.inputSection}>
+  const InsightInput = ({ label, value, onChangeText, placeholder }: any) => (
+    <View style={styles.inputGroup}>
       <Text style={styles.inputLabel}>{label}</Text>
       <TextInput
-        style={[styles.textInput, { height }]}
+        style={styles.textInput}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#CCCCCC"
+        placeholderTextColor={DESIGN.colors.textMuted}
         multiline
         textAlignVertical="top"
-        selectionColor={COLORS.primary}
+        selectionColor={DESIGN.colors.primary}
       />
     </View>
   );
@@ -106,38 +93,35 @@ export default function WriteScreen() {
         style={{ flex: 1 }}
       >
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Ionicons name="close" size={28} color={COLORS.text} />
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
+            <Ionicons name="close-outline" size={28} color={DESIGN.colors.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{editingLog ? 'Edit Log' : 'New Journal'}</Text>
-          <View style={{ width: 44 }} />
+          <TouchableOpacity onPress={handleSave} style={styles.saveBadge}>
+            <Text style={styles.saveBadgeText}>{editingLog ? 'UPDATE' : 'PUBLISH'}</Text>
+          </TouchableOpacity>
         </View>
 
         <ScrollView 
           style={styles.content}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 120 }}
+          contentContainerStyle={{ paddingBottom: 60 }}
         >
-          {/* Main Title - Borderless */}
           <TextInput 
-            style={styles.mainTitleInput}
+            style={styles.heroInput}
             value={title}
             onChangeText={setTitle}
-            placeholder="어떤 성장이 있었나요?"
-            placeholderTextColor="#DDDDDD"
-            selectionColor={COLORS.primary}
+            placeholder="Insight Title"
+            placeholderTextColor={DESIGN.colors.textMuted}
+            selectionColor={DESIGN.colors.secondary}
           />
 
-          <View style={styles.divider} />
-
-          {/* Mood Selector - Minimalist */}
           <View style={styles.moodRow}>
             {MOODS.map((item) => (
               <TouchableOpacity
                 key={item.value}
                 style={[
-                  styles.moodCircle,
-                  mood === item.value && styles.moodCircleSelected
+                  styles.moodBox,
+                  mood === item.value && styles.moodBoxSelected
                 ]}
                 onPress={() => setMood(item.value)}
               >
@@ -146,50 +130,41 @@ export default function WriteScreen() {
             ))}
           </View>
 
-          <MinimalInput 
-            label="What I did"
+          <InsightInput 
+            label="FLOW"
             value={content}
             onChangeText={setContent}
-            placeholder="오늘의 주요 성과를 텍스트로 기록하세요."
+            placeholder="Describe the day's progression..."
           />
 
-          <MinimalInput 
-            label="Learned"
+          <InsightInput 
+            label="INTEL"
             value={learned}
             onChangeText={setLearned}
-            placeholder="새롭게 깨달은 지식이나 통찰"
+            placeholder="New knowledge acquired..."
           />
 
-          <MinimalInput 
-            label="Problem"
+          <InsightInput 
+            label="BLOCK"
             value={issue}
             onChangeText={setIssue}
-            placeholder="직면했던 장애물"
+            placeholder="Obstacles encountered..."
           />
 
-          <MinimalInput 
-            label="Solution"
+          <InsightInput 
+            label="SOLVE"
             value={solution}
             onChangeText={setSolution}
-            placeholder="어떻게 극복하셨나요?"
+            placeholder="Resolutions applied..."
           />
 
-          <MinimalInput 
-            label="Memo"
+          <InsightInput 
+            label="NOTE"
             value={memo}
             onChangeText={setMemo}
-            placeholder="그 외 남기고 싶은 기록"
-            height={80}
+            placeholder="Additional context..."
           />
         </ScrollView>
-
-        <TouchableOpacity 
-          style={styles.saveButton}
-          onPress={handleSave}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.saveButtonText}>{editingLog ? 'Update' : 'Complete'}</Text>
-        </TouchableOpacity>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -198,97 +173,83 @@ export default function WriteScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: DESIGN.colors.bg,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingVertical: 10,
   },
-  backButton: {
+  closeButton: {
     width: 44,
     height: 44,
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.text,
+  saveBadge: {
+    backgroundColor: DESIGN.colors.secondary,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  saveBadgeText: {
+    fontSize: 10,
+    fontWeight: '900',
+    color: DESIGN.colors.bg,
+    letterSpacing: 1,
   },
   content: {
     flex: 1,
-    paddingHorizontal: 30,
+    paddingHorizontal: 28,
   },
-  mainTitleInput: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: COLORS.text,
+  heroInput: {
+    fontSize: 40,
+    fontWeight: '900',
+    color: DESIGN.colors.text,
     marginTop: 20,
-    paddingVertical: 10,
-    letterSpacing: -1,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: COLORS.border,
-    marginVertical: 20,
+    letterSpacing: -1.5,
+    marginBottom: 20,
   },
   moodRow: {
     flexDirection: 'row',
     marginBottom: 40,
   },
-  moodCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: COLORS.inputBg,
+  moodBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: DESIGN.colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 10,
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: DESIGN.colors.border,
   },
-  moodCircleSelected: {
-    backgroundColor: COLORS.background,
-    borderColor: COLORS.text,
+  moodBoxSelected: {
+    borderColor: DESIGN.colors.secondary,
+    backgroundColor: 'transparent',
   },
   moodEmoji: {
-    fontSize: 22,
+    fontSize: 20,
   },
-  inputSection: {
+  inputGroup: {
     marginBottom: 32,
+    borderLeftWidth: 1,
+    borderLeftColor: DESIGN.colors.border,
+    paddingLeft: 20,
   },
   inputLabel: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: COLORS.text,
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
+    fontSize: 10,
+    fontWeight: '900',
+    color: DESIGN.colors.secondary,
+    letterSpacing: 2,
     marginBottom: 12,
   },
   textInput: {
     fontSize: 16,
-    color: COLORS.text,
+    color: DESIGN.colors.text,
     lineHeight: 26,
-    fontWeight: '400',
-  },
-  saveButton: {
-    position: 'absolute',
-    bottom: 40,
-    left: 30,
-    right: 30,
-    height: 60,
-    backgroundColor: COLORS.text, // Black
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  saveButtonText: {
-    color: COLORS.background,
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.5,
+    minHeight: 40,
   },
 });

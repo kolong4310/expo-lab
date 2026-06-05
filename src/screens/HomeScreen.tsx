@@ -4,21 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { getAllLogs, WorkLog } from '../database/db';
-
-const COLORS = {
-  primary: '#4F46E5', // Indigo
-  background: '#FFFFFF',
-  text: '#000000',
-  textSecondary: '#666666',
-  border: '#F2F2F2',
-  dot: '#E5E5E5',
-};
+import { DESIGN } from '../theme/design';
 
 const MOOD_MAP: any = {
   best: '🔥',
-  good: '😀',
-  normal: '🙂',
-  hard: '😓',
+  good: '✨',
+  normal: '☁️',
+  hard: '🌊',
 };
 
 export default function HomeScreen() {
@@ -32,77 +24,73 @@ export default function HomeScreen() {
     }, [])
   );
 
-  const renderTimelineItem = ({ item, index }: { item: WorkLog, index: number }) => (
+  const renderInsight = ({ item, index }: { item: WorkLog, index: number }) => (
     <TouchableOpacity 
-      style={styles.timelineItem}
+      style={styles.insightItem}
       onPress={() => navigation.navigate('Detail', { log: item })}
-      activeOpacity={0.5}
+      activeOpacity={0.4}
     >
-      {/* Left Timeline Line */}
-      <View style={styles.leftLineArea}>
-        <View style={[styles.timelineLine, index === 0 && { top: 12 }, index === logs.length - 1 && { height: 12 }]} />
-        <View style={styles.timelineDot} />
+      <View style={styles.insightMeta}>
+        <Text style={styles.insightDate}>{item.date.split('-').slice(1).join(' / ')}</Text>
+        <View style={styles.insightDivider} />
+        {item.mood && <Text style={styles.insightMood}>{MOOD_MAP[item.mood]}</Text>}
       </View>
 
-      <View style={styles.contentArea}>
-        <View style={styles.dateMoodRow}>
-          <Text style={styles.itemDate}>{item.date.replace(/-/g, '. ')}</Text>
-          {item.mood && <Text style={styles.moodEmoji}>{MOOD_MAP[item.mood]}</Text>}
-        </View>
-        
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        
-        <Text style={styles.itemSummary} numberOfLines={2}>
-          {item.content || '성장의 기록이 비어있습니다.'}
+      <Text style={styles.insightTitle}>{item.title}</Text>
+      
+      <View style={styles.insightContentRow}>
+        <View style={[styles.indicator, { backgroundColor: index % 2 === 0 ? DESIGN.colors.primary : DESIGN.colors.accent }]} />
+        <Text style={styles.insightPreview} numberOfLines={1}>
+          {item.content || 'No content provided for this development insight.'}
         </Text>
-
-        <View style={styles.footerRow}>
-          <Text style={styles.tagText}>#Log_{logs.length - index}</Text>
-          <Ionicons name="chevron-forward" size={14} color={COLORS.dot} />
-        </View>
       </View>
     </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
       
       <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>Timeline</Text>
-          <Text style={styles.headerSubtitle}>성장의 궤적</Text>
+        <View style={styles.headerLeft}>
+          <Text style={styles.headerGlow}>.</Text>
+          <Text style={styles.headerLabel}>INSIGHTS</Text>
         </View>
-        <View style={styles.headerActions}>
-          <TouchableOpacity 
-            style={styles.iconButton}
-            onPress={() => navigation.navigate('Calendar')}
-          >
-            <Ionicons name="archive-outline" size={22} color={COLORS.text} />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity 
+          style={styles.archiveButton}
+          onPress={() => navigation.navigate('Calendar')}
+        >
+          <Ionicons name="layers-outline" size={20} color={DESIGN.colors.text} />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.heroSection}>
+        <Text style={styles.heroGreeting}>Hello, Dev.</Text>
+        <Text style={styles.heroStat}>{logs.length} Journeys Recorded</Text>
       </View>
 
       <FlatList
         data={logs}
-        renderItem={renderTimelineItem}
+        renderItem={renderInsight}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>시작은 작게, 기록은 꾸준히.</Text>
-            <Text style={styles.emptySubText}>첫 번째 발자취를 남겨보세요.</Text>
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyEmoji}>🌑</Text>
+            <Text style={styles.emptyText}>The abyss is empty. Fill it with your growth.</Text>
           </View>
         }
       />
 
       <TouchableOpacity 
-        style={styles.fab}
+        style={styles.actionButton}
         onPress={() => navigation.navigate('Write')}
-        activeOpacity={0.9}
+        activeOpacity={0.8}
       >
-        <Ionicons name="add" size={32} color={COLORS.background} />
+        <View style={styles.actionInner}>
+          <Ionicons name="add" size={28} color={DESIGN.colors.bg} />
+        </View>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -111,135 +99,140 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: DESIGN.colors.bg,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    paddingHorizontal: 30,
-    paddingTop: 30,
-    paddingBottom: 20,
+    alignItems: 'center',
+    paddingHorizontal: 28,
+    paddingVertical: 16,
   },
-  headerTitle: {
-    fontSize: 40,
-    fontWeight: '800',
-    color: COLORS.text,
-    letterSpacing: -1.5,
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  headerSubtitle: {
-    fontSize: 16,
-    color: COLORS.textSecondary,
-    fontWeight: '400',
-    marginTop: -2,
-    letterSpacing: 0.5,
+  headerGlow: {
+    fontSize: 24,
+    color: DESIGN.colors.secondary,
+    fontWeight: '900',
+    marginRight: 6,
+    marginTop: -10,
   },
-  headerActions: {
-    marginBottom: 8,
+  headerLabel: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: DESIGN.colors.text,
+    letterSpacing: 3,
   },
-  iconButton: {
-    width: 44,
-    height: 44,
+  archiveButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: DESIGN.colors.border,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  list: {
-    paddingHorizontal: 0,
-    paddingBottom: 120,
+  heroSection: {
+    paddingHorizontal: 28,
+    paddingTop: 30,
+    paddingBottom: 40,
   },
-  timelineItem: {
-    flexDirection: 'row',
-    paddingRight: 30,
+  heroGreeting: {
+    fontSize: 48,
+    fontWeight: '900',
+    color: DESIGN.colors.text,
+    letterSpacing: -2,
   },
-  leftLineArea: {
-    width: 60,
-    alignItems: 'center',
-  },
-  timelineLine: {
-    position: 'absolute',
-    width: 1,
-    height: '100%',
-    backgroundColor: COLORS.border,
-  },
-  timelineDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: COLORS.dot,
-    marginTop: 12,
-    borderWidth: 2,
-    borderColor: COLORS.background,
-  },
-  contentArea: {
-    flex: 1,
-    paddingTop: 8,
-    paddingBottom: 32,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  dateMoodRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  itemDate: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
-    letterSpacing: 1,
-  },
-  moodEmoji: {
-    fontSize: 12,
-    marginLeft: 6,
-  },
-  itemTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: 8,
-    letterSpacing: -0.5,
-  },
-  itemSummary: {
-    fontSize: 15,
-    color: COLORS.textSecondary,
-    lineHeight: 22,
-    fontWeight: '400',
-  },
-  footerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  tagText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: COLORS.primary,
+  heroStat: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: DESIGN.colors.textDim,
+    marginTop: 4,
     letterSpacing: 0.5,
   },
-  emptyContainer: {
-    marginTop: 150,
-    alignItems: 'center',
+  list: {
+    paddingHorizontal: 28,
+    paddingBottom: 120,
   },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.text,
+  insightItem: {
+    paddingVertical: 24,
+    borderTopWidth: 1,
+    borderTopColor: DESIGN.colors.border,
+  },
+  insightMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  insightDate: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: DESIGN.colors.textDim,
+    letterSpacing: 1.5,
+  },
+  insightDivider: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: DESIGN.colors.border,
+    marginHorizontal: 10,
+  },
+  insightMood: {
+    fontSize: 12,
+  },
+  insightTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: DESIGN.colors.text,
+    letterSpacing: -0.5,
     marginBottom: 8,
   },
-  emptySubText: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
+  insightContentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  fab: {
+  indicator: {
+    width: 2,
+    height: 14,
+    marginRight: 10,
+    borderRadius: 1,
+  },
+  insightPreview: {
+    fontSize: 14,
+    color: DESIGN.colors.textDim,
+    fontWeight: '400',
+  },
+  emptyState: {
+    marginTop: 80,
+    alignItems: 'center',
+  },
+  emptyEmoji: {
+    fontSize: 40,
+    marginBottom: 16,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: DESIGN.colors.textDim,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  actionButton: {
     position: 'absolute',
-    right: 30,
+    right: 28,
     bottom: 40,
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: COLORS.text, // Pure Black
+    backgroundColor: DESIGN.colors.secondary, // Bright neon accent
+    padding: 3,
+  },
+  actionInner: {
+    flex: 1,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: DESIGN.colors.text,
   },
 });

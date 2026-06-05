@@ -5,24 +5,17 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
 import { getLogsByDate, getLoggedDates, WorkLog } from '../database/db';
+import { DESIGN } from '../theme/design';
 
-const COLORS = {
-  primary: '#4F46E5',
-  background: '#FFFFFF',
-  text: '#000000',
-  textSecondary: '#666666',
-  border: '#F2F2F2',
+// Locale config
+LocaleConfig.locales['en'] = {
+  monthNames: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+  monthNamesShort: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+  dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+  dayNamesShort: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+  today: 'TODAY'
 };
-
-// 한국어 설정
-LocaleConfig.locales['ko'] = {
-  monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-  monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-  dayNames: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
-  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-  today: '오늘'
-};
-LocaleConfig.defaultLocale = 'ko';
+LocaleConfig.defaultLocale = 'en';
 
 export default function CalendarScreen() {
   const navigation = useNavigation<any>();
@@ -40,14 +33,15 @@ export default function CalendarScreen() {
     const dates = getLoggedDates();
     const marks: any = {};
     dates.forEach(date => {
-      marks[date] = { marked: true, dotColor: COLORS.primary };
+      marks[date] = { marked: true, dotColor: DESIGN.colors.secondary };
     });
     
-    if (marks[selectedDate]) {
-      marks[selectedDate] = { ...marks[selectedDate], selected: true, selectedColor: COLORS.text };
-    } else {
-      marks[selectedDate] = { selected: true, selectedColor: COLORS.text };
-    }
+    marks[selectedDate] = { 
+      ...marks[selectedDate], 
+      selected: true, 
+      selectedColor: DESIGN.colors.text,
+      selectedTextColor: DESIGN.colors.bg 
+    };
     setMarkedDates(marks);
 
     const dayLogs = getLogsByDate(selectedDate);
@@ -56,47 +50,55 @@ export default function CalendarScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={28} color={COLORS.text} />
+          <Ionicons name="chevron-back-outline" size={28} color={DESIGN.colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Archive</Text>
+        <Text style={styles.headerTitle}>ARCHIVE</Text>
         <View style={{ width: 44 }} />
       </View>
 
-      <View style={styles.calendarArea}>
+      <View style={styles.calendarWrapper}>
         <Calendar
           onDayPress={(day: any) => setSelectedDate(day.dateString)}
           markedDates={markedDates}
           theme={{
-            selectedDayBackgroundColor: COLORS.text,
-            selectedDayTextColor: COLORS.background,
-            todayTextColor: COLORS.primary,
-            arrowColor: COLORS.text,
-            monthTextColor: COLORS.text,
-            textMonthFontWeight: '800',
-            textDayHeaderFontWeight: '600',
-            dotColor: COLORS.primary,
-            calendarBackground: 'transparent',
+            backgroundColor: DESIGN.colors.bg,
+            calendarBackground: DESIGN.colors.bg,
+            textSectionTitleColor: DESIGN.colors.textDim,
+            selectedDayBackgroundColor: DESIGN.colors.text,
+            selectedDayTextColor: DESIGN.colors.bg,
+            todayTextColor: DESIGN.colors.secondary,
+            dayTextColor: DESIGN.colors.text,
+            textDisabledColor: DESIGN.colors.textMuted,
+            dotColor: DESIGN.colors.secondary,
+            monthTextColor: DESIGN.colors.text,
+            indicatorColor: DESIGN.colors.primary,
+            textDayFontWeight: '500',
+            textMonthFontWeight: '900',
+            textDayHeaderFontWeight: '700',
+            textDayFontSize: 14,
+            textMonthFontSize: 16,
+            textDayHeaderFontSize: 11,
           }}
         />
       </View>
 
       <View style={styles.listHeader}>
-        <Text style={styles.dateText}>{selectedDate.replace(/-/g, '. ')}</Text>
-        <Text style={styles.countText}>{logs.length} entries</Text>
+        <Text style={styles.selectedDateText}>{selectedDate.replace(/-/g, ' / ')}</Text>
+        <Text style={styles.countText}>{logs.length} JOURNEYS</Text>
       </View>
 
       <FlatList
         data={logs}
         renderItem={({ item }) => (
           <TouchableOpacity 
-            style={styles.logItem}
+            style={styles.archiveItem}
             onPress={() => navigation.navigate('Detail', { log: item })}
           >
-            <Text style={styles.logTitle} numberOfLines={1}>{item.title}</Text>
-            <Ionicons name="chevron-forward" size={14} color={COLORS.border} />
+            <Text style={styles.archiveItemTitle} numberOfLines={1}>{item.title}</Text>
+            <Ionicons name="arrow-forward-outline" size={16} color={DESIGN.colors.textMuted} />
           </TouchableOpacity>
         )}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
@@ -109,65 +111,65 @@ export default function CalendarScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: DESIGN.colors.bg,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingVertical: 10,
   },
   backButton: {
     width: 44,
     height: 44,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: COLORS.text,
+    fontSize: 12,
+    fontWeight: '900',
+    color: DESIGN.colors.text,
+    letterSpacing: 4,
   },
-  calendarArea: {
+  calendarWrapper: {
+    paddingHorizontal: 10,
     paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
   },
   listHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 30,
-    marginTop: 30,
+    paddingHorizontal: 28,
+    marginTop: 20,
     marginBottom: 20,
   },
-  dateText: {
-    fontSize: 18,
+  selectedDateText: {
+    fontSize: 14,
     fontWeight: '800',
-    color: COLORS.text,
+    color: DESIGN.colors.text,
+    letterSpacing: 1,
   },
   countText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
-    textTransform: 'uppercase',
+    fontSize: 10,
+    fontWeight: '700',
+    color: DESIGN.colors.textDim,
+    letterSpacing: 1,
   },
   list: {
-    paddingHorizontal: 30,
+    paddingHorizontal: 28,
   },
-  logItem: {
+  archiveItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 16,
+    paddingVertical: 20,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: DESIGN.colors.border,
   },
-  logTitle: {
+  archiveItemTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: COLORS.text,
+    color: DESIGN.colors.text,
     flex: 1,
     marginRight: 10,
   },
