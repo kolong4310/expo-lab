@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar, Alert 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { WorkLog, deleteLog } from '../database/db';
+import { WorkLog, deleteLog, getTodosByDate, Todo } from '../database/db';
 import { DESIGN } from '../theme/design';
 
 const MOOD_MAP: any = {
@@ -17,6 +17,9 @@ export default function DetailScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute();
   const { log } = route.params as { log: WorkLog };
+  
+  // Fetch todos for this specific date
+  const dayTodos = getTodosByDate(log.date);
 
   const handleDelete = () => {
     Alert.alert(
@@ -89,6 +92,28 @@ export default function DetailScreen() {
         <View style={styles.dividerArea}>
           <View style={styles.line} />
         </View>
+
+        {/* Action History (Todos) Section */}
+        {dayTodos.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>MISSION HISTORY</Text>
+            <View style={styles.todoList}>
+              {dayTodos.map(todo => (
+                <View key={todo.id} style={styles.todoRow}>
+                  <Ionicons 
+                    name={todo.is_completed === 1 ? "checkmark-circle" : "ellipse-outline"} 
+                    size={18} 
+                    color={todo.is_completed === 1 ? DESIGN.colors.secondary : DESIGN.colors.textMuted} 
+                    style={styles.todoIcon}
+                  />
+                  <Text style={[styles.todoText, todo.is_completed === 1 && styles.todoTextCompleted]}>
+                    {todo.task}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
 
         <InsightSection label="FLOW" content={log.content} />
         <InsightSection label="INTEL" content={log.learned} />
@@ -203,5 +228,29 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontWeight: '400',
     opacity: 0.9,
+  },
+  todoList: {
+    backgroundColor: DESIGN.colors.surface,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: DESIGN.colors.border,
+  },
+  todoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  todoIcon: {
+    marginRight: 10,
+  },
+  todoText: {
+    fontSize: 15,
+    color: DESIGN.colors.text,
+    fontWeight: '500',
+  },
+  todoTextCompleted: {
+    color: DESIGN.colors.textMuted,
+    textDecorationLine: 'line-through',
   },
 });

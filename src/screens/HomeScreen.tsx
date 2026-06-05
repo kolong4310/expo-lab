@@ -81,18 +81,17 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       
-      {/* Header */}
+      {/* Header - Simplified as navigation is now in tabs */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.headerGlow}>.</Text>
           <Text style={styles.headerLabel}>GROW DAY</Text>
         </View>
-        <TouchableOpacity 
-          style={styles.archiveButton}
-          onPress={() => navigation.navigate('Calendar')}
-        >
-          <Ionicons name="layers-outline" size={20} color={DESIGN.colors.text} />
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.searchButton}>
+            <Ionicons name="search-outline" size={20} color={DESIGN.colors.text} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <FlatList
@@ -231,7 +230,10 @@ const styles = StyleSheet.create({
     color: DESIGN.colors.text,
     letterSpacing: 3,
   },
-  archiveButton: {
+  headerRight: {
+    flexDirection: 'row',
+  },
+  searchButton: {
     width: 40,
     height: 40,
     borderRadius: 12,
