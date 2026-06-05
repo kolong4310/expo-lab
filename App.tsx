@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -13,6 +13,19 @@ import { DESIGN } from './src/theme/design';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+// Midnight Insight Theme
+const MidnightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: DESIGN.colors.bg,
+    card: DESIGN.colors.bg,
+    text: DESIGN.colors.text,
+    border: DESIGN.colors.border,
+    primary: DESIGN.colors.primary,
+  },
+};
 
 function TabNavigator() {
   return (
@@ -59,8 +72,8 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <NavigationContainer theme={MidnightTheme}>
+        <Stack.Navigator screenOptions={{ headerShown: false, cardStyle: { backgroundColor: DESIGN.colors.bg } }}>
           <Stack.Screen name="Main" component={TabNavigator} />
           <Stack.Screen name="Write" component={WriteScreen} />
           <Stack.Screen name="Detail" component={DetailScreen} />
