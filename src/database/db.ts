@@ -11,6 +11,7 @@ export interface WorkLog {
   issue: string;      // 이슈
   solution: string;   // 해결 방법
   memo: string;       // 메모
+  mood?: string;      // 오늘의 기분 (emoji)
   date: string;       // 작성 날짜 (YYYY-MM-DD)
 }
 
@@ -29,6 +30,7 @@ export const initDatabase = () => {
       issue TEXT,
       solution TEXT,
       memo TEXT,
+      mood TEXT,
       date TEXT NOT NULL
     );
   `);
@@ -47,7 +49,7 @@ export const getAllLogs = (): WorkLog[] => {
  */
 export const addLog = (log: WorkLog) => {
   const statement = db.prepareSync(
-    'INSERT INTO logs (title, content, learned, issue, solution, memo, date) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    'INSERT INTO logs (title, content, learned, issue, solution, memo, mood, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
   );
   try {
     statement.executeSync([
@@ -57,6 +59,7 @@ export const addLog = (log: WorkLog) => {
       log.issue,
       log.solution,
       log.memo,
+      log.mood || null,
       log.date
     ]);
   } finally {
@@ -69,7 +72,7 @@ export const addLog = (log: WorkLog) => {
  */
 export const updateLog = (log: WorkLog) => {
   const statement = db.prepareSync(
-    'UPDATE logs SET title = ?, content = ?, learned = ?, issue = ?, solution = ?, memo = ? WHERE id = ?'
+    'UPDATE logs SET title = ?, content = ?, learned = ?, issue = ?, solution = ?, memo = ?, mood = ? WHERE id = ?'
   );
   try {
     statement.executeSync([
@@ -79,6 +82,7 @@ export const updateLog = (log: WorkLog) => {
       log.issue,
       log.solution,
       log.memo,
+      log.mood || null,
       log.id!
     ]);
   } finally {

@@ -6,6 +6,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { WorkLog, deleteLog } from '../database/db';
 import { Colors, Spacing, Typography } from '../theme/theme';
 
+const MOOD_MAP: any = {
+  best: { emoji: '🔥', label: '최고' },
+  good: { emoji: '😀', label: '좋음' },
+  normal: { emoji: '🙂', label: '보통' },
+  hard: { emoji: '😓', label: '힘듦' },
+};
+
 export default function DetailScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute();
@@ -79,7 +86,15 @@ export default function DetailScreen() {
         contentContainerStyle={{ paddingBottom: Spacing.xl }}
       >
         <View style={styles.titleContainer}>
-          <Text style={styles.dateText}>{log.date}</Text>
+          <View style={styles.dateMoodRow}>
+            <Text style={styles.dateText}>{log.date}</Text>
+            {log.mood && MOOD_MAP[log.mood] && (
+              <View style={styles.moodBadge}>
+                <Text style={styles.moodEmoji}>{MOOD_MAP[log.mood].emoji}</Text>
+                <Text style={styles.moodLabel}>{MOOD_MAP[log.mood].label}</Text>
+              </View>
+            )}
+          </View>
           <Text style={styles.titleText}>{log.title}</Text>
         </View>
 
@@ -135,11 +150,35 @@ const styles = StyleSheet.create({
   titleContainer: {
     padding: Spacing.lg,
   },
+  dateMoodRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
+  },
   dateText: {
     fontSize: 14,
     color: Colors.textSecondary,
-    marginBottom: Spacing.xs,
     fontWeight: '500',
+  },
+  moodBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.background,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  moodEmoji: {
+    fontSize: 14,
+    marginRight: 4,
+  },
+  moodLabel: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    fontWeight: '600',
   },
   titleText: {
     ...Typography.h1,
@@ -181,3 +220,4 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
 });
+

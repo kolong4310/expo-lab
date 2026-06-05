@@ -6,6 +6,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { addLog, updateLog, WorkLog } from '../database/db';
 import { Colors, Spacing, Typography } from '../theme/theme';
 
+const MOODS = [
+  { emoji: '🔥', label: '최고', value: 'best' },
+  { emoji: '😀', label: '좋음', value: 'good' },
+  { emoji: '🙂', label: '보통', value: 'normal' },
+  { emoji: '😓', label: '힘듦', value: 'hard' },
+];
+
 export default function WriteScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute();
@@ -18,6 +25,7 @@ export default function WriteScreen() {
   const [issue, setIssue] = useState('');
   const [solution, setSolution] = useState('');
   const [memo, setMemo] = useState('');
+  const [mood, setMood] = useState('good');
 
   // 수정 모드일 경우 초기값 설정
   useEffect(() => {
@@ -28,6 +36,7 @@ export default function WriteScreen() {
       setIssue(editingLog.issue || '');
       setSolution(editingLog.solution || '');
       setMemo(editingLog.memo || '');
+      setMood(editingLog.mood || 'good');
     }
   }, [editingLog]);
 
@@ -46,6 +55,7 @@ export default function WriteScreen() {
         issue,
         solution,
         memo,
+        mood,
         date: editingLog ? editingLog.date : new Date().toISOString().split('T')[0],
       };
 
@@ -55,7 +65,6 @@ export default function WriteScreen() {
           { 
             text: '확인', 
             onPress: () => {
-              // 상세 화면으로 돌아갈 때 변경된 데이터를 넘겨줌
               navigation.navigate('Detail', { log: logData });
             } 
           }
@@ -103,6 +112,26 @@ export default function WriteScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: Spacing.xl }}
         >
+          <InputLabel icon="happy-outline" label="오늘의 기분" />
+          <View style={styles.moodContainer}>
+            {MOODS.map((item) => (
+              <TouchableOpacity
+                key={item.value}
+                style={[
+                  styles.moodItem,
+                  mood === item.value && styles.moodItemSelected
+                ]}
+                onPress={() => setMood(item.value)}
+              >
+                <Text style={styles.moodEmoji}>{item.emoji}</Text>
+                <Text style={[
+                  styles.moodLabel,
+                  mood === item.value && styles.moodLabelSelected
+                ]}>{item.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
           <InputLabel icon="bookmark" label="오늘 한 일 (제목)" />
           <TextInput 
             style={styles.input} 
@@ -216,6 +245,42 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+  },
+  moodContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.sm,
+  },
+  moodItem: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    marginHorizontal: 4,
+    backgroundColor: Colors.background,
+  },
+  moodItemSelected: {
+    borderColor: Colors.primary,
+    backgroundColor: Colors.white,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  moodEmoji: {
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  moodLabel: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    fontWeight: '600',
+  },
+  moodLabelSelected: {
+    color: Colors.primary,
   },
   input: {
     backgroundColor: Colors.background,
