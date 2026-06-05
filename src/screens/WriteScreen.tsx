@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { addLog } from '../database/db';
+import { addLog, updateLog, WorkLog } from '../database/db';
 import { Colors, Spacing, Typography } from '../theme/theme';
 
 export default function WriteScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const params = route.params as { log?: WorkLog } | undefined;
+  const editingLog = params?.log;
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -16,6 +19,18 @@ export default function WriteScreen() {
   const [solution, setSolution] = useState('');
   const [memo, setMemo] = useState('');
 
+  // 수정 모드일 경우 초기값 설정
+  useEffect(() => {
+    if (editingLog) {
+      setTitle(editingLog.title);
+      setContent(editingLog.content || '');
+      setLearned(editingLog.learned || '');
+      setIssue(editingLog.issue || '');
+      setSolution(editingLog.solution || '');
+      setMemo(editingLog.memo || '');
+    }
+  }, [editingLog]);
+
   const handleSave = () => {
     if (!title.trim()) {
       Alert.alert('알림', '오늘 한 일의 제목을 입력해주세요.');
@@ -23,20 +38,34 @@ export default function WriteScreen() {
     }
 
     try {
-      const newLog = {
+      const logData: WorkLog = {
+        id: editingLog?.id,
         title,
         content,
         learned,
         issue,
         solution,
         memo,
-        date: new Date().toISOString().split('T')[0],
+        date: editingLog ? editingLog.date : new Date().toISOString().split('T')[0],
       };
 
-      addLog(newLog);
-      Alert.alert('성공', '기록이 저장되었습니다.', [
-        { text: '확인', onPress: () => navigation.goBack() }
-      ]);
+      if (editingLog) {
+        updateLog(logData);
+        Alert.alert('성공', '기록이 수정되었습니다.', [
+          { 
+            text: '확인', 
+            onPress: () => {
+              // 상세 화면으로 돌아갈 때 변경된 데이터를 넘겨줌
+              navigation.navigate('Detail', { log: logData });
+            } 
+          }
+        ]);
+      } else {
+        addLog(logData);
+        Alert.alert('성공', '기록이 저장되었습니다.', [
+          { text: '확인', onPress: () => navigation.goBack() }
+        ]);
+      }
     } catch (error) {
       console.error(error);
       Alert.alert('오류', '저장 중 문제가 발생했습니다.');
@@ -63,9 +92,9 @@ export default function WriteScreen() {
           >
             <Ionicons name="close" size={24} color={Colors.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>기록하기</Text>
+          <Text style={styles.headerTitle}>{editingLog ? '기록 수정' : '기록하기'}</Text>
           <TouchableOpacity onPress={handleSave}>
-            <Text style={styles.saveText}>저장</Text>
+            <Text style={styles.saveText}>{editingLog ? '완료' : '저장'}</Text>
           </TouchableOpacity>
         </View>
 

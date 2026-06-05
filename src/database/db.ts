@@ -64,4 +64,26 @@ export const addLog = (log: WorkLog) => {
   }
 };
 
+/**
+ * 로그 수정하기
+ */
+export const updateLog = (log: WorkLog) => {
+  const statement = db.prepareSync(
+    'UPDATE logs SET title = ?, content = ?, learned = ?, issue = ?, solution = ?, memo = ? WHERE id = ?'
+  );
+  try {
+    statement.executeSync([
+      log.title,
+      log.content,
+      log.learned,
+      log.issue,
+      log.solution,
+      log.memo,
+      log.id!
+    ]);
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
 export default db;

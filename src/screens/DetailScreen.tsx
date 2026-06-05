@@ -37,7 +37,9 @@ export default function DetailScreen() {
           <Ionicons name="arrow-back" size={24} color={Colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>상세 보기</Text>
-        <TouchableOpacity onPress={() => alert('수정 기능 준비 중!')}>
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('Write', { log })}
+        >
           <Text style={styles.editText}>수정</Text>
         </TouchableOpacity>
       </View>
