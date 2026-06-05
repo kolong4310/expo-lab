@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, TextInput, ScrollView } from 'react-native';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, TextInput, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { getAllLogs, getTodosByDate, addTodo, toggleTodo, deleteTodo, getCurrentStreak, getMonthlyStats, WorkLog, Todo } from '../database/db';
 import { DESIGN } from '../theme/design';
 
@@ -21,8 +22,9 @@ export default function HomeScreen() {
   const [streak, setStreak] = useState(0);
   const [monthlyRate, setMonthlyRate] = useState(0);
   
+  const progressAnim = useRef(new Animated.Value(0)).current;
   const today = new Date().toISOString().split('T')[0];
-  const currentMonth = today.substring(0, 7); // YYYY-MM
+  const currentMonth = today.substring(0, 7);
 
   useFocusEffect(
     useCallback(() => {
@@ -31,35 +33,53 @@ export default function HomeScreen() {
   );
 
   const loadData = () => {
-    setLogs(getAllLogs());
-    setTodos(getTodosByDate(today));
+    const allLogs = getAllLogs();
+    const allTodos = getTodosByDate(today);
+    setLogs(allLogs);
+    setTodos(allTodos);
     setStreak(getCurrentStreak());
     setMonthlyRate(getMonthlyStats(currentMonth).rate);
+
+    // Animate progress bar
+    const completedCount = allTodos.filter(t => t.is_completed === 1).length;
+    const progress = allTodos.length > 0 ? completedCount / allTodos.length : 0;
+    Animated.timing(progressAnim, {
+      toValue: progress,
+      duration: 800,
+      useNativeDriver: false,
+    }).start();
   };
 
   const handleAddTodo = () => {
     if (!newTodo.trim()) return;
     addTodo(newTodo.trim(), today);
     setNewTodo('');
-    setTodos(getTodosByDate(today));
+    loadData();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const handleToggleTodo = (id: number, currentStatus: number) => {
-    toggleTodo(id, currentStatus === 1 ? 0 : 1);
-    setTodos(getTodosByDate(today));
-    setMonthlyRate(getMonthlyStats(currentMonth).rate);
+    const nextStatus = currentStatus === 1 ? 0 : 1;
+    toggleTodo(id, nextStatus);
+    loadData();
+    
+    if (nextStatus === 1) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } else {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
   };
 
   const handleDeleteTodo = (id: number) => {
     deleteTodo(id);
-    setTodos(getTodosByDate(today));
-    setMonthlyRate(getMonthlyStats(currentMonth).rate);
+    loadData();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
   const completedCount = todos.filter(t => t.is_completed === 1).length;
-  const progress = todos.length > 0 ? Math.round((completedCount / todos.length) * 100) : 0;
+  const progressPercent = todos.length > 0 ? Math.round((completedCount / todos.length) * 100) : 0;
 
-  const renderInsight = ({ item, index }: { item: WorkLog, index: number }) => (
+  const renderInsight = ({ item }: { item: WorkLog }) => (
     <TouchableOpacity 
       style={styles.insightItem}
       onPress={() => navigation.navigate('Detail', { log: item })}
@@ -81,14 +101,13 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       
-      {/* Header - Simplified as navigation is now in tabs */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.headerGlow}>.</Text>
           <Text style={styles.headerLabel}>GROW DAY</Text>
         </View>
         <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.searchButton}>
+          <TouchableOpacity style={styles.searchButton} onPress={() => Haptics.selectionAsync()}>
             <Ionicons name="search-outline" size={20} color={DESIGN.colors.text} />
           </TouchableOpacity>
         </View>
@@ -112,7 +131,6 @@ export default function HomeScreen() {
               )}
             </View>
             
-            {/* Stats Row */}
             <View style={styles.statsRow}>
               <View style={styles.statCard}>
                 <Text style={styles.statLabel}>COMPLETION</Text>
@@ -126,19 +144,28 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            {/* Progress Card */}
+            {/* Animated Progress Card */}
             <View style={styles.progressCard}>
               <View style={styles.progressInfo}>
                 <Text style={styles.progressLabel}>Today's Engine</Text>
-                <Text style={styles.progressValue}>{progress}%</Text>
+                <Text style={styles.progressValue}>{progressPercent}%</Text>
               </View>
               <View style={styles.progressBarBg}>
-                <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
+                <Animated.View 
+                  style={[
+                    styles.progressBarFill, 
+                    { 
+                      width: progressAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ['0%', '100%'],
+                      }) 
+                    }
+                  ]} 
+                />
               </View>
               <Text style={styles.progressStat}>{completedCount} of {todos.length} goals achieved</Text>
             </View>
 
-            {/* Todo Section */}
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>TODAY'S MISSION</Text>
               <Text style={styles.dateLabel}>{today.replace(/-/g, '. ')}</Text>
@@ -192,7 +219,10 @@ export default function HomeScreen() {
 
       <TouchableOpacity 
         style={styles.actionButton}
-        onPress={() => navigation.navigate('Write')}
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          navigation.navigate('Write');
+        }}
         activeOpacity={0.8}
       >
         <Text style={styles.actionText}>PUBLISH INSIGHT</Text>
@@ -472,7 +502,7 @@ const styles = StyleSheet.create({
     height: 60,
     paddingHorizontal: 28,
     borderRadius: 20,
-    backgroundColor: DESIGN.colors.text, // Black accent in dark mode
+    backgroundColor: DESIGN.colors.text, 
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,

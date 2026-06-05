@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform, LayoutAnimation } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { addLog, updateLog, WorkLog } from '../database/db';
 import { DESIGN } from '../theme/design';
 
@@ -26,6 +27,7 @@ export default function WriteScreen() {
   const [solution, setSolution] = useState('');
   const [memo, setMemo] = useState('');
   const [mood, setMood] = useState('good');
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   useEffect(() => {
     if (editingLog) {
@@ -36,11 +38,22 @@ export default function WriteScreen() {
       setSolution(editingLog.solution || '');
       setMemo(editingLog.memo || '');
       setMood(editingLog.mood || 'good');
+      // If editing and has advanced content, show it
+      if (editingLog.issue || editingLog.solution || editingLog.memo) {
+        setShowAdvanced(true);
+      }
     }
   }, [editingLog]);
 
+  const toggleAdvanced = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setShowAdvanced(!showAdvanced);
+  };
+
   const handleSave = () => {
     if (!title.trim()) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       Alert.alert('Incomplete', 'Every journey needs a name.');
       return;
     }
@@ -58,6 +71,7 @@ export default function WriteScreen() {
         date: editingLog ? editingLog.date : new Date().toISOString().split('T')[0],
       };
 
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       if (editingLog) {
         updateLog(logData);
         navigation.navigate('Detail', { log: logData });
@@ -70,8 +84,8 @@ export default function WriteScreen() {
     }
   };
 
-  const InsightInput = ({ label, value, onChangeText, placeholder }: any) => (
-    <View style={styles.inputGroup}>
+  const InsightInput = ({ label, value, onChangeText, placeholder, isAdvanced = false }: any) => (
+    <View style={[styles.inputGroup, isAdvanced && styles.advancedGroup]}>
       <Text style={styles.inputLabel}>{label}</Text>
       <TextInput
         style={styles.textInput}
@@ -93,7 +107,13 @@ export default function WriteScreen() {
         style={{ flex: 1 }}
       >
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
+          <TouchableOpacity 
+            onPress={() => {
+              Haptics.selectionAsync();
+              navigation.goBack();
+            }} 
+            style={styles.closeButton}
+          >
             <Ionicons name="close-outline" size={28} color={DESIGN.colors.text} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleSave} style={styles.saveBadge}>
@@ -123,7 +143,10 @@ export default function WriteScreen() {
                   styles.moodBox,
                   mood === item.value && styles.moodBoxSelected
                 ]}
-                onPress={() => setMood(item.value)}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setMood(item.value);
+                }}
               >
                 <Text style={styles.moodEmoji}>{item.emoji}</Text>
               </TouchableOpacity>
@@ -134,36 +157,53 @@ export default function WriteScreen() {
             label="FLOW"
             value={content}
             onChangeText={setContent}
-            placeholder="Describe the day's progression..."
+            placeholder="What was the sequence of events?"
           />
 
           <InsightInput 
             label="INTEL"
             value={learned}
             onChangeText={setLearned}
-            placeholder="New knowledge acquired..."
+            placeholder="New knowledge or realization..."
           />
 
-          <InsightInput 
-            label="BLOCK"
-            value={issue}
-            onChangeText={setIssue}
-            placeholder="Obstacles encountered..."
-          />
+          {!showAdvanced ? (
+            <TouchableOpacity style={styles.advancedToggle} onPress={toggleAdvanced}>
+              <Ionicons name="add-outline" size={16} color={DESIGN.colors.primary} />
+              <Text style={styles.advancedToggleText}>Add detailed reflection</Text>
+            </TouchableOpacity>
+          ) : (
+            <>
+              <InsightInput 
+                label="BLOCK"
+                value={issue}
+                onChangeText={setIssue}
+                placeholder="Obstacles encountered..."
+                isAdvanced
+              />
 
-          <InsightInput 
-            label="SOLVE"
-            value={solution}
-            onChangeText={setSolution}
-            placeholder="Resolutions applied..."
-          />
+              <InsightInput 
+                label="SOLVE"
+                value={solution}
+                onChangeText={setSolution}
+                placeholder="Resolutions applied..."
+                isAdvanced
+              />
 
-          <InsightInput 
-            label="NOTE"
-            value={memo}
-            onChangeText={setMemo}
-            placeholder="Additional context..."
-          />
+              <InsightInput 
+                label="NOTE"
+                value={memo}
+                onChangeText={setMemo}
+                placeholder="Additional context..."
+                isAdvanced
+              />
+
+              <TouchableOpacity style={styles.advancedToggle} onPress={toggleAdvanced}>
+                <Ionicons name="remove-outline" size={16} color={DESIGN.colors.textMuted} />
+                <Text style={[styles.advancedToggleText, { color: DESIGN.colors.textMuted }]}>Show less</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -239,6 +279,9 @@ const styles = StyleSheet.create({
     borderLeftColor: DESIGN.colors.border,
     paddingLeft: 20,
   },
+  advancedGroup: {
+    borderLeftColor: DESIGN.colors.textMuted,
+  },
   inputLabel: {
     fontSize: 10,
     fontWeight: '900',
@@ -251,5 +294,17 @@ const styles = StyleSheet.create({
     color: DESIGN.colors.text,
     lineHeight: 26,
     minHeight: 40,
+  },
+  advancedToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    marginBottom: 40,
+  },
+  advancedToggleText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: DESIGN.colors.primary,
+    marginLeft: 8,
   },
 });
