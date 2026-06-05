@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, SafeAreaView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, SafeAreaView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { addLog } from '../database/db';
+import { Colors, Spacing, Typography } from '../theme/theme';
 
 export default function WriteScreen() {
   const navigation = useNavigation();
 
-  // 1. 입력 데이터를 관리할 상태(State) 선언
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [learned, setLearned] = useState('');
@@ -15,7 +15,6 @@ export default function WriteScreen() {
   const [solution, setSolution] = useState('');
   const [memo, setMemo] = useState('');
 
-  // 2. 저장 함수 구현
   const handleSave = () => {
     if (!title.trim()) {
       Alert.alert('알림', '오늘 한 일의 제목을 입력해주세요.');
@@ -30,10 +29,10 @@ export default function WriteScreen() {
         issue,
         solution,
         memo,
-        date: new Date().toISOString().split('T')[0], // 오늘 날짜 (YYYY-MM-DD)
+        date: new Date().toISOString().split('T')[0],
       };
 
-      addLog(newLog); // DB에 저장
+      addLog(newLog);
       Alert.alert('성공', '기록이 저장되었습니다.', [
         { text: '확인', onPress: () => navigation.goBack() }
       ]);
@@ -43,64 +42,97 @@ export default function WriteScreen() {
     }
   };
 
+  const InputLabel = ({ icon, label }: { icon: any, label: string }) => (
+    <View style={styles.labelContainer}>
+      <Ionicons name={icon} size={16} color={Colors.primary} style={styles.labelIcon} />
+      <Text style={styles.label}>{label}</Text>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="close" size={28} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>기록하기</Text>
-        <TouchableOpacity onPress={handleSave}>
-          <Text style={styles.saveText}>저장</Text>
-        </TouchableOpacity>
-      </View>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={styles.headerButton}
+          >
+            <Ionicons name="close" size={24} color={Colors.text} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>기록하기</Text>
+          <TouchableOpacity onPress={handleSave}>
+            <Text style={styles.saveText}>저장</Text>
+          </TouchableOpacity>
+        </View>
 
-      <ScrollView style={styles.content}>
-        <Text style={styles.label}>오늘 한 일 (제목)</Text>
-        <TextInput 
-          style={styles.input} 
-          value={title}
-          onChangeText={setTitle}
-          placeholder="핵심 내용을 적어주세요" 
-        />
+        <ScrollView 
+          style={styles.content}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: Spacing.xl }}
+        >
+          <InputLabel icon="bookmark" label="오늘 한 일 (제목)" />
+          <TextInput 
+            style={styles.input} 
+            value={title}
+            onChangeText={setTitle}
+            placeholder="핵심 내용을 적어주세요"
+            placeholderTextColor={Colors.textSecondary}
+          />
 
-        <Text style={styles.label}>상세 내용</Text>
-        <TextInput 
-          style={[styles.input, styles.textArea]} 
-          value={content}
-          onChangeText={setContent}
-          multiline 
-          placeholder="오늘 어떤 작업을 하셨나요?" 
-        />
+          <InputLabel icon="document-text" label="상세 내용" />
+          <TextInput 
+            style={[styles.input, styles.textArea]} 
+            value={content}
+            onChangeText={setContent}
+            multiline 
+            placeholder="오늘 어떤 작업을 하셨나요?"
+            placeholderTextColor={Colors.textSecondary}
+          />
 
-        <Text style={styles.label}>배운 것</Text>
-        <TextInput 
-          style={[styles.input, styles.textArea]} 
-          value={learned}
-          onChangeText={setLearned}
-          multiline 
-          placeholder="새롭게 알게 된 사실" 
-        />
+          <InputLabel icon="bulb" label="배운 것" />
+          <TextInput 
+            style={[styles.input, styles.textArea]} 
+            value={learned}
+            onChangeText={setLearned}
+            multiline 
+            placeholder="새롭게 알게 된 사실"
+            placeholderTextColor={Colors.textSecondary}
+          />
 
-        <Text style={styles.label}>이슈 / 해결 방법</Text>
-        <TextInput 
-          style={[styles.input, styles.textArea]} 
-          value={issue}
-          onChangeText={setIssue}
-          multiline 
-          placeholder="어려웠던 점과 해결한 방법" 
-        />
+          <InputLabel icon="alert-circle" label="이슈" />
+          <TextInput 
+            style={[styles.input, styles.textArea]} 
+            value={issue}
+            onChangeText={setIssue}
+            multiline 
+            placeholder="어떤 문제가 있었나요?"
+            placeholderTextColor={Colors.textSecondary}
+          />
 
-        <Text style={styles.label}>메모</Text>
-        <TextInput 
-          style={[styles.input, styles.textArea]} 
-          value={memo}
-          onChangeText={setMemo}
-          multiline 
-          placeholder="기타 남기고 싶은 말" 
-        />
-        <View style={{ height: 40 }} />
-      </ScrollView>
+          <InputLabel icon="checkmark-circle" label="해결 방법" />
+          <TextInput 
+            style={[styles.input, styles.textArea]} 
+            value={solution}
+            onChangeText={setSolution}
+            multiline 
+            placeholder="어떻게 해결하셨나요?"
+            placeholderTextColor={Colors.textSecondary}
+          />
+
+          <InputLabel icon="attach" label="메모" />
+          <TextInput 
+            style={[styles.input, styles.textArea]} 
+            value={memo}
+            onChangeText={setMemo}
+            multiline 
+            placeholder="기타 남기고 싶은 말"
+            placeholderTextColor={Colors.textSecondary}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -108,45 +140,64 @@ export default function WriteScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF',
+    backgroundColor: Colors.surface,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#EEE',
+    borderBottomColor: Colors.border,
+  },
+  headerButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: Colors.text,
   },
   saveText: {
     fontSize: 16,
-    color: '#007AFF',
+    color: Colors.primary,
     fontWeight: 'bold',
   },
   content: {
-    padding: 20,
+    paddingHorizontal: Spacing.lg,
+  },
+  labelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: Spacing.lg,
+    marginBottom: Spacing.sm,
+  },
+  labelIcon: {
+    marginRight: Spacing.xs,
   },
   label: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#666',
-    marginBottom: 8,
-    marginTop: 15,
+    fontWeight: '700',
+    color: Colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   input: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 10,
-    padding: 15,
+    backgroundColor: Colors.background,
+    borderRadius: 12,
+    padding: Spacing.md,
     fontSize: 16,
-    color: '#333',
+    color: Colors.text,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   textArea: {
-    height: 100,
+    height: 120,
     textAlignVertical: 'top',
   },
 });
