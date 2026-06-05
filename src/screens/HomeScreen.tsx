@@ -44,12 +44,20 @@ export default function HomeScreen() {
           <Text style={styles.headerSubtitle}>반가워요! 👋</Text>
           <Text style={styles.headerTitle}>오늘 뭐 했지?</Text>
         </View>
-        <TouchableOpacity 
-          style={styles.headerButton}
-          onPress={() => alert('검색 기능 준비 중!')}
-        >
-          <Ionicons name="search" size={24} color={Colors.text} />
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row' }}>
+          <TouchableOpacity 
+            style={[styles.headerButton, { marginRight: Spacing.sm }]}
+            onPress={() => navigation.navigate('Calendar')}
+          >
+            <Ionicons name="calendar-outline" size={24} color={Colors.text} />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.headerButton}
+            onPress={() => alert('검색 기능 준비 중!')}
+          >
+            <Ionicons name="search" size={24} color={Colors.text} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <FlatList

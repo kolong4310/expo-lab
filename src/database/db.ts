@@ -98,4 +98,25 @@ export const deleteLog = (id: number) => {
   }
 };
 
+/**
+ * 특정 날짜의 로그 가져오기
+ */
+export const getLogsByDate = (date: string): WorkLog[] => {
+  const statement = db.prepareSync('SELECT * FROM logs WHERE date = ? ORDER BY id DESC');
+  try {
+    const result = statement.executeSync<WorkLog>([date]);
+    return result.getAllSync();
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
+/**
+ * 기록이 있는 모든 날짜 가져오기 (중복 제거)
+ */
+export const getLoggedDates = (): string[] => {
+  const rows = db.getAllSync<{ date: string }>('SELECT DISTINCT date FROM logs');
+  return rows.map(row => row.date);
+};
+
 export default db;
