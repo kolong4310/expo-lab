@@ -86,4 +86,16 @@ export const updateLog = (log: WorkLog) => {
   }
 };
 
+/**
+ * 로그 삭제하기
+ */
+export const deleteLog = (id: number) => {
+  const statement = db.prepareSync('DELETE FROM logs WHERE id = ?');
+  try {
+    statement.executeSync([id]);
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
 export default db;

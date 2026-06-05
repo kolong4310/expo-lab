@@ -1,15 +1,35 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { WorkLog } from '../database/db';
+import { WorkLog, deleteLog } from '../database/db';
 import { Colors, Spacing, Typography } from '../theme/theme';
 
 export default function DetailScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const route = useRoute();
   const { log } = route.params as { log: WorkLog };
+
+  const handleDelete = () => {
+    Alert.alert(
+      '삭제 확인',
+      '정말로 이 기록을 삭제하시겠습니까?',
+      [
+        { text: '취소', style: 'cancel' },
+        { 
+          text: '삭제', 
+          style: 'destructive',
+          onPress: () => {
+            if (log.id) {
+              deleteLog(log.id);
+              navigation.goBack();
+            }
+          }
+        }
+      ]
+    );
+  };
 
   const InfoSection = ({ icon, label, content }: { icon: any, label: string, content: string }) => {
     if (!content || content.trim() === '') return null;
@@ -37,11 +57,20 @@ export default function DetailScreen() {
           <Ionicons name="arrow-back" size={24} color={Colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>상세 보기</Text>
-        <TouchableOpacity 
-          onPress={() => navigation.navigate('Write', { log })}
-        >
-          <Text style={styles.editText}>수정</Text>
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('Write', { log })}
+            style={styles.actionButton}
+          >
+            <Ionicons name="create-outline" size={24} color={Colors.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={handleDelete}
+            style={styles.actionButton}
+          >
+            <Ionicons name="trash-outline" size={24} color={Colors.error} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView 
@@ -92,10 +121,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.text,
   },
-  editText: {
-    fontSize: 16,
-    color: Colors.primary,
-    fontWeight: '600',
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButton: {
+    padding: Spacing.sm,
+    marginLeft: Spacing.xs,
   },
   content: {
     flex: 1,
