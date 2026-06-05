@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
 import { addLog, updateLog, WorkLog } from '../database/db';
 import { DESIGN } from '../theme/design';
 
@@ -38,7 +37,6 @@ export default function WriteScreen() {
       setSolution(editingLog.solution || '');
       setMemo(editingLog.memo || '');
       setMood(editingLog.mood || 'good');
-      // If editing and has advanced content, show it
       if (editingLog.issue || editingLog.solution || editingLog.memo) {
         setShowAdvanced(true);
       }
@@ -46,14 +44,12 @@ export default function WriteScreen() {
   }, [editingLog]);
 
   const toggleAdvanced = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setShowAdvanced(!showAdvanced);
   };
 
   const handleSave = () => {
     if (!title.trim()) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       Alert.alert('Incomplete', 'Every journey needs a name.');
       return;
     }
@@ -71,7 +67,6 @@ export default function WriteScreen() {
         date: editingLog ? editingLog.date : new Date().toISOString().split('T')[0],
       };
 
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       if (editingLog) {
         updateLog(logData);
         navigation.navigate('Detail', { log: logData });
@@ -107,13 +102,7 @@ export default function WriteScreen() {
         style={{ flex: 1 }}
       >
         <View style={styles.header}>
-          <TouchableOpacity 
-            onPress={() => {
-              Haptics.selectionAsync();
-              navigation.goBack();
-            }} 
-            style={styles.closeButton}
-          >
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
             <Ionicons name="close-outline" size={28} color={DESIGN.colors.text} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleSave} style={styles.saveBadge}>
@@ -143,10 +132,7 @@ export default function WriteScreen() {
                   styles.moodBox,
                   mood === item.value && styles.moodBoxSelected
                 ]}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  setMood(item.value);
-                }}
+                onPress={() => setMood(item.value)}
               >
                 <Text style={styles.moodEmoji}>{item.emoji}</Text>
               </TouchableOpacity>

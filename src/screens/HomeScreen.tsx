@@ -1,9 +1,8 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, TextInput, Animated } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
 import { getAllLogs, getTodosByDate, addTodo, toggleTodo, deleteTodo, getCurrentStreak, getMonthlyStats, WorkLog, Todo } from '../database/db';
 import { DESIGN } from '../theme/design';
 
@@ -22,7 +21,6 @@ export default function HomeScreen() {
   const [streak, setStreak] = useState(0);
   const [monthlyRate, setMonthlyRate] = useState(0);
   
-  const progressAnim = useRef(new Animated.Value(0)).current;
   const today = new Date().toISOString().split('T')[0];
   const currentMonth = today.substring(0, 7);
 
@@ -33,21 +31,11 @@ export default function HomeScreen() {
   );
 
   const loadData = () => {
-    const allLogs = getAllLogs();
+    setLogs(getAllLogs());
     const allTodos = getTodosByDate(today);
-    setLogs(allLogs);
     setTodos(allTodos);
     setStreak(getCurrentStreak());
     setMonthlyRate(getMonthlyStats(currentMonth).rate);
-
-    // Animate progress bar
-    const completedCount = allTodos.filter(t => t.is_completed === 1).length;
-    const progress = allTodos.length > 0 ? completedCount / allTodos.length : 0;
-    Animated.timing(progressAnim, {
-      toValue: progress,
-      duration: 800,
-      useNativeDriver: false,
-    }).start();
   };
 
   const handleAddTodo = () => {
@@ -55,25 +43,16 @@ export default function HomeScreen() {
     addTodo(newTodo.trim(), today);
     setNewTodo('');
     loadData();
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const handleToggleTodo = (id: number, currentStatus: number) => {
-    const nextStatus = currentStatus === 1 ? 0 : 1;
-    toggleTodo(id, nextStatus);
+    toggleTodo(id, currentStatus === 1 ? 0 : 1);
     loadData();
-    
-    if (nextStatus === 1) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } else {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    }
   };
 
   const handleDeleteTodo = (id: number) => {
     deleteTodo(id);
     loadData();
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
   const completedCount = todos.filter(t => t.is_completed === 1).length;
@@ -107,7 +86,7 @@ export default function HomeScreen() {
           <Text style={styles.headerLabel}>GROW DAY</Text>
         </View>
         <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.searchButton} onPress={() => Haptics.selectionAsync()}>
+          <TouchableOpacity style={styles.searchButton}>
             <Ionicons name="search-outline" size={20} color={DESIGN.colors.text} />
           </TouchableOpacity>
         </View>
@@ -144,24 +123,14 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            {/* Animated Progress Card */}
+            {/* Stable Progress Card without Glitchy Animation */}
             <View style={styles.progressCard}>
               <View style={styles.progressInfo}>
                 <Text style={styles.progressLabel}>Today's Engine</Text>
                 <Text style={styles.progressValue}>{progressPercent}%</Text>
               </View>
               <View style={styles.progressBarBg}>
-                <Animated.View 
-                  style={[
-                    styles.progressBarFill, 
-                    { 
-                      width: progressAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: ['0%', '100%'],
-                      }) 
-                    }
-                  ]} 
-                />
+                <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
               </View>
               <Text style={styles.progressStat}>{completedCount} of {todos.length} goals achieved</Text>
             </View>
@@ -219,10 +188,7 @@ export default function HomeScreen() {
 
       <TouchableOpacity 
         style={styles.actionButton}
-        onPress={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          navigation.navigate('Write');
-        }}
+        onPress={() => navigation.navigate('Write')}
         activeOpacity={0.8}
       >
         <Text style={styles.actionText}>PUBLISH INSIGHT</Text>
