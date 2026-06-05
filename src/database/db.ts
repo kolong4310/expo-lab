@@ -34,6 +34,16 @@ export const initDatabase = () => {
       date TEXT NOT NULL
     );
   `);
+
+  // 기존 테이블에 mood 컬럼이 없는 경우를 위한 마이그레이션
+  try {
+    db.execSync('ALTER TABLE logs ADD COLUMN mood TEXT;');
+    console.log('Migration: mood column added! 🚀');
+  } catch (e) {
+    // 이미 컬럼이 있는 경우 에러가 발생하므로 무시
+    console.log('Migration: mood column already exists or skipped.');
+  }
+
   console.log('Database initialized! ✅');
 };
 
