@@ -1,10 +1,11 @@
+import nativewind from "nativewind/preset";
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-  // NOTE: Update this to include the paths to all of your component files.
+export default {
   content: ["./App.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],
-  presets: [require("nativewind/preset")],
+  presets: [nativewind],
   theme: {
     extend: {},
   },
   plugins: [],
-}
+};
