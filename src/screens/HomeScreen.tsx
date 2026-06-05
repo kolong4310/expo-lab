@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, TextInput } from 'react-native';
+import React, { useState, useCallback, useRef } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, TextInput, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -100,44 +100,55 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View style={styles.heroSection}>
-            <View style={styles.heroHeader}>
-              <Text style={styles.heroGreeting}>Hello, Dev.</Text>
-              {streak > 0 && (
-                <View style={styles.streakBadge}>
-                  <Ionicons name="flame" size={16} color="#FF9500" />
-                  <Text style={styles.streakText}>{streak}d</Text>
+            {/* New Sophisticated Identity Section */}
+            <View style={styles.identityContainer}>
+              <View style={styles.identityHeader}>
+                <View style={styles.statusDot} />
+                <Text style={styles.identityLabel}>GROWTH PROTOCOL ACTIVE</Text>
+              </View>
+              <View style={styles.identityMain}>
+                <Text style={styles.logCountText}>{logs.length.toString().padStart(2, '0')}</Text>
+                <View style={styles.identityInfo}>
+                  <Text style={styles.identityInfoTitle}>TOTAL</Text>
+                  <Text style={styles.identityInfoTitle}>INSIGHTS</Text>
                 </View>
-              )}
+              </View>
             </View>
             
+            {/* Stats Row */}
             <View style={styles.statsRow}>
               <View style={styles.statCard}>
-                <Text style={styles.statLabel}>COMPLETION</Text>
-                <Text style={styles.statValue}>{monthlyRate}%</Text>
-                <Text style={styles.statSub}>This Month</Text>
-              </View>
-              <View style={[styles.statCard, { marginLeft: 12 }]}>
                 <Text style={styles.statLabel}>STREAK</Text>
-                <Text style={styles.statValue}>{streak}</Text>
-                <Text style={styles.statSub}>Active Days</Text>
+                <View style={styles.statValueRow}>
+                  <Text style={styles.statValue}>{streak}</Text>
+                  <Text style={styles.statUnit}>DAYS</Text>
+                </View>
+              </View>
+              <View style={[styles.statCard, { marginLeft: 12, borderColor: DESIGN.colors.secondary }]}>
+                <Text style={[styles.statLabel, { color: DESIGN.colors.secondary }]}>COMPLETION</Text>
+                <View style={styles.statValueRow}>
+                  <Text style={styles.statValue}>{monthlyRate}</Text>
+                  <Text style={styles.statUnit}>%</Text>
+                </View>
               </View>
             </View>
 
-            {/* Stable Progress Card without Glitchy Animation */}
+            {/* Progress Card */}
             <View style={styles.progressCard}>
               <View style={styles.progressInfo}>
-                <Text style={styles.progressLabel}>Today's Engine</Text>
+                <Text style={styles.progressLabel}>Daily Engine Status</Text>
                 <Text style={styles.progressValue}>{progressPercent}%</Text>
               </View>
               <View style={styles.progressBarBg}>
                 <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
               </View>
-              <Text style={styles.progressStat}>{completedCount} of {todos.length} goals achieved</Text>
+              <Text style={styles.progressStat}>{completedCount} of {todos.length} missions initialized</Text>
             </View>
 
+            {/* Todo Section */}
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>TODAY'S MISSION</Text>
-              <Text style={styles.dateLabel}>{today.replace(/-/g, '. ')}</Text>
+              <Text style={styles.sectionTitle}>CURRENT MISSIONS</Text>
+              <Text style={styles.dateLabel}>{today.replace(/-/g, ' / ')}</Text>
             </View>
             
             <View style={styles.todoContainer}>
@@ -166,7 +177,7 @@ export default function HomeScreen() {
                   style={styles.addTodoInput}
                   value={newTodo}
                   onChangeText={setNewTodo}
-                  placeholder="Identify a new goal..."
+                  placeholder="Input mission identifier..."
                   placeholderTextColor={DESIGN.colors.textMuted}
                   onSubmitEditing={handleAddTodo}
                 />
@@ -176,12 +187,12 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            <Text style={[styles.sectionTitle, { marginTop: 48 }]}>GROWTH ARCHIVE</Text>
+            <Text style={[styles.sectionTitle, { marginTop: 48 }]}>SYSTEM LOG ARCHIVE</Text>
           </View>
         }
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>Empty void. Start recording.</Text>
+            <Text style={styles.emptyText}>Terminal ready. Awaiting input.</Text>
           </View>
         }
       />
@@ -191,7 +202,7 @@ export default function HomeScreen() {
         onPress={() => navigation.navigate('Write')}
         activeOpacity={0.8}
       >
-        <Text style={styles.actionText}>PUBLISH INSIGHT</Text>
+        <Text style={styles.actionText}>EXECUTE INSIGHT</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -243,33 +254,48 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 20,
   },
-  heroHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
+  identityContainer: {
+    marginBottom: 40,
   },
-  heroGreeting: {
-    fontSize: 48,
+  identityHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: DESIGN.colors.secondary,
+    marginRight: 8,
+  },
+  identityLabel: {
+    fontSize: 10,
+    fontWeight: '900',
+    color: DESIGN.colors.secondary,
+    letterSpacing: 1.5,
+  },
+  identityMain: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  logCountText: {
+    fontSize: 80,
     fontWeight: '900',
     color: DESIGN.colors.text,
-    letterSpacing: -2,
+    lineHeight: 85,
+    letterSpacing: -4,
   },
-  streakBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 149, 0, 0.1)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 149, 0, 0.2)',
+  identityInfo: {
+    marginLeft: 12,
+    marginBottom: 12,
   },
-  streakText: {
+  identityInfoTitle: {
     fontSize: 14,
-    fontWeight: '800',
-    color: '#FF9500',
-    marginLeft: 4,
+    fontWeight: '900',
+    color: DESIGN.colors.textDim,
+    lineHeight: 16,
+    letterSpacing: 1,
   },
   statsRow: {
     flexDirection: 'row',
@@ -288,18 +314,23 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: DESIGN.colors.textMuted,
     letterSpacing: 1.5,
-    marginBottom: 4,
+    marginBottom: 8,
+  },
+  statValueRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
   },
   statValue: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '900',
     color: DESIGN.colors.text,
   },
-  statSub: {
+  statUnit: {
     fontSize: 10,
-    color: DESIGN.colors.textDim,
-    marginTop: 2,
-    fontWeight: '500',
+    fontWeight: '900',
+    color: DESIGN.colors.textMuted,
+    marginLeft: 4,
+    letterSpacing: 1,
   },
   progressCard: {
     backgroundColor: DESIGN.colors.surface,
@@ -308,11 +339,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: DESIGN.colors.border,
     marginBottom: 40,
-    shadowColor: DESIGN.colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 15,
-    elevation: 2,
   },
   progressInfo: {
     flexDirection: 'row',
@@ -323,7 +349,7 @@ const styles = StyleSheet.create({
   progressLabel: {
     fontSize: 11,
     fontWeight: '800',
-    color: DESIGN.colors.secondary,
+    color: DESIGN.colors.textDim,
     textTransform: 'uppercase',
     letterSpacing: 1.5,
   },
@@ -346,7 +372,7 @@ const styles = StyleSheet.create({
   },
   progressStat: {
     fontSize: 11,
-    color: DESIGN.colors.textDim,
+    color: DESIGN.colors.textMuted,
     fontWeight: '600',
     letterSpacing: 0.3,
   },
