@@ -6,20 +6,21 @@ import { Ionicons } from '@expo/vector-icons';
 import { WorkLog, deleteLog } from '../database/db';
 
 const COLORS = {
-  primary: '#6366f1',
-  background: '#f8fafc',
-  surface: '#ffffff',
-  text: '#0f172a',
-  textSecondary: '#64748b',
-  border: '#f1f5f9',
-  error: '#ef4444',
+  primary: '#4F46E5',
+  background: '#F8FAFC',
+  surface: '#FFFFFF',
+  text: '#0F172A',
+  textSecondary: '#64748B',
+  border: '#E2E8F0',
+  error: '#EF4444',
+  indigoSubtle: '#EEF2FF',
 };
 
 const MOOD_MAP: any = {
-  best: { emoji: '🔥', label: '최고' },
-  good: { emoji: '😀', label: '좋음' },
-  normal: { emoji: '🙂', label: '보통' },
-  hard: { emoji: '😓', label: '힘듦' },
+  best: { emoji: '🔥', label: '최고의 하루' },
+  good: { emoji: '😀', label: '좋은 기분' },
+  normal: { emoji: '🙂', label: '평범한 보통' },
+  hard: { emoji: '😓', label: '조금 힘듦' },
 };
 
 export default function DetailScreen() {
@@ -29,8 +30,8 @@ export default function DetailScreen() {
 
   const handleDelete = () => {
     Alert.alert(
-      '삭제 확인',
-      '정말로 이 기록을 삭제하시겠습니까?',
+      '기록 삭제',
+      '정말로 이 소중한 기록을 삭제하시겠습니까?',
       [
         { text: '취소', style: 'cancel' },
         { 
@@ -47,17 +48,15 @@ export default function DetailScreen() {
     );
   };
 
-  const InfoSection = ({ icon, label, content }: { icon: any, label: string, content: string }) => {
+  const InfoCard = ({ icon, label, content }: { icon: any, label: string, content: string }) => {
     if (!content || content.trim() === '') return null;
     return (
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Ionicons name={icon} size={18} color={COLORS.primary} style={styles.sectionIcon} />
-          <Text style={styles.sectionLabel}>{label}</Text>
+      <View style={styles.infoCard}>
+        <View style={styles.cardHeader}>
+          <Ionicons name={icon} size={18} color={COLORS.primary} style={styles.cardIcon} />
+          <Text style={styles.cardLabel}>{label}</Text>
         </View>
-        <View style={styles.sectionContent}>
-          <Text style={styles.sectionText}>{content}</Text>
-        </View>
+        <Text style={styles.cardText}>{content}</Text>
       </View>
     );
   };
@@ -70,9 +69,8 @@ export default function DetailScreen() {
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
-          <Ionicons name="arrow-back" size={26} color={COLORS.text} />
+          <Ionicons name="chevron-back" size={28} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>상세 보기</Text>
         <View style={styles.headerActions}>
           <TouchableOpacity 
             onPress={() => navigation.navigate('Write', { log })}
@@ -92,11 +90,11 @@ export default function DetailScreen() {
       <ScrollView 
         style={styles.content}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ paddingBottom: 60 }}
       >
-        <View style={styles.titleContainer}>
-          <View style={styles.dateMoodRow}>
-            <Text style={styles.dateText}>{log.date}</Text>
+        <View style={styles.titleSection}>
+          <View style={styles.metaRow}>
+            <Text style={styles.dateText}>{log.date.replace(/-/g, '. ')}</Text>
             {log.mood && MOOD_MAP[log.mood] && (
               <View style={styles.moodBadge}>
                 <Text style={styles.moodEmoji}>{MOOD_MAP[log.mood].emoji}</Text>
@@ -104,16 +102,16 @@ export default function DetailScreen() {
               </View>
             )}
           </View>
-          <Text style={styles.titleText}>{log.title}</Text>
+          <Text style={styles.mainTitle}>{log.title}</Text>
         </View>
 
         <View style={styles.divider} />
 
-        <InfoSection icon="document-text-outline" label="상세 내용" content={log.content} />
-        <InfoSection icon="bulb-outline" label="배운 것" content={log.learned} />
-        <InfoSection icon="alert-circle-outline" label="이슈" content={log.issue} />
-        <InfoSection icon="checkmark-circle-outline" label="해결 방법" content={log.solution} />
-        <InfoSection icon="attach-outline" label="메모" content={log.memo} />
+        <InfoCard icon="document-text-outline" label="오늘의 기록" content={log.content} />
+        <InfoCard icon="bulb-outline" label="배운 점" content={log.learned} />
+        <InfoCard icon="alert-circle-outline" label="이슈" content={log.issue} />
+        <InfoCard icon="checkmark-circle-outline" label="해결 방법" content={log.solution} />
+        <InfoCard icon="attach-outline" label="메모" content={log.memo} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -122,61 +120,59 @@ export default function DetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: COLORS.text,
+    alignItems: 'center',
   },
   headerActions: {
     flexDirection: 'row',
-    alignItems: 'center',
   },
   actionButton: {
-    padding: 8,
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginLeft: 4,
   },
   content: {
     flex: 1,
   },
-  titleContainer: {
-    padding: 24,
+  titleSection: {
+    paddingHorizontal: 28,
+    paddingTop: 10,
+    paddingBottom: 28,
   },
-  dateMoodRow: {
+  metaRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   dateText: {
     fontSize: 14,
+    fontWeight: '600',
     color: COLORS.textSecondary,
-    fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   moodBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.surface,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
@@ -186,49 +182,55 @@ const styles = StyleSheet.create({
   },
   moodLabel: {
     fontSize: 12,
-    color: COLORS.textSecondary,
-    fontWeight: 'bold',
-  },
-  titleText: {
-    fontSize: 24,
-    fontWeight: '900',
     color: COLORS.text,
-    lineHeight: 32,
+    fontWeight: '700',
+  },
+  mainTitle: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: COLORS.text,
+    lineHeight: 40,
+    letterSpacing: -0.5,
   },
   divider: {
-    height: 8,
-    backgroundColor: COLORS.background,
-    marginVertical: 8,
+    height: 1,
+    backgroundColor: COLORS.border,
+    marginHorizontal: 28,
+    marginBottom: 20,
   },
-  section: {
-    paddingHorizontal: 24,
-    paddingVertical: 16,
+  infoCard: {
+    backgroundColor: COLORS.surface,
+    marginHorizontal: 20,
+    marginBottom: 16,
+    padding: 24,
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: 'rgba(226, 232, 240, 0.6)',
+    shadowColor: COLORS.text,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.02,
+    shadowRadius: 10,
+    elevation: 2,
   },
-  sectionHeader: {
+  cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
   },
-  sectionIcon: {
+  cardIcon: {
     marginRight: 8,
   },
-  sectionLabel: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: COLORS.textSecondary,
+  cardLabel: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: COLORS.primary,
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
-  sectionContent: {
-    backgroundColor: COLORS.background,
-    padding: 20,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  sectionText: {
+  cardText: {
     fontSize: 16,
     color: '#334155',
-    lineHeight: 26,
+    lineHeight: 28,
+    fontWeight: '400',
   },
 });

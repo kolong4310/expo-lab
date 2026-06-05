@@ -6,15 +6,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { getAllLogs, WorkLog } from '../database/db';
 
 const COLORS = {
-  primary: '#6366f1', // Indigo 500
-  secondary: '#10b981', // Emerald 500
-  background: '#f8fafc', // Slate 50
-  surface: '#ffffff',
-  text: '#0f172a', // Slate 900
-  textSecondary: '#64748b', // Slate 500
-  border: '#f1f5f9', // Slate 100
-  error: '#ef4444', // Red 500
-  white: '#ffffff',
+  primary: '#4F46E5', // Indigo 600
+  background: '#F8FAFC', // Slate 50
+  surface: '#FFFFFF',
+  text: '#0F172A', // Slate 900
+  textSecondary: '#64748B', // Slate 500
+  border: '#E2E8F0', // Slate 200
+  indigoSubtle: '#EEF2FF',
+};
+
+const MOOD_MAP: any = {
+  best: '🔥',
+  good: '😀',
+  normal: '🙂',
+  hard: '😓',
 };
 
 export default function HomeScreen() {
@@ -28,45 +33,52 @@ export default function HomeScreen() {
     }, [])
   );
 
-  const renderItem = ({ item }: { item: WorkLog }) => (
+  const renderItem = ({ item, index }: { item: WorkLog, index: number }) => (
     <TouchableOpacity 
       style={styles.card}
       onPress={() => navigation.navigate('Detail', { log: item })}
-      activeOpacity={0.7}
+      activeOpacity={0.6}
     >
-      <View style={styles.cardContent}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
-          <Text style={styles.cardDate}>{item.date}</Text>
+      <View style={styles.cardHeader}>
+        <View style={styles.dateMoodRow}>
+          <Text style={styles.cardDate}>{item.date.replace(/-/g, '. ')}</Text>
+          {item.mood && <Text style={styles.moodEmoji}>{MOOD_MAP[item.mood]}</Text>}
         </View>
-        <Text style={styles.cardPreview} numberOfLines={2}>
-          {item.content || '설명이 없습니다.'}
-        </Text>
+        <Ionicons name="ellipsis-horizontal" size={18} color={COLORS.textSecondary} />
       </View>
-      <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
+      
+      <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
+      
+      <Text style={styles.cardPreview} numberOfLines={3}>
+        {item.content || '기록된 내용이 없습니다.'}
+      </Text>
+
+      <View style={styles.cardFooter}>
+        <View style={styles.tag}>
+          <Text style={styles.tagText}>#{index + 1}번째 성장</Text>
+        </View>
+      </View>
     </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
+      
       <View style={styles.header}>
         <View>
-          <Text style={styles.headerSubtitle}>반가워요! 👋</Text>
-          <Text style={styles.headerTitle}>오늘 뭐 했지?</Text>
+          <Text style={styles.headerTitle}>기록</Text>
+          <Text style={styles.headerSubtitle}>{logs.length}개의 발자취</Text>
         </View>
         <View style={styles.headerActions}>
           <TouchableOpacity 
-            style={styles.headerButton}
+            style={styles.iconButton}
             onPress={() => navigation.navigate('Calendar')}
           >
-            <Ionicons name="calendar-outline" size={22} color={COLORS.text} />
+            <Ionicons name="calendar-clear-outline" size={22} color={COLORS.text} />
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.headerButton}
-            onPress={() => alert('검색 기능 준비 중!')}
-          >
-            <Ionicons name="search" size={22} color={COLORS.text} />
+          <TouchableOpacity style={styles.iconButton}>
+            <Ionicons name="search-outline" size={22} color={COLORS.text} />
           </TouchableOpacity>
         </View>
       </View>
@@ -79,11 +91,11 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <View style={styles.emptyIconCircle}>
-              <Ionicons name="document-text-outline" size={32} color={COLORS.primary} />
+            <View style={styles.emptyCircle}>
+              <Ionicons name="book-outline" size={32} color={COLORS.primary} />
             </View>
-            <Text style={styles.emptyText}>아직 작성된 기록이 없어요.</Text>
-            <Text style={styles.emptySubText}>오늘의 소중한 기록을 남겨보세요! ✨</Text>
+            <Text style={styles.emptyText}>첫 번째 기록을 남겨보세요</Text>
+            <Text style={styles.emptySubText}>오늘의 배움이 내일의 성장이 됩니다.</Text>
           </View>
         }
       />
@@ -93,7 +105,7 @@ export default function HomeScreen() {
         onPress={() => navigation.navigate('Write')}
         activeOpacity={0.8}
       >
-        <Ionicons name="add" size={36} color={COLORS.white} />
+        <Ionicons name="add" size={32} color={COLORS.white} />
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -107,131 +119,147 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    marginBottom: 2,
+    alignItems: 'flex-end',
+    paddingHorizontal: 28,
+    paddingTop: 20,
+    paddingBottom: 24,
   },
   headerTitle: {
-    fontSize: 30,
-    fontWeight: '900',
+    fontSize: 34,
+    fontWeight: '800',
     color: COLORS.text,
-    letterSpacing: -0.5,
+    letterSpacing: -1,
+  },
+  headerSubtitle: {
+    fontSize: 15,
+    color: COLORS.textSecondary,
+    fontWeight: '500',
+    marginTop: 2,
   },
   headerActions: {
     flexDirection: 'row',
+    marginBottom: 4,
   },
-  headerButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+  iconButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     backgroundColor: COLORS.surface,
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: 8,
+    marginLeft: 10,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderColor: COLORS.border,
   },
   list: {
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    paddingBottom: 100,
+    paddingHorizontal: 20,
+    paddingBottom: 120,
   },
   card: {
     backgroundColor: COLORS.surface,
-    padding: 20,
-    borderRadius: 24,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    shadowColor: '#000',
+    borderRadius: 28,
+    padding: 24,
+    marginBottom: 20,
+    shadowColor: COLORS.text,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
-    elevation: 3,
+    shadowOpacity: 0.03,
+    shadowRadius: 15,
+    elevation: 2,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
-  },
-  cardContent: {
-    flex: 1,
-    marginRight: 8,
+    borderColor: 'rgba(226, 232, 240, 0.6)',
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 16,
   },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: COLORS.text,
-    flex: 1,
-    marginRight: 8,
+  dateMoodRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   cardDate: {
-    fontSize: 12,
+    fontSize: 13,
+    fontWeight: '600',
     color: COLORS.textSecondary,
-    fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  moodEmoji: {
+    fontSize: 16,
+    marginLeft: 8,
+  },
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: COLORS.text,
+    marginBottom: 10,
+    letterSpacing: -0.3,
   },
   cardPreview: {
-    fontSize: 14,
+    fontSize: 15,
     color: COLORS.textSecondary,
-    lineHeight: 20,
+    lineHeight: 24,
+    marginBottom: 20,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tag: {
+    backgroundColor: COLORS.indigoSubtle,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
+  },
+  tagText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: COLORS.primary,
   },
   emptyContainer: {
     alignItems: 'center',
     marginTop: 100,
+    paddingHorizontal: 40,
   },
-  emptyIconCircle: {
+  emptyCircle: {
     width: 80,
     height: 80,
     borderRadius: 40,
     backgroundColor: COLORS.surface,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
+    borderColor: COLORS.border,
   },
   emptyText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: COLORS.text,
-    marginBottom: 4,
+    textAlign: 'center',
+    marginBottom: 8,
   },
   emptySubText: {
     fontSize: 14,
     color: COLORS.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
   },
   fab: {
     position: 'absolute',
     right: 24,
-    bottom: 32,
-    width: 64,
+    bottom: 40,
+    width: 68,
     height: 64,
-    borderRadius: 32,
-    backgroundColor: COLORS.primary,
+    borderRadius: 24,
+    backgroundColor: COLORS.text, // Dark primary button
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowColor: COLORS.text,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+    elevation: 10,
   },
 });

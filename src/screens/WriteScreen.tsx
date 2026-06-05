@@ -6,13 +6,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { addLog, updateLog, WorkLog } from '../database/db';
 
 const COLORS = {
-  primary: '#6366f1',
-  background: '#f8fafc',
-  surface: '#ffffff',
-  text: '#0f172a',
-  textSecondary: '#64748b',
-  border: '#f1f5f9',
-  white: '#ffffff',
+  primary: '#4F46E5',
+  background: '#F8FAFC',
+  surface: '#FFFFFF',
+  text: '#0F172A',
+  textSecondary: '#64748B',
+  border: '#E2E8F0',
+  indigoSubtle: '#EEF2FF',
 };
 
 const MOODS = [
@@ -50,7 +50,7 @@ export default function WriteScreen() {
 
   const handleSave = () => {
     if (!title.trim()) {
-      Alert.alert('알림', '오늘 한 일의 제목을 입력해주세요.');
+      Alert.alert('알림', '오늘의 핵심 제목을 입력해주세요.');
       return;
     }
 
@@ -84,10 +84,18 @@ export default function WriteScreen() {
     }
   };
 
-  const InputLabel = ({ icon, label }: { icon: any, label: string }) => (
-    <View style={styles.labelContainer}>
-      <Ionicons name={icon} size={16} color={COLORS.primary} style={styles.labelIcon} />
-      <Text style={styles.label}>{label}</Text>
+  const CardInput = ({ label, value, onChangeText, placeholder, height = 120 }: any) => (
+    <View style={styles.inputCard}>
+      <Text style={styles.inputLabel}>{label}</Text>
+      <TextInput
+        style={[styles.textInput, { height }]}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor="#94A3B8"
+        multiline
+        textAlignVertical="top"
+      />
     </View>
   );
 
@@ -100,22 +108,33 @@ export default function WriteScreen() {
         <View style={styles.header}>
           <TouchableOpacity 
             onPress={() => navigation.goBack()}
-            style={styles.headerButton}
+            style={styles.closeButton}
           >
-            <Ionicons name="close" size={26} color={COLORS.text} />
+            <Ionicons name="close" size={28} color={COLORS.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{editingLog ? '기록 수정' : '기록하기'}</Text>
-          <TouchableOpacity onPress={handleSave}>
-            <Text style={styles.saveText}>{editingLog ? '완료' : '저장'}</Text>
-          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{editingLog ? '기록 수정' : '오늘의 기록'}</Text>
+          <View style={{ width: 40 }} />
         </View>
 
         <ScrollView 
           style={styles.content}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 40 }}
+          contentContainerStyle={{ paddingBottom: 140 }}
         >
-          <InputLabel icon="happy-outline" label="오늘의 기분" />
+          {/* Title Area - Minimalist */}
+          <TextInput 
+            style={styles.mainTitleInput}
+            value={title}
+            onChangeText={setTitle}
+            placeholder="제목을 입력하세요"
+            placeholderTextColor="#CBD5E1"
+            selectionColor={COLORS.primary}
+          />
+
+          <View style={styles.sectionDivider} />
+
+          {/* Mood Selector - Premium Style */}
+          <Text style={styles.sectionTitle}>오늘의 컨디션</Text>
           <View style={styles.moodContainer}>
             {MOODS.map((item) => (
               <TouchableOpacity
@@ -135,65 +154,50 @@ export default function WriteScreen() {
             ))}
           </View>
 
-          <InputLabel icon="bookmark-outline" label="오늘 한 일 (제목)" />
-          <TextInput 
-            style={styles.input} 
-            value={title}
-            onChangeText={setTitle}
-            placeholder="핵심 내용을 적어주세요"
-            placeholderTextColor="#94a3b8"
-          />
-
-          <InputLabel icon="document-text-outline" label="상세 내용" />
-          <TextInput 
-            style={[styles.input, styles.textArea]} 
+          <CardInput 
+            label="오늘 무엇을 했나요?"
             value={content}
             onChangeText={setContent}
-            multiline 
-            placeholder="오늘 어떤 작업을 하셨나요?"
-            placeholderTextColor="#94a3b8"
+            placeholder="오늘의 주요 성과와 작업 내용을 적어주세요."
           />
 
-          <InputLabel icon="bulb-outline" label="배운 것" />
-          <TextInput 
-            style={[styles.input, styles.textArea]} 
+          <CardInput 
+            label="배운 점"
             value={learned}
             onChangeText={setLearned}
-            multiline 
-            placeholder="새롭게 알게 된 사실"
-            placeholderTextColor="#94a3b8"
+            placeholder="새롭게 깨달은 지식이나 통찰이 있나요?"
           />
 
-          <InputLabel icon="alert-circle-outline" label="이슈" />
-          <TextInput 
-            style={[styles.input, styles.textArea]} 
+          <CardInput 
+            label="어떤 문제가 있었나요?"
             value={issue}
             onChangeText={setIssue}
-            multiline 
-            placeholder="어떤 문제가 있었나요?"
-            placeholderTextColor="#94a3b8"
+            placeholder="직면했던 기술적 혹은 심리적 장애물"
           />
 
-          <InputLabel icon="checkmark-circle-outline" label="해결 방법" />
-          <TextInput 
-            style={[styles.input, styles.textArea]} 
+          <CardInput 
+            label="어떻게 해결했나요?"
             value={solution}
             onChangeText={setSolution}
-            multiline 
-            placeholder="어떻게 해결하셨나요?"
-            placeholderTextColor="#94a3b8"
+            placeholder="문제 해결 과정과 시도했던 방법들"
           />
 
-          <InputLabel icon="attach-outline" label="메모" />
-          <TextInput 
-            style={[styles.input, styles.textArea]} 
+          <CardInput 
+            label="추가 메모"
             value={memo}
             onChangeText={setMemo}
-            multiline 
-            placeholder="기타 남기고 싶은 말"
-            placeholderTextColor="#94a3b8"
+            placeholder="내일의 나에게 남기는 한 마디"
+            height={100}
           />
         </ScrollView>
+
+        <TouchableOpacity 
+          style={styles.saveFab}
+          onPress={handleSave}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="checkmark" size={32} color={COLORS.white} />
+        </TouchableOpacity>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -202,80 +206,80 @@ export default function WriteScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
   },
-  headerButton: {
+  closeButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
     justifyContent: 'center',
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 17,
+    fontWeight: '700',
     color: COLORS.text,
   },
-  saveText: {
-    fontSize: 16,
-    color: COLORS.primary,
-    fontWeight: 'bold',
-  },
   content: {
+    flex: 1,
     paddingHorizontal: 24,
   },
-  labelContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 8,
+  mainTitleInput: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: COLORS.text,
+    marginTop: 10,
+    paddingVertical: 10,
+    letterSpacing: -1,
   },
-  labelIcon: {
-    marginRight: 6,
+  sectionDivider: {
+    height: 1,
+    backgroundColor: COLORS.border,
+    marginVertical: 20,
   },
-  label: {
-    fontSize: 12,
-    fontWeight: 'bold',
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '700',
     color: COLORS.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 1,
+    marginBottom: 16,
   },
   moodContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 32,
   },
   moodItem: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 16,
+    paddingVertical: 16,
+    borderRadius: 20,
+    backgroundColor: COLORS.surface,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: 'transparent',
     marginHorizontal: 4,
-    backgroundColor: COLORS.background,
+    shadowColor: COLORS.text,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 8,
+    elevation: 1,
   },
   moodItemSelected: {
     borderColor: COLORS.primary,
-    backgroundColor: COLORS.surface,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    backgroundColor: COLORS.white,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
   },
   moodEmoji: {
-    fontSize: 24,
-    marginBottom: 4,
+    fontSize: 28,
+    marginBottom: 6,
   },
   moodLabel: {
     fontSize: 12,
@@ -284,18 +288,46 @@ const styles = StyleSheet.create({
   },
   moodLabelSelected: {
     color: COLORS.primary,
+    fontWeight: '700',
   },
-  input: {
-    backgroundColor: COLORS.background,
-    borderRadius: 12,
-    padding: 16,
+  inputCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 24,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: COLORS.text,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.02,
+    shadowRadius: 10,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(226, 232, 240, 0.8)',
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: COLORS.primary,
+    marginBottom: 12,
+  },
+  textInput: {
     fontSize: 16,
     color: COLORS.text,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    lineHeight: 24,
   },
-  textArea: {
-    height: 120,
-    textAlignVertical: 'top',
+  saveFab: {
+    position: 'absolute',
+    right: 24,
+    bottom: 40,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
+    elevation: 12,
   },
 });

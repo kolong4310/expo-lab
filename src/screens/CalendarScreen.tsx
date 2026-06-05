@@ -7,12 +7,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { getLogsByDate, getLoggedDates, WorkLog } from '../database/db';
 
 const COLORS = {
-  primary: '#6366f1',
-  background: '#f8fafc',
-  surface: '#ffffff',
-  text: '#0f172a',
-  textSecondary: '#64748b',
-  border: '#f1f5f9',
+  primary: '#4F46E5',
+  background: '#F8FAFC',
+  surface: '#FFFFFF',
+  text: '#0F172A',
+  textSecondary: '#64748B',
+  border: '#E2E8F0',
+  indigoSubtle: '#EEF2FF',
 };
 
 // 한국어 설정
@@ -57,17 +58,17 @@ export default function CalendarScreen() {
 
   const renderItem = ({ item }: { item: WorkLog }) => (
     <TouchableOpacity 
-      style={styles.card}
+      style={styles.logCard}
       onPress={() => navigation.navigate('Detail', { log: item })}
       activeOpacity={0.7}
     >
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
         <Text style={styles.cardPreview} numberOfLines={1}>
-          {item.content || '내용 없음'}
+          {item.content || '기록 없음'}
         </Text>
       </View>
-      <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
+      <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
     </TouchableOpacity>
   );
 
@@ -76,13 +77,13 @@ export default function CalendarScreen() {
       <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={26} color={COLORS.text} />
+          <Ionicons name="chevron-back" size={28} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>캘린더</Text>
-        <View style={{ width: 40 }} />
+        <Text style={styles.headerTitle}>기록 보관소</Text>
+        <View style={{ width: 44 }} />
       </View>
 
-      <View style={styles.calendarContainer}>
+      <View style={styles.calendarWrapper}>
         <Calendar
           onDayPress={(day: any) => setSelectedDate(day.dateString)}
           markedDates={markedDates}
@@ -92,7 +93,7 @@ export default function CalendarScreen() {
             todayTextColor: COLORS.primary,
             arrowColor: COLORS.primary,
             monthTextColor: COLORS.text,
-            textMonthFontWeight: '900',
+            textMonthFontWeight: '800',
             textDayHeaderFontWeight: '600',
             dotColor: COLORS.primary,
             calendarBackground: 'transparent',
@@ -101,9 +102,9 @@ export default function CalendarScreen() {
       </View>
 
       <View style={styles.listHeader}>
-        <Text style={styles.listHeaderTitle}>{selectedDate.replace(/-/g, '. ')}</Text>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{logs.length}개의 기록</Text>
+        <Text style={styles.selectedDateText}>{selectedDate.replace(/-/g, '. ')}</Text>
+        <View style={styles.countBadge}>
+          <Text style={styles.countText}>{logs.length}개의 발자취</Text>
         </View>
       </View>
 
@@ -112,9 +113,10 @@ export default function CalendarScreen() {
         renderItem={renderItem}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
         contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>이 날은 기록이 없어요 💨</Text>
+            <Text style={styles.emptyText}>이 날은 아직 비어있네요</Text>
           </View>
         }
       />
@@ -131,75 +133,69 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    backgroundColor: COLORS.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   backButton: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: COLORS.text,
   },
-  calendarContainer: {
+  calendarWrapper: {
     backgroundColor: COLORS.surface,
-    paddingBottom: 8,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
+    paddingBottom: 10,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    shadowColor: COLORS.text,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.04,
+    shadowRadius: 20,
     elevation: 5,
   },
   listHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 28,
     marginTop: 32,
     marginBottom: 16,
   },
-  listHeaderTitle: {
+  selectedDateText: {
     fontSize: 20,
-    fontWeight: '900',
+    fontWeight: '800',
     color: COLORS.text,
+    letterSpacing: -0.5,
   },
-  badge: {
-    backgroundColor: '#eef2ff',
+  countBadge: {
+    backgroundColor: COLORS.indigoSubtle,
     paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 20,
+    paddingVertical: 6,
+    borderRadius: 12,
   },
-  badgeText: {
+  countText: {
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: COLORS.primary,
   },
   list: {
     paddingHorizontal: 24,
     paddingBottom: 40,
   },
-  card: {
+  logCard: {
     backgroundColor: COLORS.surface,
-    padding: 16,
+    padding: 18,
     borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 12,
     borderWidth: 1,
     borderColor: COLORS.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
-    elevation: 1,
   },
   cardContent: {
     flex: 1,
@@ -209,7 +205,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: COLORS.text,
-    marginBottom: 2,
+    marginBottom: 4,
   },
   cardPreview: {
     fontSize: 13,
@@ -217,7 +213,7 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     alignItems: 'center',
-    marginTop: 48,
+    marginTop: 40,
   },
   emptyText: {
     fontSize: 15,
