@@ -5,16 +5,11 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { 
   getAllLogs, 
-  getDailyRoutinesByDate, 
-  toggleRoutineCheck, 
-  getTodayOnlyGoals, 
-  addTodayOnlyGoal, 
-  toggleTodayOnlyGoal, 
-  deleteTodayOnlyGoal, 
+  getDailyGoalsWithCheck, 
+  toggleGoalCheck, 
   getGrowthStats,
   getCurrentStreak,
-  WorkLog, 
-  TodayOnlyGoal 
+  WorkLog 
 } from '../database/db';
 import { DESIGN } from '../theme/design';
 
@@ -29,9 +24,7 @@ export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const [logs, setLogs] = useState<WorkLog[]>([]);
-  const [routines, setRoutines] = useState<any[]>([]);
-  const [todayGoals, setTodayGoals] = useState<TodayOnlyGoal[]>([]);
-  const [newGoal, setNewGoal] = useState('');
+  const [dailyGoals, setDailyGoals] = useState<any[]>([]);
   const [streak, setStreak] = useState(0);
   const [stats, setStats] = useState({ total: 0, completed: 0, rate: 0 });
   
@@ -45,31 +38,13 @@ export default function HomeScreen() {
 
   const loadData = () => {
     setLogs(getAllLogs());
-    setRoutines(getDailyRoutinesByDate(today));
-    setTodayGoals(getTodayOnlyGoals(today));
+    setDailyGoals(getDailyGoalsWithCheck(today));
     setStreak(getCurrentStreak());
     setStats(getGrowthStats(today));
   };
 
-  const handleAddTodayGoal = () => {
-    if (!newGoal.trim()) return;
-    addTodayOnlyGoal(newGoal.trim(), today);
-    setNewGoal('');
-    loadData();
-  };
-
-  const handleToggleRoutine = (goalId: number, currentDone: number) => {
-    toggleRoutineCheck(goalId, today, currentDone === 1 ? 0 : 1);
-    loadData();
-  };
-
-  const handleToggleTodayGoal = (id: number, currentDone: number) => {
-    toggleTodayOnlyGoal(id, currentDone === 1 ? 0 : 1);
-    loadData();
-  };
-
-  const handleDeleteTodayGoal = (id: number) => {
-    deleteTodayOnlyGoal(id);
+  const handleToggleGoal = (goalId: number, currentDone: number) => {
+    toggleGoalCheck(goalId, today, currentDone === 1 ? 0 : 1);
     loadData();
   };
 
@@ -175,19 +150,18 @@ export default function HomeScreen() {
             </View>
 
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>DAILY ROUTINES</Text>
+              <Text style={styles.sectionTitle}>GROWTH ROUTINES</Text>
               <TouchableOpacity onPress={() => navigation.navigate('GoalManage')}>
-                <Text style={styles.manageLink}>MANAGE ROUTINES</Text>
+                <Text style={styles.manageLink}>MANAGE</Text>
               </TouchableOpacity>
             </View>
             
             <View style={styles.todoContainer}>
-              {/* Routine Goals */}
-              {routines.map(item => (
-                <View key={`routine-${item.goal_id}`} style={styles.todoRow}>
+              {dailyGoals.map(item => (
+                <View key={item.goal_id} style={styles.todoRow}>
                   <TouchableOpacity 
                     style={styles.todoCheck}
-                    onPress={() => handleToggleRoutine(item.goal_id, item.is_done)}
+                    onPress={() => handleToggleGoal(item.goal_id, item.is_done)}
                   >
                     <Ionicons 
                       name={item.is_done === 1 ? "checkmark-circle" : "ellipse-outline"} 
@@ -203,42 +177,14 @@ export default function HomeScreen() {
                   </View>
                 </View>
               ))}
-
-              {/* Today Only Goals */}
-              {todayGoals.map(item => (
-                <View key={`today-${item.id}`} style={styles.todoRow}>
-                  <TouchableOpacity 
-                    style={styles.todoCheck}
-                    onPress={() => handleToggleTodayGoal(item.id!, item.is_done)}
-                  >
-                    <Ionicons 
-                      name={item.is_done === 1 ? "checkmark-circle" : "ellipse-outline"} 
-                      size={26} 
-                      color={item.is_done === 1 ? DESIGN.colors.primary : DESIGN.colors.textMuted} 
-                    />
-                  </TouchableOpacity>
-                  <Text style={[styles.todoText, item.is_done === 1 && styles.todoTextCompleted]}>
-                    {item.title}
-                  </Text>
-                  <TouchableOpacity onPress={() => handleDeleteTodayGoal(item.id!)}>
-                    <Ionicons name="close" size={20} color={DESIGN.colors.textMuted} />
-                  </TouchableOpacity>
-                </View>
-              ))}
-
-              <View style={styles.addTodoRow}>
-                <TextInput
-                  style={styles.addTodoInput}
-                  value={newGoal}
-                  onChangeText={setNewGoal}
-                  placeholder="오늘만 할 일 추가..."
-                  placeholderTextColor={DESIGN.colors.textMuted}
-                  onSubmitEditing={handleAddTodayGoal}
-                />
-                <TouchableOpacity onPress={handleAddTodayGoal}>
-                  <Ionicons name="add-circle" size={32} color={DESIGN.colors.primary} />
+              {dailyGoals.length === 0 && (
+                <TouchableOpacity 
+                  style={styles.emptyTodoRow}
+                  onPress={() => navigation.navigate('GoalManage')}
+                >
+                  <Text style={styles.emptyTodoText}>루틴을 등록하고 성장을 시작하세요.</Text>
                 </TouchableOpacity>
-              </View>
+              )}
             </View>
 
             <Text style={[styles.sectionTitle, { marginTop: 48 }]}>SYSTEM LOG ARCHIVE</Text>
@@ -486,19 +432,14 @@ const styles = StyleSheet.create({
     color: DESIGN.colors.textMuted,
     textDecorationLine: 'line-through',
   },
-  addTodoRow: {
-    flexDirection: 'row',
+  emptyTodoRow: {
+    padding: 20,
     alignItems: 'center',
-    paddingTop: 12,
-    paddingBottom: 8,
-    paddingHorizontal: 8,
   },
-  addTodoInput: {
-    flex: 1,
-    fontSize: 16,
-    color: DESIGN.colors.text,
-    paddingRight: 10,
-    fontWeight: '500',
+  emptyTodoText: {
+    color: DESIGN.colors.textDim,
+    fontSize: 13,
+    fontWeight: '600',
   },
   list: {
     paddingBottom: 150,

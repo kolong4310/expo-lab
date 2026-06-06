@@ -3,49 +3,38 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert, S
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { getGoalTemplates, addGoalTemplate, updateGoalTemplate, deleteGoalTemplate, GoalTemplate } from '../database/db';
+import { getAllGoals, addGoal, updateGoal, Goal } from '../database/db';
 import { DESIGN } from '../theme/design';
 
-const CATEGORIES = ['개발', '건강', '공부', '회사', '회고', '기타'];
+const CATEGORIES = ['건강', '공부', '일', '생활', '성장', '기타'];
 
 export default function GoalManageScreen() {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const [templates, setGoalTemplates] = useState<GoalTemplate[]>([]);
+  const [goals, setGoals] = useState<Goal[]>([]);
   const [newTitle, setNewTitle] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('개발');
-  const [isEditing, setIsEditing] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState('성장');
 
   useFocusEffect(
     useCallback(() => {
-      loadTemplates();
+      loadGoals();
     }, [])
   );
 
-  const loadTemplates = () => {
-    setGoalTemplates(getGoalTemplates());
+  const loadGoals = () => {
+    setGoals(getAllGoals());
   };
 
   const handleAdd = () => {
     if (!newTitle.trim()) return;
-    addGoalTemplate(newTitle.trim(), selectedCategory);
+    addGoal(newTitle.trim(), selectedCategory);
     setNewTitle('');
-    loadTemplates();
+    loadGoals();
   };
 
-  const handleToggleActive = (item: GoalTemplate) => {
-    updateGoalTemplate(item.id!, item.title, item.category, item.is_active === 1 ? 0 : 1);
-    loadTemplates();
-  };
-
-  const handleDelete = (id: number) => {
-    Alert.alert('Delete Routine', 'This will also erase historical data for this routine. Continue?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => {
-        deleteGoalTemplate(id);
-        loadTemplates();
-      }}
-    ]);
+  const handleToggleActive = (item: Goal) => {
+    updateGoal(item.id!, item.title, item.category, item.is_active === 1 ? 0 : 1);
+    loadGoals();
   };
 
   return (
@@ -54,7 +43,7 @@ export default function GoalManageScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="arrow-back-outline" size={24} color={DESIGN.colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>ROUTINE PROTOCOL</Text>
+        <Text style={styles.headerTitle}>GOAL PROTOCOL</Text>
         <View style={{ width: 44 }} />
       </View>
 
@@ -63,7 +52,7 @@ export default function GoalManageScreen() {
           style={styles.input}
           value={newTitle}
           onChangeText={setNewTitle}
-          placeholder="Define new growth routine..."
+          placeholder="New growth goal..."
           placeholderTextColor={DESIGN.colors.textMuted}
           selectionColor={DESIGN.colors.primary}
         />
@@ -79,16 +68,16 @@ export default function GoalManageScreen() {
           ))}
         </ScrollView>
         <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
-          <Text style={styles.addButtonText}>INITIALIZE ROUTINE</Text>
+          <Text style={styles.addButtonText}>INITIALIZE GOAL</Text>
         </TouchableOpacity>
       </View>
 
       <FlatList
-        data={templates}
+        data={goals}
         keyExtractor={item => item.id?.toString() || ''}
         contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 40 }]}
         renderItem={({ item }) => (
-          <View style={[styles.templateItem, item.is_active === 0 && { opacity: 0.5 }]}>
+          <View style={[styles.templateItem, item.is_active === 0 && { opacity: 0.3 }]}>
             <View style={styles.templateInfo}>
               <Text style={styles.templateCategory}>{item.category}</Text>
               <Text style={styles.templateTitle}>{item.title}</Text>
@@ -96,20 +85,17 @@ export default function GoalManageScreen() {
             <View style={styles.actions}>
               <TouchableOpacity onPress={() => handleToggleActive(item)} style={styles.iconBtn}>
                 <Ionicons 
-                  name={item.is_active === 1 ? "eye-outline" : "eye-off-outline"} 
-                  size={20} 
-                  color={item.is_active === 1 ? DESIGN.colors.secondary : DESIGN.colors.textMuted} 
+                  name={item.is_active === 1 ? "checkbox" : "square-outline"} 
+                  size={24} 
+                  color={item.is_active === 1 ? DESIGN.colors.secondary : DESIGN.colors.textDim} 
                 />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDelete(item.id!)} style={styles.iconBtn}>
-                <Ionicons name="trash-outline" size={20} color="#ef4444" />
               </TouchableOpacity>
             </View>
           </View>
         )}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>No routines defined. Start your growth.</Text>
+            <Text style={styles.emptyText}>No goals defined. Set your growth targets.</Text>
           </View>
         }
       />
@@ -192,7 +178,7 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   list: {
-    padding: 24,
+    paddingHorizontal: 24,
   },
   templateItem: {
     flexDirection: 'row',
@@ -219,10 +205,10 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   iconBtn: {
     padding: 10,
-    marginLeft: 8,
   },
   emptyState: {
     marginTop: 60,
@@ -230,7 +216,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: DESIGN.colors.textMuted,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
   }
 });
