@@ -56,7 +56,7 @@ export default function CalendarScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="chevron-back-outline" size={28} color={DESIGN.colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>ARCHIVE</Text>
+        <Text style={styles.headerTitle}>CALENDAR</Text>
         <TouchableOpacity 
           style={styles.searchButton}
           onPress={() => navigation.navigate('Search')}

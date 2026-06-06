@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from './src/screens/HomeScreen';
 import WriteScreen from './src/screens/WriteScreen';
@@ -28,8 +28,6 @@ const MidnightTheme = {
   },
 };
 
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-...
 function TabNavigator() {
   const insets = useSafeAreaInsets();
   return (
@@ -40,8 +38,10 @@ function TabNavigator() {
           let iconName: any;
           if (route.name === 'Home') {
             iconName = focused ? 'flash' : 'flash-outline';
-          } else if (route.name === 'Archive') {
-            iconName = focused ? 'layers' : 'layers-outline';
+          } else if (route.name === 'Calendar') {
+            iconName = focused ? 'calendar' : 'calendar-outline';
+          } else if (route.name === 'Search') {
+            iconName = focused ? 'search' : 'search-outline';
           }
           return <Ionicons name={iconName} size={24} color={color} />;
         },
@@ -63,7 +63,8 @@ function TabNavigator() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: 'ENGINE' }} />
-      <Tab.Screen name="Archive" component={CalendarScreen} options={{ tabBarLabel: 'ARCHIVE' }} />
+      <Tab.Screen name="Calendar" component={CalendarScreen} options={{ tabBarLabel: 'CALENDAR' }} />
+      <Tab.Screen name="Search" component={SearchScreen} options={{ tabBarLabel: 'SEARCH' }} />
     </Tab.Navigator>
   );
 }
