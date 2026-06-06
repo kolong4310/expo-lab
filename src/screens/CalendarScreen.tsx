@@ -4,7 +4,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
-import { getLogsByDate, getLoggedDates, getDailyGoalsWithCheck, WorkLog } from '../database/db';
+import { getLogsByDate, getLoggedDates, getDailyGoalsWithCheck, getGrowthStats, WorkLog } from '../database/db';
 import { DESIGN } from '../theme/design';
 
 // Locale config
@@ -24,6 +24,7 @@ export default function CalendarScreen() {
   const [markedDates, setMarkedDates] = useState<any>({});
   const [logs, setLogs] = useState<WorkLog[]>([]);
   const [dailyGoals, setDailyGoals] = useState<any[]>([]);
+  const [stats, setStats] = useState({ total: 0, completed: 0, rate: 0 });
 
   useFocusEffect(
     useCallback(() => {
@@ -48,6 +49,7 @@ export default function CalendarScreen() {
 
     setLogs(getLogsByDate(selectedDate));
     setDailyGoals(getDailyGoalsWithCheck(selectedDate));
+    setStats(getGrowthStats(selectedDate));
   };
 
   const renderArchiveItem = ({ item }: { item: WorkLog }) => (
@@ -113,8 +115,8 @@ export default function CalendarScreen() {
             </View>
 
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>GOAL PERFORMANCE</Text>
-              <Text style={styles.dateText}>{selectedDate.replace(/-/g, ' / ')}</Text>
+              <Text style={styles.sectionTitle}>목표 달성 현황</Text>
+              <Text style={styles.dateText}>{stats.rate}% 완료</Text>
             </View>
 
             <View style={styles.goalContainer}>
@@ -128,18 +130,18 @@ export default function CalendarScreen() {
                   <Text style={[styles.goalText, goal.is_done === 1 && styles.goalTextDone]}>{goal.title}</Text>
                 </View>
               ))}
-              {dailyGoals.length === 0 && <Text style={styles.emptyGoalText}>No goals recorded on this cycle.</Text>}
+              {dailyGoals.length === 0 && <Text style={styles.emptyGoalText}>이 날은 등록된 목표가 없었습니다.</Text>}
             </View>
 
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>INSIGHT LOGS</Text>
-              <Text style={styles.countText}>{logs.length} ENTRIES</Text>
+              <Text style={styles.sectionTitle}>작성한 회고</Text>
+              <Text style={styles.countText}>{logs.length}개</Text>
             </View>
           </>
         }
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>No insights found for this date.</Text>
+            <Text style={styles.emptyText}>선택한 날짜의 회고 기록이 없습니다.</Text>
           </View>
         }
       />
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 10,
     fontWeight: '800',
-    color: DESIGN.colors.textDim,
+    color: DESIGN.colors.secondary,
   },
   countText: {
     fontSize: 10,

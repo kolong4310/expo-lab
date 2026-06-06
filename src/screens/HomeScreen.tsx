@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, Animated } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, TextInput, Animated } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -110,7 +110,7 @@ export default function HomeScreen() {
             <View style={styles.identityContainer}>
               <View style={styles.identityHeader}>
                 <View style={styles.statusDot} />
-                <Text style={styles.identityLabel}>오늘의 성장 지표</Text>
+                <Text style={styles.identityLabel}>오늘의 성장</Text>
               </View>
               <View style={styles.identityMain}>
                 <Text style={styles.logCountText}>{logs.length.toString().padStart(2, '0')}</Text>
@@ -140,13 +140,13 @@ export default function HomeScreen() {
 
             <View style={styles.progressCard}>
               <View style={styles.progressInfo}>
-                <Text style={styles.progressLabel}>성장 에너지</Text>
+                <Text style={styles.progressLabel}>오늘 달성률</Text>
                 <Text style={styles.progressValue}>{stats.rate}%</Text>
               </View>
               <View style={styles.progressBarBg}>
                 <View style={[styles.progressBarFill, { width: `${stats.rate}%` }]} />
               </View>
-              <Text style={styles.progressStat}>{stats.total}개의 목표 중 {stats.completed}개 완료</Text>
+              <Text style={styles.progressStat}>{stats.total}개의 목표 중 {stats.completed}개 완료한 목표</Text>
             </View>
 
             <View style={styles.sectionHeaderRow}>
@@ -182,8 +182,8 @@ export default function HomeScreen() {
                   style={styles.emptyTodoRow}
                   onPress={() => navigation.navigate('GoalManage')}
                 >
-                  <Ionicons name="add-circle-outline" size={24} color={DESIGN.colors.primary} style={{ marginBottom: 8 }} />
-                  <Text style={styles.emptyTodoText}>매일 반복할 목표를 등록해보세요.</Text>
+                  <Ionicons name="add-circle-outline" size={32} color={DESIGN.colors.primary} style={{ marginBottom: 12 }} />
+                  <Text style={styles.emptyTodoText}>성장 루틴이 비어있습니다.{"\n"}목표를 추가하고 오늘을 시작하세요.</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -203,7 +203,7 @@ export default function HomeScreen() {
         onPress={() => navigation.navigate('Write')}
         activeOpacity={0.8}
       >
-        <Text style={styles.actionText}>오늘 기록하기</Text>
+        <Text style={styles.actionText}>회고 작성하기</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -442,6 +442,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     textAlign: 'center',
+    lineHeight: 20,
   },
   list: {
     paddingBottom: 150,

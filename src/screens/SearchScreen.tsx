@@ -52,7 +52,9 @@ export default function SearchScreen() {
       {item.tags && (
         <View style={styles.resultTagList}>
           {item.tags.split(',').map(tag => (
-            <Text key={tag} style={styles.resultTagText}>#{tag}</Text>
+            <TouchableOpacity key={tag} onPress={() => setKeyword(tag)}>
+              <Text style={styles.resultTagText}>#{tag}</Text>
+            </TouchableOpacity>
           ))}
         </View>
       )}
@@ -76,7 +78,7 @@ export default function SearchScreen() {
             style={styles.searchInput}
             value={keyword}
             onChangeText={setKeyword}
-            placeholder="Search insights..."
+            placeholder="기록 검색..."
             placeholderTextColor={DESIGN.colors.textMuted}
             autoFocus
           />
@@ -104,8 +106,8 @@ export default function SearchScreen() {
             />
             <Text style={styles.emptyText}>
               {keyword.length > 0 
-                ? "No matching insights found." 
-                : "Enter keywords to search your growth protocol."}
+                ? "일치하는 기록을 찾지 못했습니다." 
+                : "키워드나 태그를 입력하여 기록을 찾아보세요."}
             </Text>
           </View>
         }
