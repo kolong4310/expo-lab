@@ -43,7 +43,7 @@ export default function GoalManageScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="arrow-back-outline" size={24} color={DESIGN.colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>GOAL PROTOCOL</Text>
+        <Text style={styles.headerTitle}>목표 관리</Text>
         <View style={{ width: 44 }} />
       </View>
 
@@ -52,7 +52,7 @@ export default function GoalManageScreen() {
           style={styles.input}
           value={newTitle}
           onChangeText={setNewTitle}
-          placeholder="New growth goal..."
+          placeholder="새로운 성장 목표를 입력하세요..."
           placeholderTextColor={DESIGN.colors.textMuted}
           selectionColor={DESIGN.colors.primary}
         />
@@ -68,7 +68,7 @@ export default function GoalManageScreen() {
           ))}
         </ScrollView>
         <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
-          <Text style={styles.addButtonText}>INITIALIZE GOAL</Text>
+          <Text style={styles.addButtonText}>목표 추가하기</Text>
         </TouchableOpacity>
       </View>
 
@@ -95,7 +95,7 @@ export default function GoalManageScreen() {
         )}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>No goals defined. Set your growth targets.</Text>
+            <Text style={styles.emptyText}>등록된 목표가 없습니다.</Text>
           </View>
         }
       />

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, TextInput, Animated } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, Animated } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -110,27 +110,27 @@ export default function HomeScreen() {
             <View style={styles.identityContainer}>
               <View style={styles.identityHeader}>
                 <View style={styles.statusDot} />
-                <Text style={styles.identityLabel}>GROWTH PROTOCOL ACTIVE</Text>
+                <Text style={styles.identityLabel}>오늘의 성장 지표</Text>
               </View>
               <View style={styles.identityMain}>
                 <Text style={styles.logCountText}>{logs.length.toString().padStart(2, '0')}</Text>
                 <View style={styles.identityInfo}>
-                  <Text style={styles.identityInfoTitle}>TOTAL</Text>
-                  <Text style={styles.identityInfoTitle}>INSIGHTS</Text>
+                  <Text style={styles.identityInfoTitle}>누적</Text>
+                  <Text style={styles.identityInfoTitle}>기록수</Text>
                 </View>
               </View>
             </View>
             
             <View style={styles.statsRow}>
               <View style={styles.statCard}>
-                <Text style={styles.statLabel}>STREAK</Text>
+                <Text style={styles.statLabel}>연속 기록</Text>
                 <View style={styles.statValueRow}>
                   <Text style={styles.statValue}>{streak}</Text>
-                  <Text style={styles.statUnit}>DAYS</Text>
+                  <Text style={styles.statUnit}>일째</Text>
                 </View>
               </View>
               <View style={[styles.statCard, { marginLeft: 12, borderColor: DESIGN.colors.secondary }]}>
-                <Text style={[styles.statLabel, { color: DESIGN.colors.secondary }]}>COMPLETION</Text>
+                <Text style={[styles.statLabel, { color: DESIGN.colors.secondary }]}>오늘 달성률</Text>
                 <View style={styles.statValueRow}>
                   <Text style={styles.statValue}>{stats.rate}</Text>
                   <Text style={styles.statUnit}>%</Text>
@@ -140,19 +140,19 @@ export default function HomeScreen() {
 
             <View style={styles.progressCard}>
               <View style={styles.progressInfo}>
-                <Text style={styles.progressLabel}>Daily Engine Status</Text>
+                <Text style={styles.progressLabel}>성장 에너지</Text>
                 <Text style={styles.progressValue}>{stats.rate}%</Text>
               </View>
               <View style={styles.progressBarBg}>
                 <View style={[styles.progressBarFill, { width: `${stats.rate}%` }]} />
               </View>
-              <Text style={styles.progressStat}>{stats.completed} of {stats.total} missions initialized</Text>
+              <Text style={styles.progressStat}>{stats.total}개의 목표 중 {stats.completed}개 완료</Text>
             </View>
 
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>GROWTH ROUTINES</Text>
+              <Text style={styles.sectionTitle}>오늘의 목표 체크</Text>
               <TouchableOpacity onPress={() => navigation.navigate('GoalManage')}>
-                <Text style={styles.manageLink}>MANAGE</Text>
+                <Text style={styles.manageLink}>목표 관리</Text>
               </TouchableOpacity>
             </View>
             
@@ -182,17 +182,18 @@ export default function HomeScreen() {
                   style={styles.emptyTodoRow}
                   onPress={() => navigation.navigate('GoalManage')}
                 >
-                  <Text style={styles.emptyTodoText}>루틴을 등록하고 성장을 시작하세요.</Text>
+                  <Ionicons name="add-circle-outline" size={24} color={DESIGN.colors.primary} style={{ marginBottom: 8 }} />
+                  <Text style={styles.emptyTodoText}>매일 반복할 목표를 등록해보세요.</Text>
                 </TouchableOpacity>
               )}
             </View>
 
-            <Text style={[styles.sectionTitle, { marginTop: 48 }]}>SYSTEM LOG ARCHIVE</Text>
+            <Text style={[styles.sectionTitle, { marginTop: 48 }]}>과거 기록 타임라인</Text>
           </View>
         }
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>Terminal ready. Awaiting input.</Text>
+            <Text style={styles.emptyText}>성장의 흔적이 아직 없습니다.</Text>
           </View>
         }
       />
@@ -202,7 +203,7 @@ export default function HomeScreen() {
         onPress={() => navigation.navigate('Write')}
         activeOpacity={0.8}
       >
-        <Text style={styles.actionText}>EXECUTE INSIGHT</Text>
+        <Text style={styles.actionText}>오늘 기록하기</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -433,13 +434,14 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
   },
   emptyTodoRow: {
-    padding: 20,
+    padding: 30,
     alignItems: 'center',
   },
   emptyTodoText: {
     color: DESIGN.colors.textDim,
     fontSize: 13,
     fontWeight: '600',
+    textAlign: 'center',
   },
   list: {
     paddingBottom: 150,
