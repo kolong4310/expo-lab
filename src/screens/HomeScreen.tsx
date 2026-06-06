@@ -5,6 +5,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { 
   getAllLogs, 
+  getLogsByDate,
   getDailyGoalsWithCheck, 
   toggleGoalCheck, 
   getGrowthStats,
@@ -27,6 +28,7 @@ export default function HomeScreen() {
   const [dailyGoals, setDailyGoals] = useState<any[]>([]);
   const [streak, setStreak] = useState(0);
   const [stats, setStats] = useState({ total: 0, completed: 0, rate: 0 });
+  const [todayLog, setTodayLog] = useState<WorkLog | null>(null);
   
   const today = new Date().toISOString().split('T')[0];
 
@@ -41,6 +43,10 @@ export default function HomeScreen() {
     setDailyGoals(getDailyGoalsWithCheck(today));
     setStreak(getCurrentStreak());
     setStats(getGrowthStats(today));
+    
+    // 오늘 작성한 회고 가져오기
+    const todayLogs = getLogsByDate(today);
+    setTodayLog(todayLogs.length > 0 ? todayLogs[0] : null);
   };
 
   const handleToggleGoal = (goalId: number, currentDone: number) => {
@@ -88,6 +94,29 @@ export default function HomeScreen() {
               <View style={styles.streakBadge}>
                 <Text style={styles.streakText}>{streak}일째 기록 중</Text>
               </View>
+            </View>
+
+            {/* 오늘의 한 줄 영역 (Apple Journal Style) */}
+            <View style={styles.mantraSection}>
+              <Text style={styles.sectionLabel}>오늘의 한 줄</Text>
+              {todayLog ? (
+                <TouchableOpacity 
+                  onPress={() => navigation.navigate('Detail', { log: todayLog })}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.mantraText}>"{todayLog.daily_summary || todayLog.title}"</Text>
+                </TouchableOpacity>
+              ) : (
+                <View>
+                  <Text style={styles.mantraPlaceholder}>오늘의 성장을 한 문장으로 남겨보세요.</Text>
+                  <TouchableOpacity 
+                    style={styles.mantraButton}
+                    onPress={() => navigation.navigate('Write')}
+                  >
+                    <Text style={styles.mantraButtonText}>회고 작성하기</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
 
             <View style={styles.statsContainer}>
@@ -153,7 +182,7 @@ export default function HomeScreen() {
         style={[styles.floatingButton, { bottom: insets.bottom + 20 }]}
         onPress={() => navigation.navigate('Write')}
       >
-        <Text style={styles.buttonText}>회고 작성하기</Text>
+        <Text style={styles.buttonText}>기록하기</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -197,6 +226,45 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: DESIGN.colors.primary,
+  },
+  mantraSection: {
+    marginBottom: 48,
+    paddingVertical: 8,
+  },
+  sectionLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: DESIGN.colors.textDim,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 16,
+  },
+  mantraText: {
+    fontSize: 26,
+    fontWeight: '600',
+    color: DESIGN.colors.text,
+    fontStyle: 'italic',
+    lineHeight: 34,
+    letterSpacing: -0.5,
+  },
+  mantraPlaceholder: {
+    fontSize: 22,
+    fontWeight: '500',
+    color: DESIGN.colors.textDim,
+    lineHeight: 30,
+    marginBottom: 20,
+  },
+  mantraButton: {
+    alignSelf: 'flex-start',
+    backgroundColor: DESIGN.colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 999,
+  },
+  mantraButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   statsContainer: {
     flexDirection: 'row',
