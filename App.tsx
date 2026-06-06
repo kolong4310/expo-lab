@@ -9,6 +9,7 @@ import WriteScreen from './src/screens/WriteScreen';
 import DetailScreen from './src/screens/DetailScreen';
 import CalendarScreen from './src/screens/CalendarScreen';
 import SearchScreen from './src/screens/SearchScreen';
+import GoalManageScreen from './src/screens/GoalManageScreen';
 import { initDatabase } from './src/database/db';
 import { DESIGN } from './src/theme/design';
 
@@ -83,6 +84,7 @@ export default function App() {
           <Stack.Screen name="Write" component={WriteScreen} />
           <Stack.Screen name="Detail" component={DetailScreen} />
           <Stack.Screen name="Search" component={SearchScreen} />
+          <Stack.Screen name="GoalManage" component={GoalManageScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

@@ -27,10 +27,41 @@ export interface Todo {
   date: string;
 }
 
+/**
+ * 목표 템플릿 (반복 루틴)
+ */
+export interface GoalTemplate {
+  id?: number;
+  title: string;
+  category: string;
+  is_active: number; // 0 or 1
+  created_at: string;
+}
+
+/**
+ * 일일 목표 달성 여부 (루틴 체크)
+ */
+export interface DailyGoalCheck {
+  id?: number;
+  goal_id: number;
+  date: string;
+  is_done: number; // 0 or 1
+}
+
+/**
+ * 오늘만 할 일
+ */
+export interface TodayOnlyGoal {
+  id?: number;
+  title: string;
+  date: string;
+  is_done: number; // 0 or 1
+}
+
 const db = SQLite.openDatabaseSync('work_logs.db');
 
 /**
- * 데이터베이스 초기화 (테이블 생성)
+ * 데이터베이스 초기화 (테이블 생성 및 마이그레이션)
  */
 export const initDatabase = () => {
   // 기존 로그 테이블
@@ -38,6 +69,8 @@ export const initDatabase = () => {
     CREATE TABLE IF NOT EXISTS logs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
+      daily_summary TEXT,
+      tags TEXT,
       content TEXT,
       learned TEXT,
       issue TEXT,
@@ -48,7 +81,7 @@ export const initDatabase = () => {
     );
   `);
 
-  // 할 일 테이블 추가
+  // 할 일 테이블 (Legacy 유지)
   db.execSync(`
     CREATE TABLE IF NOT EXISTS todos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,31 +91,182 @@ export const initDatabase = () => {
     );
   `);
 
-  // 기존 테이블에 mood 컬럼이 없는 경우를 위한 마이그레이션
-  try {
-    db.execSync('ALTER TABLE logs ADD COLUMN mood TEXT;');
-    console.log('Migration: mood column added! 🚀');
-  } catch (e) {
-    console.log('Migration: mood column already exists or skipped.');
-  }
+  // 1. Goal Templates 테이블 추가
+  db.execSync(`
+    CREATE TABLE IF NOT EXISTS goal_templates (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      category TEXT,
+      is_active INTEGER DEFAULT 1,
+      created_at TEXT NOT NULL
+    );
+  `);
 
-  // daily_summary 컬럼 추가
-  try {
-    db.execSync('ALTER TABLE logs ADD COLUMN daily_summary TEXT;');
-    console.log('Migration: daily_summary column added! 🚀');
-  } catch (e) {
-    console.log('Migration: daily_summary already exists.');
-  }
+  // 2. Daily Goal Checks 테이블 추가
+  db.execSync(`
+    CREATE TABLE IF NOT EXISTS daily_goal_checks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      goal_id INTEGER NOT NULL,
+      date TEXT NOT NULL,
+      is_done INTEGER DEFAULT 0,
+      UNIQUE(goal_id, date)
+    );
+  `);
 
-  // tags 컬럼 추가
-  try {
-    db.execSync('ALTER TABLE logs ADD COLUMN tags TEXT;');
-    console.log('Migration: tags column added! 🚀');
-  } catch (e) {
-    console.log('Migration: tags already exists.');
-  }
+  // 3. Today Only Goals 테이블 추가
+  db.execSync(`
+    CREATE TABLE IF NOT EXISTS today_only_goals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      date TEXT NOT NULL,
+      is_done INTEGER DEFAULT 0
+    );
+  `);
 
-  console.log('Database initialized! ✅');
+  // 기존 마이그레이션 로직들...
+  // (생략 가능하나 안전을 위해 유지)
+  try { db.execSync('ALTER TABLE logs ADD COLUMN mood TEXT;'); } catch(e) {}
+  try { db.execSync('ALTER TABLE logs ADD COLUMN daily_summary TEXT;'); } catch(e) {}
+  try { db.execSync('ALTER TABLE logs ADD COLUMN tags TEXT;'); } catch(e) {}
+
+  console.log('Database initialized with Growth Routine tables! ✅');
+};
+
+/**
+ * Goal Template CRUD
+ */
+export const getGoalTemplates = (): GoalTemplate[] => {
+  return db.getAllSync<GoalTemplate>('SELECT * FROM goal_templates ORDER BY id DESC');
+};
+
+export const addGoalTemplate = (title: string, category: string) => {
+  const statement = db.prepareSync('INSERT INTO goal_templates (title, category, created_at) VALUES (?, ?, ?)');
+  try {
+    statement.executeSync([title, category, new Date().toISOString()]);
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
+export const updateGoalTemplate = (id: number, title: string, category: string, isActive: number) => {
+  const statement = db.prepareSync('UPDATE goal_templates SET title = ?, category = ?, is_active = ? WHERE id = ?');
+  try {
+    statement.executeSync([title, category, isActive, id]);
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
+export const deleteGoalTemplate = (id: number) => {
+  db.execSync(`DELETE FROM goal_templates WHERE id = ${id}`);
+  db.execSync(`DELETE FROM daily_goal_checks WHERE goal_id = ${id}`);
+};
+
+/**
+ * Daily Routine Checks
+ */
+export const getDailyRoutinesByDate = (date: string) => {
+  // 활성화된 템플릿과 해당 날짜의 체크 상태를 조인해서 가져옴
+  const query = `
+    SELECT 
+      t.id as goal_id, 
+      t.title, 
+      t.category, 
+      COALESCE(c.is_done, 0) as is_done,
+      c.id as check_id
+    FROM goal_templates t
+    LEFT JOIN daily_goal_checks c ON t.id = c.goal_id AND c.date = ?
+    WHERE t.is_active = 1
+  `;
+  const statement = db.prepareSync(query);
+  try {
+    const result = statement.executeSync<any>([date]);
+    return result.getAllSync();
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
+export const toggleRoutineCheck = (goalId: number, date: string, isDone: number) => {
+  // INSERT OR REPLACE 사용
+  const statement = db.prepareSync(`
+    INSERT INTO daily_goal_checks (goal_id, date, is_done) 
+    VALUES (?, ?, ?)
+    ON CONFLICT(goal_id, date) DO UPDATE SET is_done = excluded.is_done
+  `);
+  try {
+    statement.executeSync([goalId, date, isDone]);
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
+/**
+ * Today Only Goals CRUD
+ */
+export const getTodayOnlyGoals = (date: string): TodayOnlyGoal[] => {
+  const statement = db.prepareSync('SELECT * FROM today_only_goals WHERE date = ?');
+  try {
+    const result = statement.executeSync<TodayOnlyGoal>([date]);
+    return result.getAllSync();
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
+export const addTodayOnlyGoal = (title: string, date: string) => {
+  const statement = db.prepareSync('INSERT INTO today_only_goals (title, date) VALUES (?, ?)');
+  try {
+    statement.executeSync([title, date]);
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
+export const toggleTodayOnlyGoal = (id: number, isDone: number) => {
+  db.execSync(`UPDATE today_only_goals SET is_done = ${isDone} WHERE id = ${id}`);
+};
+
+export const deleteTodayOnlyGoal = (id: number) => {
+  db.execSync(`DELETE FROM today_only_goals WHERE id = ${id}`);
+};
+
+/**
+ * 통합 달성률 계산 (Routines + TodayOnly)
+ */
+export const getGrowthStats = (date: string) => {
+  const routines = getDailyRoutinesByDate(date);
+  const todayOnly = getTodayOnlyGoals(date);
+  
+  const total = routines.length + todayOnly.length;
+  if (total === 0) return { total: 0, completed: 0, rate: 0 };
+  
+  const completed = routines.filter(r => r.is_done === 1).length + 
+                    todayOnly.filter(g => g.is_done === 1).length;
+                    
+  return {
+    total,
+    completed,
+    rate: Math.round((completed / total) * 100)
+  };
+};
+
+/**
+ * 월간 달성률 (이전 함수와 호환성 유지하면서 로직 변경 가능하나 일단은 오늘 날짜 중심)
+ */
+export const getMonthlyGrowthRate = (monthStr: string) => {
+  // 간단하게 해당 월의 모든 체크 수 / 전체 가능 수 계산
+  // (실제로는 매일의 루틴 개수가 다를 수 있으나 MVP 수준에서 구현)
+  const routineChecks = db.getAllSync<{is_done: number}>(`SELECT is_done FROM daily_goal_checks WHERE date LIKE '${monthStr}%'`);
+  const todayOnlyChecks = db.getAllSync<{is_done: number}>(`SELECT is_done FROM today_only_goals WHERE date LIKE '${monthStr}%'`);
+  
+  const total = routineChecks.length + todayOnlyChecks.length;
+  if (total === 0) return 0;
+  
+  const completed = routineChecks.filter(c => c.is_done === 1).length + 
+                    todayOnlyChecks.filter(c => c.is_done === 1).length;
+                    
+  return Math.round((completed / total) * 100);
 };
 
 /**

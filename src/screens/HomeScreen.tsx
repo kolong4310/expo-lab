@@ -1,9 +1,21 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, TextInput, Animated } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { getAllLogs, getTodosByDate, addTodo, toggleTodo, deleteTodo, getCurrentStreak, getMonthlyStats, WorkLog, Todo } from '../database/db';
+import { 
+  getAllLogs, 
+  getDailyRoutinesByDate, 
+  toggleRoutineCheck, 
+  getTodayOnlyGoals, 
+  addTodayOnlyGoal, 
+  toggleTodayOnlyGoal, 
+  deleteTodayOnlyGoal, 
+  getGrowthStats,
+  getCurrentStreak,
+  WorkLog, 
+  TodayOnlyGoal 
+} from '../database/db';
 import { DESIGN } from '../theme/design';
 
 const MOOD_MAP: any = {
@@ -17,13 +29,13 @@ export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const [logs, setLogs] = useState<WorkLog[]>([]);
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [newTodo, setNewTodo] = useState('');
+  const [routines, setRoutines] = useState<any[]>([]);
+  const [todayGoals, setTodayGoals] = useState<TodayOnlyGoal[]>([]);
+  const [newGoal, setNewGoal] = useState('');
   const [streak, setStreak] = useState(0);
-  const [monthlyRate, setMonthlyRate] = useState(0);
+  const [stats, setStats] = useState({ total: 0, completed: 0, rate: 0 });
   
   const today = new Date().toISOString().split('T')[0];
-  const currentMonth = today.substring(0, 7);
 
   useFocusEffect(
     useCallback(() => {
@@ -33,31 +45,33 @@ export default function HomeScreen() {
 
   const loadData = () => {
     setLogs(getAllLogs());
-    const allTodos = getTodosByDate(today);
-    setTodos(allTodos);
+    setRoutines(getDailyRoutinesByDate(today));
+    setTodayGoals(getTodayOnlyGoals(today));
     setStreak(getCurrentStreak());
-    setMonthlyRate(getMonthlyStats(currentMonth).rate);
+    setStats(getGrowthStats(today));
   };
 
-  const handleAddTodo = () => {
-    if (!newTodo.trim()) return;
-    addTodo(newTodo.trim(), today);
-    setNewTodo('');
+  const handleAddTodayGoal = () => {
+    if (!newGoal.trim()) return;
+    addTodayOnlyGoal(newGoal.trim(), today);
+    setNewGoal('');
     loadData();
   };
 
-  const handleToggleTodo = (id: number, currentStatus: number) => {
-    toggleTodo(id, currentStatus === 1 ? 0 : 1);
+  const handleToggleRoutine = (goalId: number, currentDone: number) => {
+    toggleRoutineCheck(goalId, today, currentDone === 1 ? 0 : 1);
     loadData();
   };
 
-  const handleDeleteTodo = (id: number) => {
-    deleteTodo(id);
+  const handleToggleTodayGoal = (id: number, currentDone: number) => {
+    toggleTodayOnlyGoal(id, currentDone === 1 ? 0 : 1);
     loadData();
   };
 
-  const completedCount = todos.filter(t => t.is_completed === 1).length;
-  const progressPercent = todos.length > 0 ? Math.round((completedCount / todos.length) * 100) : 0;
+  const handleDeleteTodayGoal = (id: number) => {
+    deleteTodayOnlyGoal(id);
+    loadData();
+  };
 
   const renderInsight = ({ item }: { item: WorkLog }) => (
     <TouchableOpacity 
@@ -118,7 +132,6 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View style={styles.heroSection}>
-            {/* New Sophisticated Identity Section */}
             <View style={styles.identityContainer}>
               <View style={styles.identityHeader}>
                 <View style={styles.statusDot} />
@@ -133,7 +146,6 @@ export default function HomeScreen() {
               </View>
             </View>
             
-            {/* Stats Row */}
             <View style={styles.statsRow}>
               <View style={styles.statCard}>
                 <Text style={styles.statLabel}>STREAK</Text>
@@ -145,61 +157,85 @@ export default function HomeScreen() {
               <View style={[styles.statCard, { marginLeft: 12, borderColor: DESIGN.colors.secondary }]}>
                 <Text style={[styles.statLabel, { color: DESIGN.colors.secondary }]}>COMPLETION</Text>
                 <View style={styles.statValueRow}>
-                  <Text style={styles.statValue}>{monthlyRate}</Text>
+                  <Text style={styles.statValue}>{stats.rate}</Text>
                   <Text style={styles.statUnit}>%</Text>
                 </View>
               </View>
             </View>
 
-            {/* Progress Card */}
             <View style={styles.progressCard}>
               <View style={styles.progressInfo}>
                 <Text style={styles.progressLabel}>Daily Engine Status</Text>
-                <Text style={styles.progressValue}>{progressPercent}%</Text>
+                <Text style={styles.progressValue}>{stats.rate}%</Text>
               </View>
               <View style={styles.progressBarBg}>
-                <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
+                <View style={[styles.progressBarFill, { width: `${stats.rate}%` }]} />
               </View>
-              <Text style={styles.progressStat}>{completedCount} of {todos.length} missions initialized</Text>
+              <Text style={styles.progressStat}>{stats.completed} of {stats.total} missions initialized</Text>
             </View>
 
-            {/* Todo Section */}
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>CURRENT MISSIONS</Text>
-              <Text style={styles.dateLabel}>{today.replace(/-/g, ' / ')}</Text>
+              <Text style={styles.sectionTitle}>DAILY ROUTINES</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('GoalManage')}>
+                <Text style={styles.manageLink}>MANAGE ROUTINES</Text>
+              </TouchableOpacity>
             </View>
             
             <View style={styles.todoContainer}>
-              {todos.map(todo => (
-                <View key={todo.id} style={styles.todoRow}>
+              {/* Routine Goals */}
+              {routines.map(item => (
+                <View key={`routine-${item.goal_id}`} style={styles.todoRow}>
                   <TouchableOpacity 
                     style={styles.todoCheck}
-                    onPress={() => handleToggleTodo(todo.id!, todo.is_completed)}
+                    onPress={() => handleToggleRoutine(item.goal_id, item.is_done)}
                   >
                     <Ionicons 
-                      name={todo.is_completed === 1 ? "checkmark-circle" : "ellipse-outline"} 
+                      name={item.is_done === 1 ? "checkmark-circle" : "ellipse-outline"} 
                       size={26} 
-                      color={todo.is_completed === 1 ? DESIGN.colors.secondary : DESIGN.colors.textMuted} 
+                      color={item.is_done === 1 ? DESIGN.colors.secondary : DESIGN.colors.textMuted} 
                     />
                   </TouchableOpacity>
-                  <Text style={[styles.todoText, todo.is_completed === 1 && styles.todoTextCompleted]}>
-                    {todo.task}
+                  <View style={styles.todoTextContainer}>
+                    <Text style={styles.routineCategory}>{item.category}</Text>
+                    <Text style={[styles.todoText, item.is_done === 1 && styles.todoTextCompleted]}>
+                      {item.title}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+
+              {/* Today Only Goals */}
+              {todayGoals.map(item => (
+                <View key={`today-${item.id}`} style={styles.todoRow}>
+                  <TouchableOpacity 
+                    style={styles.todoCheck}
+                    onPress={() => handleToggleTodayGoal(item.id!, item.is_done)}
+                  >
+                    <Ionicons 
+                      name={item.is_done === 1 ? "checkmark-circle" : "ellipse-outline"} 
+                      size={26} 
+                      color={item.is_done === 1 ? DESIGN.colors.primary : DESIGN.colors.textMuted} 
+                    />
+                  </TouchableOpacity>
+                  <Text style={[styles.todoText, item.is_done === 1 && styles.todoTextCompleted]}>
+                    {item.title}
                   </Text>
-                  <TouchableOpacity onPress={() => handleDeleteTodo(todo.id!)}>
+                  <TouchableOpacity onPress={() => handleDeleteTodayGoal(item.id!)}>
                     <Ionicons name="close" size={20} color={DESIGN.colors.textMuted} />
                   </TouchableOpacity>
                 </View>
               ))}
+
               <View style={styles.addTodoRow}>
                 <TextInput
                   style={styles.addTodoInput}
-                  value={newTodo}
-                  onChangeText={setNewTodo}
-                  placeholder="Input mission identifier..."
+                  value={newGoal}
+                  onChangeText={setNewGoal}
+                  placeholder="오늘만 할 일 추가..."
                   placeholderTextColor={DESIGN.colors.textMuted}
-                  onSubmitEditing={handleAddTodo}
+                  onSubmitEditing={handleAddTodayGoal}
                 />
-                <TouchableOpacity onPress={handleAddTodo}>
+                <TouchableOpacity onPress={handleAddTodayGoal}>
                   <Ionicons name="add-circle" size={32} color={DESIGN.colors.primary} />
                 </TouchableOpacity>
               </View>
@@ -406,10 +442,11 @@ const styles = StyleSheet.create({
     color: DESIGN.colors.textMuted,
     letterSpacing: 2,
   },
-  dateLabel: {
+  manageLink: {
     fontSize: 10,
-    fontWeight: '800',
-    color: DESIGN.colors.textMuted,
+    fontWeight: '900',
+    color: DESIGN.colors.primary,
+    letterSpacing: 1,
   },
   todoContainer: {
     backgroundColor: DESIGN.colors.surface,
@@ -428,6 +465,16 @@ const styles = StyleSheet.create({
   },
   todoCheck: {
     marginRight: 14,
+  },
+  todoTextContainer: {
+    flex: 1,
+  },
+  routineCategory: {
+    fontSize: 9,
+    fontWeight: '900',
+    color: DESIGN.colors.secondary,
+    letterSpacing: 1,
+    marginBottom: 2,
   },
   todoText: {
     flex: 1,
