@@ -36,14 +36,14 @@ export default function CalendarScreen() {
     const dates = getLoggedDates();
     const marks: any = {};
     dates.forEach(date => {
-      marks[date] = { marked: true, dotColor: DESIGN.colors.secondary };
+      marks[date] = { marked: true, dotColor: DESIGN.colors.primary };
     });
     
     marks[selectedDate] = { 
       ...marks[selectedDate], 
       selected: true, 
-      selectedColor: DESIGN.colors.text,
-      selectedTextColor: DESIGN.colors.bg 
+      selectedColor: DESIGN.colors.primary,
+      selectedTextColor: '#FFFFFF' 
     };
     setMarkedDates(marks);
 
@@ -56,36 +56,28 @@ export default function CalendarScreen() {
     <TouchableOpacity 
       style={styles.archiveItem}
       onPress={() => navigation.navigate('Detail', { log: item })}
+      activeOpacity={0.6}
     >
       <View style={{ flex: 1 }}>
         <Text style={styles.archiveItemTitle} numberOfLines={1}>{item.title}</Text>
         {item.daily_summary && <Text style={styles.archiveItemSummary} numberOfLines={1}>{item.daily_summary}</Text>}
       </View>
-      <Ionicons name="arrow-forward-outline" size={16} color={DESIGN.colors.textMuted} />
+      <Ionicons name="chevron-forward" size={16} color={DESIGN.colors.border} />
     </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="chevron-back-outline" size={28} color={DESIGN.colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>CALENDAR</Text>
-        <TouchableOpacity 
-          style={styles.searchButton}
-          onPress={() => navigation.navigate('Search')}
-        >
-          <Ionicons name="search-outline" size={24} color={DESIGN.colors.text} />
-        </TouchableOpacity>
+        <Text style={styles.headerTitle}>아카이브</Text>
       </View>
 
       <FlatList
         data={logs}
         renderItem={renderArchiveItem}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
-        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 120 }]}
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 40 }]}
         ListHeaderComponent={
           <>
             <View style={styles.calendarWrapper}>
@@ -96,27 +88,29 @@ export default function CalendarScreen() {
                   backgroundColor: DESIGN.colors.bg,
                   calendarBackground: DESIGN.colors.bg,
                   textSectionTitleColor: DESIGN.colors.textDim,
-                  selectedDayBackgroundColor: DESIGN.colors.text,
-                  selectedDayTextColor: DESIGN.colors.bg,
-                  todayTextColor: DESIGN.colors.secondary,
+                  selectedDayBackgroundColor: DESIGN.colors.primary,
+                  selectedDayTextColor: '#FFFFFF',
+                  todayTextColor: DESIGN.colors.primary,
                   dayTextColor: DESIGN.colors.text,
-                  textDisabledColor: DESIGN.colors.textMuted,
-                  dotColor: DESIGN.colors.secondary,
+                  textDisabledColor: DESIGN.colors.border,
+                  dotColor: DESIGN.colors.primary,
                   monthTextColor: DESIGN.colors.text,
                   indicatorColor: DESIGN.colors.primary,
                   textDayFontWeight: '500',
-                  textMonthFontWeight: '900',
-                  textDayHeaderFontWeight: '700',
-                  textDayFontSize: 14,
-                  textMonthFontSize: 16,
-                  textDayHeaderFontSize: 11,
+                  textMonthFontWeight: '700',
+                  textDayHeaderFontWeight: '600',
+                  textDayFontSize: 15,
+                  textMonthFontSize: 17,
+                  textDayHeaderFontSize: 12,
                 }}
               />
             </View>
 
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>목표 달성 현황</Text>
-              <Text style={styles.dateText}>{stats.rate}% 완료</Text>
+              <View style={styles.rateBadge}>
+                <Text style={styles.rateText}>{stats.rate}% 완료</Text>
+              </View>
             </View>
 
             <View style={styles.goalContainer}>
@@ -124,13 +118,13 @@ export default function CalendarScreen() {
                 <View key={goal.goal_id} style={styles.goalRow}>
                   <Ionicons 
                     name={goal.is_done === 1 ? "checkmark-circle" : "ellipse-outline"} 
-                    size={20} 
-                    color={goal.is_done === 1 ? DESIGN.colors.secondary : DESIGN.colors.textMuted} 
+                    size={22} 
+                    color={goal.is_done === 1 ? DESIGN.colors.primary : DESIGN.colors.border} 
                   />
                   <Text style={[styles.goalText, goal.is_done === 1 && styles.goalTextDone]}>{goal.title}</Text>
                 </View>
               ))}
-              {dailyGoals.length === 0 && <Text style={styles.emptyGoalText}>이 날은 등록된 목표가 없었습니다.</Text>}
+              {dailyGoals.length === 0 && <Text style={styles.emptyGoalText}>이 날은 기록된 목표가 없습니다.</Text>}
             </View>
 
             <View style={styles.sectionHeader}>
@@ -155,35 +149,21 @@ const styles = StyleSheet.create({
     backgroundColor: DESIGN.colors.bg,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  backButton: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderBottomWidth: 0.5,
+    borderBottomColor: DESIGN.colors.border,
   },
   headerTitle: {
-    fontSize: 12,
-    fontWeight: '900',
+    ...DESIGN.typography.title,
     color: DESIGN.colors.text,
-    letterSpacing: 4,
-  },
-  searchButton: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'flex-end',
   },
   calendarWrapper: {
-    paddingHorizontal: 10,
+    paddingTop: 10,
     paddingBottom: 20,
   },
   list: {
-    paddingHorizontal: 28,
+    paddingHorizontal: 24,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -193,47 +173,50 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 10,
-    fontWeight: '900',
-    color: DESIGN.colors.textMuted,
-    letterSpacing: 2,
+    fontSize: 14,
+    fontWeight: '600',
+    color: DESIGN.colors.textDim,
+    textTransform: 'uppercase',
   },
-  dateText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: DESIGN.colors.secondary,
+  rateBadge: {
+    backgroundColor: DESIGN.colors.bgSecondary,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  rateText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: DESIGN.colors.primary,
   },
   countText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: DESIGN.colors.textDim,
+    fontSize: 14,
+    fontWeight: '600',
+    color: DESIGN.colors.text,
   },
   goalContainer: {
-    backgroundColor: DESIGN.colors.surface,
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: DESIGN.colors.border,
+    backgroundColor: DESIGN.colors.bgSecondary,
+    padding: 20,
+    borderRadius: 18,
   },
   goalRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
   },
   goalText: {
-    marginLeft: 10,
-    fontSize: 14,
+    marginLeft: 12,
+    fontSize: 16,
     color: DESIGN.colors.text,
     fontWeight: '500',
   },
   goalTextDone: {
-    color: DESIGN.colors.textMuted,
+    color: DESIGN.colors.textDim,
     textDecorationLine: 'line-through',
   },
   emptyGoalText: {
-    fontSize: 12,
-    color: DESIGN.colors.textMuted,
-    fontStyle: 'italic',
+    fontSize: 15,
+    color: DESIGN.colors.textDim,
     textAlign: 'center',
   },
   archiveItem: {
@@ -241,18 +224,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 20,
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: DESIGN.colors.border,
   },
   archiveItemTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
     color: DESIGN.colors.text,
     marginBottom: 4,
   },
   archiveItemSummary: {
-    fontSize: 12,
-    color: DESIGN.colors.accent,
+    fontSize: 14,
+    color: DESIGN.colors.primary,
     fontStyle: 'italic',
   },
   emptyState: {
@@ -260,7 +243,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 12,
-    color: DESIGN.colors.textMuted,
+    fontSize: 15,
+    color: DESIGN.colors.textDim,
   }
 });

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, ScrollView, StatusBar } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -39,12 +39,14 @@ export default function GoalManageScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back-outline" size={24} color={DESIGN.colors.text} />
+          <Ionicons name="chevron-back" size={24} color={DESIGN.colors.primary} />
+          <Text style={styles.backText}>돌아가기</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>목표 관리</Text>
-        <View style={{ width: 44 }} />
+        <View style={{ width: 80 }} />
       </View>
 
       <View style={styles.addSection}>
@@ -52,8 +54,8 @@ export default function GoalManageScreen() {
           style={styles.input}
           value={newTitle}
           onChangeText={setNewTitle}
-          placeholder="새로운 성장 목표를 입력하세요..."
-          placeholderTextColor={DESIGN.colors.textMuted}
+          placeholder="새로운 성장 목표 입력..."
+          placeholderTextColor={DESIGN.colors.textDim}
           selectionColor={DESIGN.colors.primary}
         />
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryRow}>
@@ -68,29 +70,29 @@ export default function GoalManageScreen() {
           ))}
         </ScrollView>
         <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
-          <Text style={styles.addButtonText}>목표 추가하기</Text>
+          <Text style={styles.addButtonText}>목표 추가</Text>
         </TouchableOpacity>
       </View>
 
       <FlatList
         data={goals}
         keyExtractor={item => item.id?.toString() || ''}
-        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 40 }]}
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 20 }]}
         renderItem={({ item }) => (
-          <View style={[styles.templateItem, item.is_active === 0 && { opacity: 0.3 }]}>
+          <View style={styles.templateItem}>
             <View style={styles.templateInfo}>
               <Text style={styles.templateCategory}>{item.category}</Text>
-              <Text style={styles.templateTitle}>{item.title}</Text>
+              <Text style={[styles.templateTitle, item.is_active === 0 && styles.textMuted]}>
+                {item.title}
+              </Text>
             </View>
-            <View style={styles.actions}>
-              <TouchableOpacity onPress={() => handleToggleActive(item)} style={styles.iconBtn}>
-                <Ionicons 
-                  name={item.is_active === 1 ? "checkbox" : "square-outline"} 
-                  size={24} 
-                  color={item.is_active === 1 ? DESIGN.colors.secondary : DESIGN.colors.textDim} 
-                />
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity onPress={() => handleToggleActive(item)} style={styles.toggleBtn}>
+              <Ionicons 
+                name={item.is_active === 1 ? "checkmark-circle" : "ellipse-outline"} 
+                size={28} 
+                color={item.is_active === 1 ? DESIGN.colors.primary : DESIGN.colors.border} 
+              />
+            </TouchableOpacity>
           </View>
         )}
         ListEmptyComponent={
@@ -112,111 +114,113 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 0.5,
     borderBottomColor: DESIGN.colors.border,
   },
   backButton: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 80,
+  },
+  backText: {
+    fontSize: 17,
+    color: DESIGN.colors.primary,
+    marginLeft: -4,
   },
   headerTitle: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: 17,
+    fontWeight: '600',
     color: DESIGN.colors.text,
-    letterSpacing: 3,
   },
   addSection: {
     padding: 24,
-    backgroundColor: DESIGN.colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: DESIGN.colors.border,
+    backgroundColor: DESIGN.colors.bgSecondary,
   },
   input: {
-    fontSize: 18,
+    fontSize: 17,
     color: DESIGN.colors.text,
-    fontWeight: '600',
-    marginBottom: 20,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginBottom: 16,
   },
   categoryRow: {
     flexDirection: 'row',
     marginBottom: 20,
   },
   catChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 0.5,
     borderColor: DESIGN.colors.border,
     marginRight: 8,
   },
   catChipSelected: {
+    backgroundColor: DESIGN.colors.primary,
     borderColor: DESIGN.colors.primary,
-    backgroundColor: 'rgba(99, 102, 241, 0.1)',
   },
   catText: {
-    fontSize: 12,
-    color: DESIGN.colors.textDim,
-    fontWeight: '700',
+    fontSize: 13,
+    color: DESIGN.colors.text,
+    fontWeight: '500',
   },
   catTextSelected: {
-    color: DESIGN.colors.primary,
+    color: '#FFFFFF',
   },
   addButton: {
     backgroundColor: DESIGN.colors.primary,
     height: 50,
-    borderRadius: 12,
+    borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
   },
   addButtonText: {
-    fontSize: 11,
-    fontWeight: '900',
-    color: DESIGN.colors.text,
-    letterSpacing: 2,
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   list: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
   },
   templateItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 20,
-    borderBottomWidth: 1,
+    paddingVertical: 18,
+    borderBottomWidth: 0.5,
     borderBottomColor: DESIGN.colors.border,
   },
   templateInfo: {
     flex: 1,
   },
   templateCategory: {
-    fontSize: 10,
-    fontWeight: '900',
-    color: DESIGN.colors.secondary,
-    letterSpacing: 1,
+    fontSize: 12,
+    fontWeight: '600',
+    color: DESIGN.colors.primary,
     marginBottom: 4,
   },
   templateTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '500',
     color: DESIGN.colors.text,
   },
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  textMuted: {
+    color: DESIGN.colors.textDim,
   },
-  iconBtn: {
-    padding: 10,
+  toggleBtn: {
+    padding: 4,
   },
   emptyState: {
     marginTop: 60,
     alignItems: 'center',
   },
   emptyText: {
-    color: DESIGN.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '600',
+    color: DESIGN.colors.textDim,
+    fontSize: 15,
   }
 });

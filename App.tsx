@@ -16,8 +16,8 @@ import { DESIGN } from './src/theme/design';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Midnight Insight Theme
-const MidnightTheme = {
+// Apple Design Theme
+const AppleTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
@@ -38,7 +38,7 @@ function TabNavigator() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: any;
           if (route.name === 'Home') {
-            iconName = focused ? 'flash' : 'flash-outline';
+            iconName = focused ? 'sparkles' : 'sparkles-outline';
           } else if (route.name === 'Calendar') {
             iconName = focused ? 'calendar' : 'calendar-outline';
           } else if (route.name === 'Search') {
@@ -46,39 +46,37 @@ function TabNavigator() {
           }
           return <Ionicons name={iconName} size={24} color={color} />;
         },
-        tabBarActiveTintColor: DESIGN.colors.secondary,
+        tabBarActiveTintColor: DESIGN.colors.primary,
         tabBarInactiveTintColor: DESIGN.colors.textDim,
         tabBarStyle: {
           backgroundColor: DESIGN.colors.bg,
-          borderTopWidth: 1,
+          borderTopWidth: 0.5,
           borderTopColor: DESIGN.colors.border,
-          height: 72 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
-          paddingBottom: insets.bottom > 0 ? insets.bottom : 12,
-          paddingTop: 12,
+          height: 64 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
+          paddingTop: 8,
         },
         tabBarLabelStyle: {
           fontSize: 10,
-          fontWeight: '900',
-          letterSpacing: 1,
+          fontWeight: '500',
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: 'ENGINE' }} />
-      <Tab.Screen name="Calendar" component={CalendarScreen} options={{ tabBarLabel: 'CALENDAR' }} />
-      <Tab.Screen name="Search" component={SearchScreen} options={{ tabBarLabel: 'SEARCH' }} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: '오늘의 성장' }} />
+      <Tab.Screen name="Calendar" component={CalendarScreen} options={{ tabBarLabel: '아카이브' }} />
+      <Tab.Screen name="Search" component={SearchScreen} options={{ tabBarLabel: '검색' }} />
     </Tab.Navigator>
   );
 }
 
 export default function App() {
-  // 앱 시작 시 DB 초기화
   useEffect(() => {
     initDatabase();
   }, []);
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer theme={MidnightTheme}>
+      <NavigationContainer theme={AppleTheme}>
         <Stack.Navigator screenOptions={{ headerShown: false, cardStyle: { backgroundColor: DESIGN.colors.bg } }}>
           <Stack.Screen name="Main" component={TabNavigator} />
           <Stack.Screen name="Write" component={WriteScreen} />

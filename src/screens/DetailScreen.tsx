@@ -3,14 +3,14 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar, Alert 
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { WorkLog, deleteLog, getTodosByDate, Todo } from '../database/db';
+import { WorkLog, deleteLog, getDailyGoalsWithCheck } from '../database/db';
 import { DESIGN } from '../theme/design';
 
 const MOOD_MAP: any = {
-  best: { emoji: '🔥', label: 'OPTIMAL' },
-  good: { emoji: '✨', label: 'BRIGHT' },
-  normal: { emoji: '☁️', label: 'NEUTRAL' },
-  hard: { emoji: '🌊', label: 'WAVY' },
+  best: { emoji: '🔥', label: '최고' },
+  good: { emoji: '✨', label: '좋음' },
+  normal: { emoji: '☁️', label: '보통' },
+  hard: { emoji: '🌊', label: '힘듦' },
 };
 
 export default function DetailScreen() {
@@ -19,17 +19,16 @@ export default function DetailScreen() {
   const route = useRoute();
   const { log } = route.params as { log: WorkLog };
   
-  // Fetch todos for this specific date
-  const dayTodos = getTodosByDate(log.date);
+  const dailyGoals = getDailyGoalsWithCheck(log.date);
 
   const handleDelete = () => {
     Alert.alert(
-      'Purge Log',
-      'This entry will be lost to the void. Continue?',
+      '기록 삭제',
+      '이 기록을 영구적으로 삭제하시겠습니까?',
       [
-        { text: 'ABORT', style: 'cancel' },
+        { text: '취소', style: 'cancel' },
         { 
-          text: 'PURGE', 
+          text: '삭제', 
           style: 'destructive',
           onPress: () => {
             if (log.id) {
@@ -54,20 +53,21 @@ export default function DetailScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back-outline" size={24} color={DESIGN.colors.text} />
+          <Ionicons name="chevron-back" size={24} color={DESIGN.colors.primary} />
+          <Text style={styles.backText}>기록</Text>
         </TouchableOpacity>
         <View style={styles.headerActions}>
           <TouchableOpacity 
             onPress={() => navigation.navigate('Write', { log })}
             style={styles.actionButton}
           >
-            <Ionicons name="pencil-outline" size={20} color={DESIGN.colors.primary} />
+            <Text style={styles.editText}>수정</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleDelete} style={styles.actionButton}>
-            <Ionicons name="trash-outline" size={20} color="#ef4444" />
+            <Ionicons name="trash-outline" size={20} color={DESIGN.colors.error} />
           </TouchableOpacity>
         </View>
       </View>
@@ -78,21 +78,19 @@ export default function DetailScreen() {
         contentContainerStyle={{ paddingBottom: insets.bottom + 60 }}
       >
         <View style={styles.heroArea}>
-          <View style={styles.metaHeader}>
-            <Text style={styles.dateText}>{log.date.replace(/-/g, ' / ')}</Text>
-            {log.mood && MOOD_MAP[log.mood] && (
-              <View style={styles.moodBadge}>
-                <Text style={styles.moodEmoji}>{MOOD_MAP[log.mood].emoji}</Text>
-                <Text style={styles.moodLabel}>{MOOD_MAP[log.mood].label}</Text>
-              </View>
-            )}
-          </View>
+          <Text style={styles.dateText}>{log.date.replace(/-/g, ' / ')}</Text>
           <Text style={styles.heroTitle}>{log.title}</Text>
           
           {log.daily_summary && (
-            <View style={styles.summaryQuoteContainer}>
-              <Ionicons name="quote" size={20} color={DESIGN.colors.accent} style={{ opacity: 0.3, marginBottom: 10 }} />
-              <Text style={styles.summaryQuoteText}>{log.daily_summary}</Text>
+            <View style={styles.mantraContainer}>
+              <Text style={styles.mantraText}>"{log.daily_summary}"</Text>
+            </View>
+          )}
+
+          {log.mood && MOOD_MAP[log.mood] && (
+            <View style={styles.moodBadge}>
+              <Text style={styles.moodEmoji}>{MOOD_MAP[log.mood].emoji}</Text>
+              <Text style={styles.moodLabel}>{MOOD_MAP[log.mood].label}</Text>
             </View>
           )}
 
@@ -105,25 +103,21 @@ export default function DetailScreen() {
           )}
         </View>
 
-        <View style={styles.dividerArea}>
-          <View style={styles.line} />
-        </View>
+        <View style={styles.divider} />
 
-        {/* Action History (Todos) Section */}
-        {dayTodos.length > 0 && (
+        {dailyGoals.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>MISSION HISTORY</Text>
-            <View style={styles.todoList}>
-              {dayTodos.map(todo => (
-                <View key={todo.id} style={styles.todoRow}>
+            <Text style={styles.sectionLabel}>그날의 목표</Text>
+            <View style={styles.goalList}>
+              {dailyGoals.map(goal => (
+                <View key={goal.goal_id} style={styles.goalRow}>
                   <Ionicons 
-                    name={todo.is_completed === 1 ? "checkmark-circle" : "ellipse-outline"} 
-                    size={18} 
-                    color={todo.is_completed === 1 ? DESIGN.colors.secondary : DESIGN.colors.textMuted} 
-                    style={styles.todoIcon}
+                    name={goal.is_done === 1 ? "checkmark-circle" : "ellipse-outline"} 
+                    size={20} 
+                    color={goal.is_done === 1 ? DESIGN.colors.primary : DESIGN.colors.border} 
                   />
-                  <Text style={[styles.todoText, todo.is_completed === 1 && styles.todoTextCompleted]}>
-                    {todo.task}
+                  <Text style={[styles.goalText, goal.is_done === 1 && styles.goalTextDone]}>
+                    {goal.title}
                   </Text>
                 </View>
               ))}
@@ -131,11 +125,10 @@ export default function DetailScreen() {
           </View>
         )}
 
-        <InsightSection label="FLOW" content={log.content} />
-        <InsightSection label="INTEL" content={log.learned} />
-        <InsightSection label="BLOCK" content={log.issue} />
-        <InsightSection label="SOLVE" content={log.solution} />
-        <InsightSection label="NOTE" content={log.memo} />
+        <InsightSection label="과정" content={log.content} />
+        <InsightSection label="배운 점" content={log.learned} />
+        <InsightSection label="이슈와 해결" content={log.issue} />
+        <InsightSection label="메모" content={log.memo} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -150,148 +143,125 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 0.5,
+    borderBottomColor: DESIGN.colors.border,
   },
   backButton: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backText: {
+    fontSize: 17,
+    color: DESIGN.colors.primary,
+    marginLeft: -4,
   },
   headerActions: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   actionButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: DESIGN.colors.border,
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 8,
     marginLeft: 8,
+  },
+  editText: {
+    fontSize: 17,
+    color: DESIGN.colors.primary,
+    fontWeight: '500',
   },
   content: {
     flex: 1,
   },
   heroArea: {
-    paddingHorizontal: 28,
-    paddingTop: 20,
-    paddingBottom: 40,
-  },
-  metaHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
+    paddingHorizontal: 24,
+    paddingTop: 32,
+    paddingBottom: 32,
   },
   dateText: {
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: 15,
+    fontWeight: '600',
     color: DESIGN.colors.textDim,
-    letterSpacing: 2,
+    marginBottom: 8,
+  },
+  heroTitle: {
+    ...DESIGN.typography.largeTitle,
+    color: DESIGN.colors.text,
+    marginBottom: 16,
+  },
+  mantraContainer: {
+    backgroundColor: DESIGN.colors.bgSecondary,
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 20,
+  },
+  mantraText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: DESIGN.colors.primary,
+    fontStyle: 'italic',
+    lineHeight: 26,
   },
   moodBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: DESIGN.colors.surface,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: DESIGN.colors.border,
+    marginBottom: 16,
   },
   moodEmoji: {
-    fontSize: 12,
+    fontSize: 18,
     marginRight: 6,
   },
   moodLabel: {
-    fontSize: 9,
-    color: DESIGN.colors.text,
-    fontWeight: '900',
-    letterSpacing: 1,
-  },
-  heroTitle: {
-    fontSize: 36,
-    fontWeight: '900',
-    color: DESIGN.colors.text,
-    lineHeight: 44,
-    letterSpacing: -1.5,
-    marginBottom: 16,
-  },
-  summaryQuoteContainer: {
-    marginTop: 8,
-    paddingLeft: 4,
-  },
-  summaryQuoteText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: DESIGN.colors.accent,
-    fontStyle: 'italic',
-    lineHeight: 28,
-    opacity: 0.9,
-  },
-  tagList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 20,
-  },
-  tagText: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: DESIGN.colors.primary,
-    marginRight: 12,
-    marginBottom: 4,
-  },
-  dividerArea: {
-    paddingHorizontal: 28,
-    marginBottom: 40,
-  },
-  line: {
-    height: 1,
-    backgroundColor: DESIGN.colors.border,
-    width: 40,
-  },
-  section: {
-    paddingHorizontal: 28,
-    marginBottom: 48,
-  },
-  sectionLabel: {
-    fontSize: 10,
-    fontWeight: '900',
-    color: DESIGN.colors.secondary,
-    letterSpacing: 2,
-    marginBottom: 16,
-  },
-  sectionText: {
-    fontSize: 18,
-    color: DESIGN.colors.text,
-    lineHeight: 30,
-    fontWeight: '400',
-    opacity: 0.9,
-  },
-  todoList: {
-    backgroundColor: DESIGN.colors.surface,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: DESIGN.colors.border,
-  },
-  todoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  todoIcon: {
-    marginRight: 10,
-  },
-  todoText: {
     fontSize: 15,
     color: DESIGN.colors.text,
     fontWeight: '500',
   },
-  todoTextCompleted: {
-    color: DESIGN.colors.textMuted,
+  tagList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  tagText: {
+    fontSize: 15,
+    color: DESIGN.colors.textDim,
+    marginRight: 12,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: DESIGN.colors.border,
+    marginHorizontal: 24,
+    marginBottom: 32,
+  },
+  section: {
+    paddingHorizontal: 24,
+    marginBottom: 40,
+  },
+  sectionLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: DESIGN.colors.textDim,
+    textTransform: 'uppercase',
+    marginBottom: 12,
+  },
+  sectionText: {
+    fontSize: 17,
+    color: DESIGN.colors.text,
+    lineHeight: 26,
+  },
+  goalList: {
+    marginTop: 8,
+  },
+  goalRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  goalText: {
+    marginLeft: 12,
+    fontSize: 16,
+    color: DESIGN.colors.text,
+  },
+  goalTextDone: {
+    color: DESIGN.colors.textDim,
     textDecorationLine: 'line-through',
   },
 });

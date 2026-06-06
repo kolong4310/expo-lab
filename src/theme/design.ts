@@ -1,17 +1,39 @@
 export const DESIGN = {
   colors: {
-    bg: '#0A0A0B',      // Deep Space Black
-    surface: '#141415', // Midnight Card
-    primary: '#6366F1', // Electric Indigo
-    secondary: '#10B981', // Neon Emerald
-    text: '#FFFFFF',
-    textDim: '#6B7280', // Cool Gray
-    textMuted: '#374151',
-    border: '#262626',  // Subtle separator
-    accent: '#A855F7',  // Cosmic Purple
+    bg: '#FFFFFF',          // Canvas
+    bgSecondary: '#F5F5F7', // Canvas Parchment
+    text: '#1D1D1F',        // Ink
+    textDim: '#7A7A7A',     // Muted
+    primary: '#0066CC',      // iOS Blue
+    primaryLight: '#2997FF', // Light Blue
+    border: '#E0E0E0',       // Hairline
+    error: '#FF3B30',       // iOS Red
+    success: '#34C759',     // iOS Green
   },
   spacing: {
+    base: 8,
     padding: 24,
-    radius: 20,
+    radius: 18,
+    radiusPill: 999,
+  },
+  typography: {
+    largeTitle: {
+      fontSize: 34,
+      fontWeight: '600' as const,
+      letterSpacing: -0.5,
+    },
+    title: {
+      fontSize: 22,
+      fontWeight: '600' as const,
+      letterSpacing: -0.2,
+    },
+    body: {
+      fontSize: 17,
+      lineHeight: 24,
+    },
+    footnote: {
+      fontSize: 13,
+      fontWeight: '400' as const,
+    }
   }
 };
