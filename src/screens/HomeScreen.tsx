@@ -86,7 +86,10 @@ export default function HomeScreen() {
           <Text style={styles.headerLabel}>GROW DAY</Text>
         </View>
         <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.searchButton}>
+          <TouchableOpacity 
+            style={styles.searchButton}
+            onPress={() => navigation.navigate('Search')}
+          >
             <Ionicons name="search-outline" size={20} color={DESIGN.colors.text} />
           </TouchableOpacity>
         </View>

@@ -203,6 +203,30 @@ export const getLoggedDates = (): string[] => {
 };
 
 /**
+ * 키워드로 로그 검색하기
+ */
+export const searchLogs = (keyword: string): WorkLog[] => {
+  const query = `
+    SELECT * FROM logs 
+    WHERE title LIKE ? 
+    OR content LIKE ? 
+    OR learned LIKE ? 
+    OR issue LIKE ? 
+    OR solution LIKE ? 
+    OR memo LIKE ? 
+    ORDER BY date DESC
+  `;
+  const pattern = \`%\${keyword}%\`;
+  const statement = db.prepareSync(query);
+  try {
+    const result = statement.executeSync<WorkLog>([pattern, pattern, pattern, pattern, pattern, pattern]);
+    return result.getAllSync();
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
+/**
  * 연속 기록 일수(Streak) 계산하기
  */
 export const getCurrentStreak = (): number => {

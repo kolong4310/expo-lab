@@ -56,7 +56,12 @@ export default function CalendarScreen() {
           <Ionicons name="chevron-back-outline" size={28} color={DESIGN.colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>ARCHIVE</Text>
-        <View style={{ width: 44 }} />
+        <TouchableOpacity 
+          style={styles.searchButton}
+          onPress={() => navigation.navigate('Search')}
+        >
+          <Ionicons name="search-outline" size={24} color={DESIGN.colors.text} />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.calendarWrapper}>
@@ -130,6 +135,12 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: DESIGN.colors.text,
     letterSpacing: 4,
+  },
+  searchButton: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
   },
   calendarWrapper: {
     paddingHorizontal: 10,

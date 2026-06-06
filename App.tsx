@@ -8,6 +8,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import WriteScreen from './src/screens/WriteScreen';
 import DetailScreen from './src/screens/DetailScreen';
 import CalendarScreen from './src/screens/CalendarScreen';
+import SearchScreen from './src/screens/SearchScreen';
 import { initDatabase } from './src/database/db';
 import { DESIGN } from './src/theme/design';
 
@@ -77,6 +78,7 @@ export default function App() {
           <Stack.Screen name="Main" component={TabNavigator} />
           <Stack.Screen name="Write" component={WriteScreen} />
           <Stack.Screen name="Detail" component={DetailScreen} />
+          <Stack.Screen name="Search" component={SearchScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
