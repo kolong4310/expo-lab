@@ -15,6 +15,22 @@ const MOODS = [
 
 const DEFAULT_TAGS = ['개발', '공부', '운동', '회사', '회고', 'ReactNative', 'SQLite', 'UI'];
 
+const InsightInput = ({ label, value, onChangeText, placeholder, isAdvanced = false, isSummary = false }: any) => (
+  <View style={[styles.inputGroup, isAdvanced && styles.advancedGroup, isSummary && styles.summaryGroup]}>
+    <Text style={styles.inputLabel}>{label}</Text>
+    <TextInput
+      style={[styles.textInput, isSummary && styles.summaryInput]}
+      value={value}
+      onChangeText={onChangeText}
+      placeholder={placeholder}
+      placeholderTextColor={DESIGN.colors.textMuted}
+      multiline
+      textAlignVertical="top"
+      selectionColor={DESIGN.colors.primary}
+    />
+  </View>
+);
+
 export default function WriteScreen() {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
@@ -95,22 +111,6 @@ export default function WriteScreen() {
       console.error(error);
     }
   };
-
-  const InsightInput = ({ label, value, onChangeText, placeholder, isAdvanced = false, isSummary = false }: any) => (
-    <View style={[styles.inputGroup, isAdvanced && styles.advancedGroup, isSummary && styles.summaryGroup]}>
-      <Text style={styles.inputLabel}>{label}</Text>
-      <TextInput
-        style={[styles.textInput, isSummary && styles.summaryInput]}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        placeholderTextColor={DESIGN.colors.textMuted}
-        multiline
-        textAlignVertical="top"
-        selectionColor={DESIGN.colors.primary}
-      />
-    </View>
-  );
 
   return (
     <SafeAreaView style={styles.container}>
