@@ -71,9 +71,23 @@ export default function HomeScreen() {
         {item.mood && <Text style={styles.insightMood}>{MOOD_MAP[item.mood]}</Text>}
       </View>
       <Text style={styles.insightTitle} numberOfLines={1}>{item.title}</Text>
+      
+      {item.daily_summary && (
+        <Text style={styles.insightSummary} numberOfLines={1}>"{item.daily_summary}"</Text>
+      )}
+
       <Text style={styles.insightPreview} numberOfLines={1}>
-        {item.content || '성장의 발자취를 남겨보세요.'}
+        {item.content || item.learned || '성장의 발자취를 남겨보세요.'}
       </Text>
+
+      {item.tags && (
+        <View style={styles.insightTagList}>
+          {item.tags.split(',').slice(0, 3).map(tag => (
+            <Text key={tag} style={styles.insightTagText}>#{tag}</Text>
+          ))}
+          {item.tags.split(',').length > 3 && <Text style={styles.insightTagText}>...</Text>}
+        </View>
+      )}
     </TouchableOpacity>
   );
 
@@ -473,13 +487,32 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: DESIGN.colors.text,
-    marginBottom: 6,
+    marginBottom: 4,
     letterSpacing: -0.3,
+  },
+  insightSummary: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: DESIGN.colors.accent,
+    fontStyle: 'italic',
+    marginBottom: 6,
+    opacity: 0.9,
   },
   insightPreview: {
     fontSize: 13,
     color: DESIGN.colors.textDim,
     lineHeight: 20,
+    marginBottom: 8,
+  },
+  insightTagList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  insightTagText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: DESIGN.colors.primary,
+    marginRight: 8,
   },
   emptyState: {
     marginTop: 40,
