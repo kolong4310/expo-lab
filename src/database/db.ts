@@ -6,6 +6,8 @@ import * as SQLite from 'expo-sqlite';
 export interface WorkLog {
   id?: number;
   title: string;      // 오늘 한 일 요약
+  daily_summary?: string; // 오늘을 한 문장으로
+  tags?: string;      // 태그 (콤마 구분)
   content: string;    // 상세 내용
   learned: string;    // 배운 것
   issue: string;      // 이슈
@@ -62,6 +64,22 @@ export const initDatabase = () => {
     console.log('Migration: mood column added! 🚀');
   } catch (e) {
     console.log('Migration: mood column already exists or skipped.');
+  }
+
+  // daily_summary 컬럼 추가
+  try {
+    db.execSync('ALTER TABLE logs ADD COLUMN daily_summary TEXT;');
+    console.log('Migration: daily_summary column added! 🚀');
+  } catch (e) {
+    console.log('Migration: daily_summary already exists.');
+  }
+
+  // tags 컬럼 추가
+  try {
+    db.execSync('ALTER TABLE logs ADD COLUMN tags TEXT;');
+    console.log('Migration: tags column added! 🚀');
+  } catch (e) {
+    console.log('Migration: tags already exists.');
   }
 
   console.log('Database initialized! ✅');
@@ -128,11 +146,13 @@ export const getAllLogs = (): WorkLog[] => {
  */
 export const addLog = (log: WorkLog) => {
   const statement = db.prepareSync(
-    'INSERT INTO logs (title, content, learned, issue, solution, memo, mood, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+    'INSERT INTO logs (title, daily_summary, tags, content, learned, issue, solution, memo, mood, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
   );
   try {
     statement.executeSync([
       log.title,
+      log.daily_summary || null,
+      log.tags || null,
       log.content,
       log.learned,
       log.issue,
@@ -151,11 +171,13 @@ export const addLog = (log: WorkLog) => {
  */
 export const updateLog = (log: WorkLog) => {
   const statement = db.prepareSync(
-    'UPDATE logs SET title = ?, content = ?, learned = ?, issue = ?, solution = ?, memo = ?, mood = ? WHERE id = ?'
+    'UPDATE logs SET title = ?, daily_summary = ?, tags = ?, content = ?, learned = ?, issue = ?, solution = ?, memo = ?, mood = ? WHERE id = ?'
   );
   try {
     statement.executeSync([
       log.title,
+      log.daily_summary || null,
+      log.tags || null,
       log.content,
       log.learned,
       log.issue,
@@ -209,6 +231,8 @@ export const searchLogs = (keyword: string): WorkLog[] => {
   const query = `
     SELECT * FROM logs 
     WHERE title LIKE ? 
+    OR daily_summary LIKE ?
+    OR tags LIKE ?
     OR content LIKE ? 
     OR learned LIKE ? 
     OR issue LIKE ? 
@@ -216,10 +240,10 @@ export const searchLogs = (keyword: string): WorkLog[] => {
     OR memo LIKE ? 
     ORDER BY date DESC
   `;
-  const pattern = \`%\${keyword}%\`;
+  const pattern = `%${keyword}%`;
   const statement = db.prepareSync(query);
   try {
-    const result = statement.executeSync<WorkLog>([pattern, pattern, pattern, pattern, pattern, pattern]);
+    const result = statement.executeSync<WorkLog>([pattern, pattern, pattern, pattern, pattern, pattern, pattern, pattern]);
     return result.getAllSync();
   } finally {
     statement.finalizeSync();

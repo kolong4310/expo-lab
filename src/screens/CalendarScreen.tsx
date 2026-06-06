@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,6 +19,7 @@ LocaleConfig.defaultLocale = 'en';
 
 export default function CalendarScreen() {
   const navigation = useNavigation<any>();
+  const insets = useSafeAreaInsets();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [markedDates, setMarkedDates] = useState<any>({});
   const [logs, setLogs] = useState<WorkLog[]>([]);
@@ -107,7 +108,7 @@ export default function CalendarScreen() {
           </TouchableOpacity>
         )}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 120 }]}
       />
     </SafeAreaView>
   );

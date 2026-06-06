@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, StatusBar } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { searchLogs, WorkLog } from '../database/db';
@@ -15,6 +15,7 @@ const MOOD_MAP: any = {
 
 export default function SearchScreen() {
   const navigation = useNavigation<any>();
+  const insets = useSafeAreaInsets();
   const [keyword, setKeyword] = useState('');
   const [results, setResults] = useState<WorkLog[]>([]);
 
@@ -39,9 +40,22 @@ export default function SearchScreen() {
         {item.mood && <Text style={styles.resultMood}>{MOOD_MAP[item.mood]}</Text>}
       </View>
       <Text style={styles.resultTitle} numberOfLines={1}>{item.title}</Text>
+      
+      {item.daily_summary && (
+        <Text style={styles.resultSummary} numberOfLines={1}>"{item.daily_summary}"</Text>
+      )}
+
       <Text style={styles.resultPreview} numberOfLines={2}>
         {item.content || item.learned || item.issue || '성장의 발자취를 남겨보세요.'}
       </Text>
+
+      {item.tags && (
+        <View style={styles.resultTagList}>
+          {item.tags.split(',').map(tag => (
+            <Text key={tag} style={styles.resultTagText}>#{tag}</Text>
+          ))}
+        </View>
+      )}
     </TouchableOpacity>
   );
 
@@ -78,7 +92,7 @@ export default function SearchScreen() {
         data={results}
         renderItem={renderResultItem}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 40 }]}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyState}>
@@ -172,13 +186,32 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: DESIGN.colors.text,
-    marginBottom: 6,
+    marginBottom: 4,
     letterSpacing: -0.3,
+  },
+  resultSummary: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: DESIGN.colors.accent,
+    fontStyle: 'italic',
+    marginBottom: 8,
+    opacity: 0.9,
   },
   resultPreview: {
     fontSize: 13,
     color: DESIGN.colors.textDim,
     lineHeight: 20,
+    marginBottom: 10,
+  },
+  resultTagList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  resultTagText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: DESIGN.colors.primary,
+    marginRight: 8,
   },
   emptyState: {
     marginTop: 100,

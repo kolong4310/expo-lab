@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform, LayoutAnimation } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { addLog, updateLog, WorkLog } from '../database/db';
@@ -13,13 +13,18 @@ const MOODS = [
   { emoji: '🌊', value: 'hard' },
 ];
 
+const DEFAULT_TAGS = ['개발', '공부', '운동', '회사', '회고', 'ReactNative', 'SQLite', 'UI'];
+
 export default function WriteScreen() {
   const navigation = useNavigation<any>();
+  const insets = useSafeAreaInsets();
   const route = useRoute();
   const params = route.params as { log?: WorkLog } | undefined;
   const editingLog = params?.log;
 
   const [title, setTitle] = useState('');
+  const [dailySummary, setDailySummary] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [content, setContent] = useState('');
   const [learned, setLearned] = useState('');
   const [issue, setIssue] = useState('');
@@ -31,6 +36,8 @@ export default function WriteScreen() {
   useEffect(() => {
     if (editingLog) {
       setTitle(editingLog.title);
+      setDailySummary(editingLog.daily_summary || '');
+      setSelectedTags(editingLog.tags ? editingLog.tags.split(',') : []);
       setContent(editingLog.content || '');
       setLearned(editingLog.learned || '');
       setIssue(editingLog.issue || '');
@@ -48,6 +55,14 @@ export default function WriteScreen() {
     setShowAdvanced(!showAdvanced);
   };
 
+  const toggleTag = (tag: string) => {
+    if (selectedTags.includes(tag)) {
+      setSelectedTags(selectedTags.filter(t => t !== tag));
+    } else {
+      setSelectedTags([...selectedTags, tag]);
+    }
+  };
+
   const handleSave = () => {
     if (!title.trim()) {
       Alert.alert('Incomplete', 'Every journey needs a name.');
@@ -58,6 +73,8 @@ export default function WriteScreen() {
       const logData: WorkLog = {
         id: editingLog?.id,
         title,
+        daily_summary: dailySummary,
+        tags: selectedTags.join(','),
         content,
         learned,
         issue,
@@ -79,11 +96,11 @@ export default function WriteScreen() {
     }
   };
 
-  const InsightInput = ({ label, value, onChangeText, placeholder, isAdvanced = false }: any) => (
-    <View style={[styles.inputGroup, isAdvanced && styles.advancedGroup]}>
+  const InsightInput = ({ label, value, onChangeText, placeholder, isAdvanced = false, isSummary = false }: any) => (
+    <View style={[styles.inputGroup, isAdvanced && styles.advancedGroup, isSummary && styles.summaryGroup]}>
       <Text style={styles.inputLabel}>{label}</Text>
       <TextInput
-        style={styles.textInput}
+        style={[styles.textInput, isSummary && styles.summaryInput]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
@@ -113,7 +130,7 @@ export default function WriteScreen() {
         <ScrollView 
           style={styles.content}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 60 }}
+          contentContainerStyle={{ paddingBottom: insets.bottom + 60 }}
         >
           <TextInput 
             style={styles.heroInput}
@@ -123,6 +140,29 @@ export default function WriteScreen() {
             placeholderTextColor={DESIGN.colors.textMuted}
             selectionColor={DESIGN.colors.secondary}
           />
+
+          <InsightInput 
+            label="MANTRA"
+            value={dailySummary}
+            onChangeText={setDailySummary}
+            placeholder="오늘은 어떤 성장의 흔적이 있었나요?"
+            isSummary
+          />
+
+          <View style={styles.tagSection}>
+            <Text style={styles.sectionLabel}>IDENTIFIERS</Text>
+            <View style={styles.tagRow}>
+              {DEFAULT_TAGS.map(tag => (
+                <TouchableOpacity 
+                  key={tag} 
+                  style={[styles.tagChip, selectedTags.includes(tag) && styles.tagChipSelected]}
+                  onPress={() => toggleTag(tag)}
+                >
+                  <Text style={[styles.tagText, selectedTags.includes(tag) && styles.tagTextSelected]}>#{tag}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
 
           <View style={styles.moodRow}>
             {MOODS.map((item) => (
@@ -268,6 +308,16 @@ const styles = StyleSheet.create({
   advancedGroup: {
     borderLeftColor: DESIGN.colors.textMuted,
   },
+  summaryGroup: {
+    borderLeftColor: DESIGN.colors.accent,
+    marginBottom: 24,
+  },
+  summaryInput: {
+    fontSize: 18,
+    fontWeight: '600',
+    fontStyle: 'italic',
+    color: DESIGN.colors.accent,
+  },
   inputLabel: {
     fontSize: 10,
     fontWeight: '900',
@@ -292,5 +342,41 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: DESIGN.colors.primary,
     marginLeft: 8,
+  },
+  tagSection: {
+    marginBottom: 32,
+  },
+  sectionLabel: {
+    fontSize: 9,
+    fontWeight: '900',
+    color: DESIGN.colors.textMuted,
+    letterSpacing: 2,
+    marginBottom: 12,
+  },
+  tagRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  tagChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: DESIGN.colors.surface,
+    borderWidth: 1,
+    borderColor: DESIGN.colors.border,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  tagChipSelected: {
+    borderColor: DESIGN.colors.primary,
+    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+  },
+  tagText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: DESIGN.colors.textDim,
+  },
+  tagTextSelected: {
+    color: DESIGN.colors.primary,
   },
 });

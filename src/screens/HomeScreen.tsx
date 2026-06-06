@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, TextInput, Animated } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { getAllLogs, getTodosByDate, addTodo, toggleTodo, deleteTodo, getCurrentStreak, getMonthlyStats, WorkLog, Todo } from '../database/db';
@@ -15,6 +15,7 @@ const MOOD_MAP: any = {
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
+  const insets = useSafeAreaInsets();
   const [logs, setLogs] = useState<WorkLog[]>([]);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState('');
@@ -99,7 +100,7 @@ export default function HomeScreen() {
         data={logs}
         renderItem={renderInsight}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 140 }]}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View style={styles.heroSection}>
@@ -201,7 +202,7 @@ export default function HomeScreen() {
       />
 
       <TouchableOpacity 
-        style={styles.actionButton}
+        style={[styles.actionButton, { bottom: (insets.bottom > 0 ? insets.bottom : 0) + 90 }]}
         onPress={() => navigation.navigate('Write')}
         activeOpacity={0.8}
       >

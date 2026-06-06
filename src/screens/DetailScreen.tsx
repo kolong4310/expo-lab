@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { WorkLog, deleteLog, getTodosByDate, Todo } from '../database/db';
@@ -15,6 +15,7 @@ const MOOD_MAP: any = {
 
 export default function DetailScreen() {
   const navigation = useNavigation<any>();
+  const insets = useSafeAreaInsets();
   const route = useRoute();
   const { log } = route.params as { log: WorkLog };
   
@@ -74,7 +75,7 @@ export default function DetailScreen() {
       <ScrollView 
         style={styles.content}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60 }}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 60 }}
       >
         <View style={styles.heroArea}>
           <View style={styles.metaHeader}>
@@ -87,6 +88,21 @@ export default function DetailScreen() {
             )}
           </View>
           <Text style={styles.heroTitle}>{log.title}</Text>
+          
+          {log.daily_summary && (
+            <View style={styles.summaryQuoteContainer}>
+              <Ionicons name="quote" size={20} color={DESIGN.colors.accent} style={{ opacity: 0.3, marginBottom: 10 }} />
+              <Text style={styles.summaryQuoteText}>{log.daily_summary}</Text>
+            </View>
+          )}
+
+          {log.tags && (
+            <View style={styles.tagList}>
+              {log.tags.split(',').map(tag => (
+                <Text key={tag} style={styles.tagText}>#{tag}</Text>
+              ))}
+            </View>
+          )}
         </View>
 
         <View style={styles.dividerArea}>
@@ -201,6 +217,31 @@ const styles = StyleSheet.create({
     color: DESIGN.colors.text,
     lineHeight: 44,
     letterSpacing: -1.5,
+    marginBottom: 16,
+  },
+  summaryQuoteContainer: {
+    marginTop: 8,
+    paddingLeft: 4,
+  },
+  summaryQuoteText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: DESIGN.colors.accent,
+    fontStyle: 'italic',
+    lineHeight: 28,
+    opacity: 0.9,
+  },
+  tagList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 20,
+  },
+  tagText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: DESIGN.colors.primary,
+    marginRight: 12,
+    marginBottom: 4,
   },
   dividerArea: {
     paddingHorizontal: 28,

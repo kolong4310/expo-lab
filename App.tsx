@@ -28,7 +28,10 @@ const MidnightTheme = {
   },
 };
 
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+...
 function TabNavigator() {
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -48,9 +51,9 @@ function TabNavigator() {
           backgroundColor: DESIGN.colors.bg,
           borderTopWidth: 1,
           borderTopColor: DESIGN.colors.border,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
+          height: 72 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 12,
+          paddingTop: 12,
         },
         tabBarLabelStyle: {
           fontSize: 10,
