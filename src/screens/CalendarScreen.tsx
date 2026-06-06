@@ -52,17 +52,25 @@ export default function CalendarScreen() {
     setStats(getGrowthStats(selectedDate));
   };
 
-  const renderArchiveItem = ({ item }: { item: WorkLog }) => (
+  const renderTimelineItem = ({ item }: { item: WorkLog }) => (
     <TouchableOpacity 
-      style={styles.archiveItem}
+      style={styles.timelineItem}
       onPress={() => navigation.navigate('Detail', { log: item })}
       activeOpacity={0.6}
     >
-      <View style={{ flex: 1 }}>
-        <Text style={styles.archiveItemTitle} numberOfLines={1}>{item.title}</Text>
-        {item.daily_summary && <Text style={styles.archiveItemSummary} numberOfLines={1}>{item.daily_summary}</Text>}
+      <View style={styles.timelineLine} />
+      <View style={styles.timelineDot} />
+      <View style={styles.timelineContent}>
+        <Text style={styles.timelineTitle}>{item.title}</Text>
+        {item.daily_summary && <Text style={styles.timelineSummary}>"{item.daily_summary}"</Text>}
+        {item.tags && (
+          <View style={styles.tagRow}>
+            {item.tags.split(',').map(tag => (
+              <Text key={tag} style={styles.tagText}>#{tag}</Text>
+            ))}
+          </View>
+        )}
       </View>
-      <Ionicons name="chevron-forward" size={16} color={DESIGN.colors.border} />
     </TouchableOpacity>
   );
 
@@ -70,12 +78,12 @@ export default function CalendarScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>아카이브</Text>
+        <Text style={styles.headerTitle}>성장 아카이브</Text>
       </View>
 
       <FlatList
         data={logs}
-        renderItem={renderArchiveItem}
+        renderItem={renderTimelineItem}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
         contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 40 }]}
         ListHeaderComponent={
@@ -106,37 +114,34 @@ export default function CalendarScreen() {
               />
             </View>
 
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>목표 달성 현황</Text>
-              <View style={styles.rateBadge}>
-                <Text style={styles.rateText}>{stats.rate}% 완료</Text>
+            <View style={styles.archiveHeader}>
+              <View style={styles.archiveDateInfo}>
+                <Text style={styles.archiveDateText}>{selectedDate.replace(/-/g, ' / ')}</Text>
+                <Text style={styles.archiveStatsText}>달성률 {stats.rate}%</Text>
               </View>
             </View>
 
-            <View style={styles.goalContainer}>
-              {dailyGoals.map(goal => (
-                <View key={goal.goal_id} style={styles.goalRow}>
-                  <Ionicons 
-                    name={goal.is_done === 1 ? "checkmark-circle" : "ellipse-outline"} 
-                    size={22} 
-                    color={goal.is_done === 1 ? DESIGN.colors.primary : DESIGN.colors.border} 
-                  />
-                  <Text style={[styles.goalText, goal.is_done === 1 && styles.goalTextDone]}>{goal.title}</Text>
-                </View>
-              ))}
-              {dailyGoals.length === 0 && <Text style={styles.emptyGoalText}>이 날은 기록된 목표가 없습니다.</Text>}
+            <View style={styles.goalsSummary}>
+              <Text style={styles.sectionLabel}>완료한 목표</Text>
+              <View style={styles.goalPillRow}>
+                {dailyGoals.filter(g => g.is_done === 1).map(goal => (
+                  <View key={goal.goal_id} style={styles.goalPill}>
+                    <Text style={styles.goalPillText}>{goal.title}</Text>
+                  </View>
+                ))}
+                {dailyGoals.filter(g => g.is_done === 1).length === 0 && (
+                  <Text style={styles.emptyText}>완료한 목표가 없습니다.</Text>
+                )}
+              </View>
             </View>
 
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>작성한 회고</Text>
-              <Text style={styles.countText}>{logs.length}개</Text>
-            </View>
+            <Text style={styles.sectionLabel}>기록 타임라인</Text>
+            {logs.length === 0 && (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyText}>기록된 회고가 없습니다.</Text>
+              </View>
+            )}
           </>
-        }
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>선택한 날짜의 회고 기록이 없습니다.</Text>
-          </View>
         }
       />
     </SafeAreaView>
@@ -165,82 +170,100 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 24,
   },
-  sectionHeader: {
+  archiveHeader: {
+    marginTop: 24,
+    marginBottom: 20,
+  },
+  archiveDateInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 32,
-    marginBottom: 16,
+    alignItems: 'baseline',
   },
-  sectionTitle: {
-    fontSize: 14,
+  archiveDateText: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: DESIGN.colors.text,
+  },
+  archiveStatsText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: DESIGN.colors.primary,
+  },
+  sectionLabel: {
+    fontSize: 13,
     fontWeight: '600',
     color: DESIGN.colors.textDim,
     textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginTop: 24,
+    marginBottom: 16,
   },
-  rateBadge: {
-    backgroundColor: DESIGN.colors.bgSecondary,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+  goalsSummary: {
+    marginBottom: 8,
   },
-  rateText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: DESIGN.colors.primary,
-  },
-  countText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: DESIGN.colors.text,
-  },
-  goalContainer: {
-    backgroundColor: DESIGN.colors.bgSecondary,
-    padding: 20,
-    borderRadius: 18,
-  },
-  goalRow: {
+  goalPillRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
+    flexWrap: 'wrap',
   },
-  goalText: {
-    marginLeft: 12,
-    fontSize: 16,
-    color: DESIGN.colors.text,
+  goalPill: {
+    backgroundColor: DESIGN.colors.bgSecondary,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  goalPillText: {
+    fontSize: 14,
     fontWeight: '500',
+    color: DESIGN.colors.text,
   },
-  goalTextDone: {
-    color: DESIGN.colors.textDim,
-    textDecorationLine: 'line-through',
-  },
-  emptyGoalText: {
-    fontSize: 15,
-    color: DESIGN.colors.textDim,
-    textAlign: 'center',
-  },
-  archiveItem: {
+  timelineItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 20,
-    borderBottomWidth: 0.5,
-    borderBottomColor: DESIGN.colors.border,
+    paddingBottom: 32,
   },
-  archiveItemTitle: {
-    fontSize: 17,
+  timelineLine: {
+    position: 'absolute',
+    left: 4,
+    top: 10,
+    bottom: 0,
+    width: 1,
+    backgroundColor: DESIGN.colors.border,
+  },
+  timelineDot: {
+    width: 9,
+    height: 9,
+    borderRadius: 4.5,
+    backgroundColor: DESIGN.colors.primary,
+    marginTop: 8,
+  },
+  timelineContent: {
+    flex: 1,
+    marginLeft: 20,
+  },
+  timelineTitle: {
+    fontSize: 18,
     fontWeight: '600',
     color: DESIGN.colors.text,
-    marginBottom: 4,
+    marginBottom: 6,
   },
-  archiveItemSummary: {
-    fontSize: 14,
+  timelineSummary: {
+    fontSize: 15,
     color: DESIGN.colors.primary,
     fontStyle: 'italic',
+    lineHeight: 22,
+    marginBottom: 8,
+  },
+  tagRow: {
+    flexDirection: 'row',
+  },
+  tagText: {
+    fontSize: 13,
+    color: DESIGN.colors.textDim,
+    marginRight: 10,
   },
   emptyState: {
-    marginTop: 20,
-    alignItems: 'center',
+    paddingVertical: 20,
   },
   emptyText: {
     fontSize: 15,

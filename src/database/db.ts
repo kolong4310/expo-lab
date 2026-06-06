@@ -147,16 +147,70 @@ export const getDailyGoalsWithCheck = (date: string) => {
 };
 
 export const toggleGoalCheck = (goalId: number, date: string, isDone: number) => {
-  const statement = db.prepareSync(`
-    INSERT INTO goal_checks (goal_id, check_date, is_done, created_at) 
-    VALUES (?, ?, ?, ?)
-    ON CONFLICT(goal_id, check_date) DO UPDATE SET is_done = excluded.is_done
-  `);
-  try {
-    statement.executeSync([goalId, date, isDone, new Date().toISOString()]);
+...
   } finally {
     statement.finalizeSync();
   }
+};
+
+/**
+ * 개별 목표의 연속 달성 일수 계산
+ */
+export const getGoalStreak = (goalId: number): number => {
+  const query = `
+    SELECT check_date FROM goal_checks 
+    WHERE goal_id = ? AND is_done = 1 
+    ORDER BY check_date DESC
+  `;
+  const statement = db.prepareSync(query);
+  try {
+    const result = statement.executeSync<{ check_date: string }>([goalId]);
+    const rows = result.getAllSync();
+    if (rows.length === 0) return 0;
+
+    const dates = rows.map(r => r.check_date);
+    let streak = 0;
+    let currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    const todayStr = currentDate.toISOString().split('T')[0];
+    const yesterday = new Date(currentDate);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    // 가장 최근 완료일이 오늘이나 어제가 아니면 스트릭 0
+    if (dates[0] !== todayStr && dates[0] !== yesterdayStr) return 0;
+
+    let checkDate = new Date(dates[0]);
+    streak = 1;
+
+    for (let i = 1; i < dates.length; i++) {
+      const nextDate = new Date(dates[i]);
+      const diffTime = Math.abs(checkDate.getTime() - nextDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 1) {
+        streak++;
+        checkDate = nextDate;
+      } else {
+        break;
+      }
+    }
+    return streak;
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
+/**
+ * 특정 날짜의 목표와 달성 상태, 그리고 현재 스트릭까지 가져오기
+ */
+export const getDailyGoalsWithStats = (date: string) => {
+  const goals = getDailyGoalsWithCheck(date);
+  return goals.map(g => ({
+    ...g,
+    streak: getGoalStreak(g.goal_id)
+  }));
 };
 
 /**

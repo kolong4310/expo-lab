@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { 
   getAllLogs, 
   getLogsByDate,
-  getDailyGoalsWithCheck, 
+  getDailyGoalsWithStats, 
   toggleGoalCheck, 
   getGrowthStats,
   getCurrentStreak,
@@ -40,11 +40,10 @@ export default function HomeScreen() {
 
   const loadData = () => {
     setLogs(getAllLogs());
-    setDailyGoals(getDailyGoalsWithCheck(today));
+    setDailyGoals(getDailyGoalsWithStats(today));
     setStreak(getCurrentStreak());
     setStats(getGrowthStats(today));
     
-    // 오늘 작성한 회고 가져오기
     const todayLogs = getLogsByDate(today);
     setTodayLog(todayLogs.length > 0 ? todayLogs[0] : null);
   };
@@ -96,7 +95,6 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            {/* 오늘의 한 줄 영역 (Apple Journal Style) */}
             <View style={styles.mantraSection}>
               <Text style={styles.sectionLabel}>오늘의 한 줄</Text>
               {todayLog ? (
@@ -155,6 +153,9 @@ export default function HomeScreen() {
                     <Text style={[styles.goalTitle, item.is_done === 1 && styles.goalTitleDone]}>
                       {item.title}
                     </Text>
+                    {item.streak > 1 && (
+                      <Text style={styles.goalStreak}>🔥 {item.streak}일 연속</Text>
+                    )}
                   </View>
                 </TouchableOpacity>
               ))}
@@ -329,6 +330,12 @@ const styles = StyleSheet.create({
   goalTitleDone: {
     color: DESIGN.colors.textDim,
     textDecorationLine: 'line-through',
+  },
+  goalStreak: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: DESIGN.colors.primary,
+    marginTop: 4,
   },
   emptyGoalBox: {
     padding: 32,
