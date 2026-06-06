@@ -147,7 +147,13 @@ export const getDailyGoalsWithCheck = (date: string) => {
 };
 
 export const toggleGoalCheck = (goalId: number, date: string, isDone: number) => {
-...
+  const statement = db.prepareSync(`
+    INSERT INTO goal_checks (goal_id, check_date, is_done, created_at) 
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT(goal_id, check_date) DO UPDATE SET is_done = excluded.is_done
+  `);
+  try {
+    statement.executeSync([goalId, date, isDone, new Date().toISOString()]);
   } finally {
     statement.finalizeSync();
   }
@@ -178,7 +184,6 @@ export const getGoalStreak = (goalId: number): number => {
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-    // 가장 최근 완료일이 오늘이나 어제가 아니면 스트릭 0
     if (dates[0] !== todayStr && dates[0] !== yesterdayStr) return 0;
 
     let checkDate = new Date(dates[0]);
