@@ -4,7 +4,6 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from './src/screens/HomeScreen';
 import WriteScreen from './src/screens/WriteScreen';
 import DetailScreen from './src/screens/DetailScreen';
@@ -13,6 +12,7 @@ import SearchScreen from './src/screens/SearchScreen';
 import GoalManageScreen from './src/screens/GoalManageScreen';
 import { initDatabase } from './src/database/db';
 import { DESIGN } from './src/theme/design';
+import PixelTabIcon from './src/components/ui/PixelTabIcon';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -39,6 +39,12 @@ function TabNavigator() {
     return focused ? 'search' : 'search-outline';
   };
 
+  const getTabAccent = (routeName: string) => {
+    if (routeName === 'Today') return DESIGN.colors.pink;
+    if (routeName === 'Archive') return DESIGN.colors.green;
+    return DESIGN.colors.purple;
+  };
+
   return (
     <Tab.Navigator
       id="RootTabs"
@@ -48,20 +54,12 @@ function TabNavigator() {
           backgroundColor: DESIGN.colors.bg,
         },
         tabBarIcon: ({ focused, color }) => (
-          <View
-            style={{
-              borderWidth: DESIGN.borders.pixel,
-              borderColor: focused ? DESIGN.colors.mint : '#252B36',
-              backgroundColor: focused ? DESIGN.colors.surface : DESIGN.colors.bg,
-              paddingHorizontal: 7,
-              paddingVertical: 3,
-              borderRadius: 4,
-              borderRightColor: focused ? DESIGN.colors.pink : '#252B36',
-              borderBottomColor: focused ? DESIGN.colors.yellow : '#252B36',
-            }}
-          >
-            <Ionicons name={getTabIcon(route.name, focused) as any} size={19} color={color} />
-          </View>
+          <PixelTabIcon
+            name={getTabIcon(route.name, focused) as any}
+            color={color}
+            focused={focused}
+            accent={getTabAccent(route.name)}
+          />
         ),
         tabBarActiveTintColor: DESIGN.colors.mint,
         tabBarInactiveTintColor: DESIGN.colors.textDim,
@@ -69,15 +67,16 @@ function TabNavigator() {
           backgroundColor: DESIGN.colors.bg,
           borderTopWidth: DESIGN.borders.heavy,
           borderTopColor: DESIGN.colors.cyan,
-          height: 68 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
+          height: 88 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
           paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
-          paddingTop: 8,
+          paddingTop: 12,
         },
         tabBarLabelStyle: {
-          fontSize: 9,
+          fontSize: 10,
           fontWeight: '900',
-          fontFamily: 'monospace',
-          letterSpacing: 0.5,
+          fontFamily: DESIGN.fonts.title,
+          letterSpacing: 0.8,
+          marginTop: 4,
         },
       })}
     >

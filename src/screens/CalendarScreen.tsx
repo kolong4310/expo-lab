@@ -5,9 +5,9 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { getLogsByDate, getLoggedDates, getDailyGoalsWithCheck, WorkLog } from '../database/db';
 import { DESIGN } from '../theme/design';
-import RetroCard from '../components/RetroCard';
-import RetroButton from '../components/RetroButton';
-import PixelSectionTitle from '../components/PixelSectionTitle';
+import RetroCard from '../components/ui/RetroCard';
+import RetroButton from '../components/ui/RetroButton';
+import PixelSectionTitle from '../components/ui/PixelSectionTitle';
 
 LocaleConfig.locales['en'] = {
   monthNames: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
@@ -78,7 +78,7 @@ export default function CalendarScreen() {
         data={logs}
         renderItem={renderArchiveLog}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
-        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 40 }]}
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 120 }]}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
@@ -93,7 +93,7 @@ export default function CalendarScreen() {
                 theme={{
                   backgroundColor: DESIGN.colors.surface,
                   calendarBackground: DESIGN.colors.surface,
-                  textSectionTitleColor: DESIGN.colors.primaryLight,
+                  textSectionTitleColor: DESIGN.colors.cyan,
                   selectedDayBackgroundColor: DESIGN.colors.primary,
                   selectedDayTextColor: DESIGN.colors.text,
                   todayTextColor: DESIGN.colors.yellow,
@@ -151,56 +151,56 @@ const styles = StyleSheet.create({
     backgroundColor: DESIGN.colors.bg,
   },
   list: {
-    paddingHorizontal: DESIGN.spacing.padding,
+    paddingHorizontal: 24,
     paddingTop: 22,
   },
   screenTitle: {
     ...DESIGN.typography.largeTitle,
-    color: DESIGN.colors.primaryLight,
+    color: DESIGN.colors.cyan,
   },
   screenSub: {
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.pixelKo,
     color: DESIGN.colors.textDim,
-    fontWeight: '900',
-    marginTop: 4,
-    marginBottom: 18,
+    fontWeight: '800',
+    marginTop: 6,
+    marginBottom: 24,
   },
   calendarCard: {
     padding: 10,
-    marginBottom: 18,
+    marginBottom: 24,
   },
   loggedDay: {
     borderWidth: 2,
     borderColor: DESIGN.colors.yellow,
-    borderRadius: 4,
+    borderRadius: 3,
   },
   loggedDayText: {
     color: DESIGN.colors.yellow,
   },
   datePanel: {
     padding: 16,
-    marginBottom: 24,
+    marginBottom: 28,
   },
   goalGrid: {
     marginBottom: 16,
   },
   goalGem: {
-    fontFamily: 'monospace',
-    color: DESIGN.colors.mint,
+    fontFamily: DESIGN.fonts.pixelKo,
+    color: DESIGN.colors.green,
     fontWeight: '900',
     marginBottom: 8,
   },
   archiveLog: {
     backgroundColor: DESIGN.colors.surface,
     borderWidth: DESIGN.borders.heavy,
-    borderColor: DESIGN.colors.primaryLight,
+    borderColor: DESIGN.colors.cyan,
     borderBottomColor: DESIGN.colors.yellow,
     borderRightColor: DESIGN.colors.primary,
     padding: 14,
     marginBottom: 12,
   },
   logDate: {
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.title,
     color: DESIGN.colors.purple,
     fontWeight: '900',
     marginBottom: 4,
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     right: 12,
     top: 16,
     color: DESIGN.colors.primary,
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.title,
     fontWeight: '900',
   },
   emptyCard: {

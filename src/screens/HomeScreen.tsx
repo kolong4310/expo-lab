@@ -16,11 +16,11 @@ import {
   TodayOnlyGoal,
 } from '../database/db';
 import { DESIGN } from '../theme/design';
-import RetroCard from '../components/RetroCard';
-import RetroButton from '../components/RetroButton';
-import RetroInput from '../components/RetroInput';
-import PixelProgressBar from '../components/PixelProgressBar';
-import PixelSectionTitle from '../components/PixelSectionTitle';
+import RetroCard from '../components/ui/RetroCard';
+import RetroButton from '../components/ui/RetroButton';
+import RetroInput from '../components/ui/RetroInput';
+import PixelProgressBar from '../components/ui/PixelProgressBar';
+import PixelSectionTitle from '../components/ui/PixelSectionTitle';
 
 const PixelCheck = ({ checked }: { checked: boolean }) => (
   <View style={[styles.pixelCheck, checked && styles.pixelCheckDone]}>
@@ -118,7 +118,7 @@ export default function HomeScreen() {
       <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
       <ScrollView
         style={styles.container}
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 100 }]}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 170 }]}
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.arcadeTitle}>GROWTH QUEST</Text>
@@ -157,7 +157,10 @@ export default function HomeScreen() {
               <Text style={styles.emptyText}>반복 목표를 만들거나 오늘만 할 목표를 추가하세요.</Text>
             </View>
           )}
+        </RetroCard>
 
+        <RetroCard accent="purple" style={styles.addPanel}>
+          <PixelSectionTitle>ADD MISSION</PixelSectionTitle>
           <View style={styles.addMissionRow}>
             <RetroInput
               style={styles.todayOnlyInput}
@@ -174,11 +177,9 @@ export default function HomeScreen() {
         </RetroCard>
       </ScrollView>
 
-      <RetroButton
-        label="+ 오늘 기록하기"
-        style={[styles.floatingButton, { bottom: insets.bottom + 20 }]}
-        onPress={() => navigation.navigate('Write')}
-      />
+      <View style={[styles.ctaWrap, { bottom: insets.bottom + 16 }]}>
+        <RetroButton label="+ 오늘 기록하기" onPress={() => navigation.navigate('Write')} />
+      </View>
     </SafeAreaView>
   );
 }
@@ -189,67 +190,75 @@ const styles = StyleSheet.create({
     backgroundColor: DESIGN.colors.bg,
   },
   content: {
-    paddingHorizontal: DESIGN.spacing.padding,
+    paddingHorizontal: 24,
     paddingTop: 22,
   },
   arcadeTitle: {
     ...DESIGN.typography.largeTitle,
     color: DESIGN.colors.primary,
-    textShadowColor: DESIGN.colors.primaryLight,
+    fontSize: 34,
+    letterSpacing: 2,
+    textShadowColor: DESIGN.colors.cyan,
     textShadowOffset: { width: 3, height: 3 },
     textShadowRadius: 0,
   },
   subtitle: {
-    fontFamily: 'monospace',
-    color: DESIGN.colors.mint,
-    fontWeight: '900',
+    fontFamily: DESIGN.fonts.pixelKo,
+    color: DESIGN.colors.green,
+    fontWeight: '800',
     fontSize: 16,
-    marginTop: 6,
-    marginBottom: 20,
+    lineHeight: 24,
+    marginTop: 8,
+    marginBottom: 24,
   },
   statusRow: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 18,
+    marginBottom: 24,
   },
   statusChip: {
     flex: 1,
+    height: 118,
     padding: 14,
+    justifyContent: 'center',
   },
   statusLabel: {
-    fontFamily: 'monospace',
-    color: DESIGN.colors.primaryLight,
+    fontFamily: DESIGN.fonts.title,
+    color: DESIGN.colors.cyan,
     fontWeight: '900',
     fontSize: 11,
-    marginBottom: 6,
+    marginBottom: 8,
   },
   statusValue: {
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.score,
     color: DESIGN.colors.yellow,
     fontWeight: '900',
-    fontSize: 18,
+    fontSize: 20,
   },
   missionStatus: {
+    minHeight: 238,
     padding: 22,
-    marginBottom: 18,
+    marginBottom: 28,
+    justifyContent: 'center',
   },
   percentText: {
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.score,
     color: DESIGN.colors.yellow,
     fontWeight: '900',
-    fontSize: 34,
+    fontSize: 42,
     textAlign: 'center',
-    marginTop: 12,
+    marginTop: 18,
   },
   completeText: {
-    fontFamily: 'monospace',
-    color: DESIGN.colors.primaryLight,
+    fontFamily: DESIGN.fonts.score,
+    color: DESIGN.colors.cyan,
     fontWeight: '900',
     fontSize: 13,
     textAlign: 'center',
   },
   missionList: {
     padding: 16,
+    marginBottom: 24,
   },
   missionHeader: {
     flexDirection: 'row',
@@ -259,10 +268,10 @@ const styles = StyleSheet.create({
   missionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 44,
+    minHeight: 46,
     borderWidth: DESIGN.borders.pixel,
     borderColor: '#343B49',
-    backgroundColor: DESIGN.colors.bgSecondary,
+    backgroundColor: '#090B10',
     paddingHorizontal: 12,
     marginBottom: 10,
   },
@@ -276,12 +285,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pixelCheckDone: {
-    borderColor: DESIGN.colors.mint,
+    borderColor: DESIGN.colors.green,
   },
   pixelCheckInner: {
     width: 12,
     height: 12,
-    backgroundColor: DESIGN.colors.mint,
+    backgroundColor: DESIGN.colors.green,
   },
   missionTextWrap: {
     flex: 1,
@@ -295,10 +304,11 @@ const styles = StyleSheet.create({
   missionTitle: {
     color: DESIGN.colors.text,
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '700',
+    lineHeight: 23,
   },
   missionMeta: {
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.pixelKo,
     color: DESIGN.colors.textDim,
     fontSize: 11,
     marginTop: 2,
@@ -307,11 +317,11 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   missionDone: {
-    color: DESIGN.colors.mint,
+    color: DESIGN.colors.green,
     textDecorationLine: 'line-through',
   },
   deleteText: {
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.title,
     color: DESIGN.colors.error,
     fontWeight: '900',
     fontSize: 16,
@@ -322,7 +332,7 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
   },
   emptyTitle: {
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.title,
     color: DESIGN.colors.yellow,
     fontWeight: '900',
     marginBottom: 6,
@@ -330,36 +340,38 @@ const styles = StyleSheet.create({
   emptyText: {
     color: DESIGN.colors.textDim,
     textAlign: 'center',
-    lineHeight: 21,
+    lineHeight: 22,
+  },
+  addPanel: {
+    padding: 16,
   },
   addMissionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 8,
   },
   todayOnlyInput: {
     flex: 1,
   },
   addMissionButton: {
-    width: 46,
-    height: 46,
-    marginLeft: 8,
+    width: 48,
+    height: 48,
+    marginLeft: 10,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: DESIGN.colors.primary,
     borderWidth: DESIGN.borders.heavy,
-    borderColor: DESIGN.colors.primaryLight,
+    borderColor: DESIGN.colors.cyan,
     borderBottomColor: DESIGN.colors.yellow,
   },
   addMissionText: {
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.title,
     color: DESIGN.colors.text,
     fontWeight: '900',
     fontSize: 22,
   },
-  floatingButton: {
+  ctaWrap: {
     position: 'absolute',
-    left: DESIGN.spacing.padding,
-    right: DESIGN.spacing.padding,
+    left: 24,
+    right: 24,
   },
 });

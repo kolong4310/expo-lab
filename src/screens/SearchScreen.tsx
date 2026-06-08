@@ -4,9 +4,9 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native';
 import { searchLogs, WorkLog } from '../database/db';
 import { DESIGN } from '../theme/design';
-import RetroCard from '../components/RetroCard';
-import RetroInput from '../components/RetroInput';
-import PixelSectionTitle from '../components/PixelSectionTitle';
+import RetroCard from '../components/ui/RetroCard';
+import RetroInput from '../components/ui/RetroInput';
+import PixelSectionTitle from '../components/ui/PixelSectionTitle';
 
 const QUICK_TAGS = ['ReactNative', 'SQLite', 'UI', '공부', '운동', '개발'];
 
@@ -41,7 +41,7 @@ export default function SearchScreen() {
         data={results}
         renderItem={renderResultItem}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
-        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 40 }]}
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 120 }]}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     backgroundColor: DESIGN.colors.bg,
   },
   list: {
-    paddingHorizontal: DESIGN.spacing.padding,
+    paddingHorizontal: 24,
     paddingTop: 22,
   },
   screenTitle: {
@@ -107,15 +107,15 @@ const styles = StyleSheet.create({
     color: DESIGN.colors.purple,
   },
   screenSub: {
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.pixelKo,
     color: DESIGN.colors.textDim,
-    fontWeight: '900',
-    marginTop: 4,
-    marginBottom: 18,
+    fontWeight: '800',
+    marginTop: 6,
+    marginBottom: 24,
   },
   searchCard: {
     padding: 14,
-    marginBottom: 24,
+    marginBottom: 28,
   },
   searchRow: {
     flexDirection: 'row',
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   },
   searchIcon: {
     color: DESIGN.colors.text,
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.title,
     fontWeight: '900',
     fontSize: 18,
     marginRight: 10,
@@ -133,14 +133,14 @@ const styles = StyleSheet.create({
   },
   clearText: {
     color: DESIGN.colors.error,
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.title,
     fontWeight: '900',
     marginLeft: 10,
   },
   tagGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 24,
+    marginBottom: 28,
   },
   tagChip: {
     borderWidth: DESIGN.borders.pixel,
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   tagText: {
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.pixelKo,
     color: DESIGN.colors.text,
     fontWeight: '900',
     fontSize: 13,
@@ -160,14 +160,14 @@ const styles = StyleSheet.create({
   resultItem: {
     backgroundColor: DESIGN.colors.surface,
     borderWidth: DESIGN.borders.heavy,
-    borderColor: DESIGN.colors.primaryLight,
-    borderRightColor: DESIGN.colors.primary,
+    borderColor: DESIGN.colors.cyan,
+    borderRightColor: DESIGN.colors.pink,
     borderBottomColor: DESIGN.colors.yellow,
     padding: 14,
     marginBottom: 12,
   },
   resultDate: {
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.title,
     color: DESIGN.colors.purple,
     fontWeight: '900',
     marginBottom: 4,
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     right: 12,
     top: 16,
     color: DESIGN.colors.primary,
-    fontFamily: 'monospace',
+    fontFamily: DESIGN.fonts.title,
     fontWeight: '900',
   },
   emptyCard: {

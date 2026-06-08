@@ -19,6 +19,12 @@ export const DESIGN = {
     error: RetroColors.danger,
     success: RetroColors.neonGreen,
   },
+  fonts: {
+    title: RetroFonts.title,
+    pixelKo: RetroFonts.pixel,
+    body: RetroFonts.body || undefined,
+    score: RetroFonts.title,
+  },
   spacing: {
     base: 8,
     padding: 24,
