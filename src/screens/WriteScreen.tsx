@@ -2,25 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
 import { addLog, updateLog, WorkLog } from '../database/db';
 import { DESIGN } from '../theme/design';
-import { retroStyles } from '../theme/retro';
+import RetroCard from '../components/RetroCard';
+import RetroButton from '../components/RetroButton';
 
 const MOODS = [
-  { emoji: '🔥', value: 'best' },
-  { emoji: '✨', value: 'good' },
-  { emoji: '☁️', value: 'normal' },
-  { emoji: '🌊', value: 'hard' },
+  { label: 'BEST', value: 'best' },
+  { label: 'GOOD', value: 'good' },
+  { label: 'NORM', value: 'normal' },
+  { label: 'HARD', value: 'hard' },
 ];
 
-const DEFAULT_TAGS = ['개발', '공부', '운동', '회사', '회고', 'ReactNative', 'SQLite', 'UI'];
+const DEFAULT_TAGS = ['개발', '공부', '운동', '회고', 'ReactNative', 'SQLite', 'UI'];
 
-const InsightInput = ({ label, value, onChangeText, placeholder, isMantra = false }: any) => (
-  <View style={[styles.inputGroup, isMantra && styles.mantraGroup]}>
+const InsightInput = ({ label, value, onChangeText, placeholder, isBig = false }: any) => (
+  <RetroCard accent={isBig ? 'pink' : 'cyan'} style={styles.inputCard}>
     <Text style={styles.inputLabel}>{label}</Text>
     <TextInput
-      style={[styles.textInput, isMantra && styles.mantraInput]}
+      style={[styles.textInput, isBig && styles.bigInput]}
       value={value}
       onChangeText={onChangeText}
       placeholder={placeholder}
@@ -29,7 +29,7 @@ const InsightInput = ({ label, value, onChangeText, placeholder, isMantra = fals
       textAlignVertical="top"
       selectionColor={DESIGN.colors.primary}
     />
-  </View>
+  </RetroCard>
 );
 
 export default function WriteScreen() {
@@ -107,113 +107,81 @@ export default function WriteScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardContainer}
-      >
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardContainer}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.cancelBtn}>
-            <Text style={styles.cancelBtnText}>취소</Text>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
+            <Text style={styles.headerButtonText}>BACK</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{editingLog ? '기록 수정' : '새 기록'}</Text>
-          <View style={{ width: 60 }} />
+          <Text style={styles.headerTitle}>{editingLog ? 'EDIT LOG' : 'NEW LOG'}</Text>
+          <View style={styles.headerButton} />
         </View>
 
-        <ScrollView 
+        <ScrollView
           style={styles.content}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
         >
-          <InsightInput 
+          <InsightInput
             label="오늘의 한 줄"
             value={dailySummary}
             onChangeText={setDailySummary}
-            placeholder="오늘을 한 문장으로 남긴다면?"
-            isMantra
+            placeholder="오늘의 성장을 한 문장으로"
+            isBig
           />
 
-          <View style={styles.divider} />
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>제목</Text>
-            <TextInput 
+          <RetroCard accent="yellow" style={styles.inputCard}>
+            <Text style={styles.inputLabel}>QUEST TITLE</Text>
+            <TextInput
               style={styles.titleInput}
               value={title}
               onChangeText={setTitle}
-              placeholder="무엇을 했나요?"
+              placeholder="무엇을 클리어했나요?"
               placeholderTextColor={DESIGN.colors.textDim}
               selectionColor={DESIGN.colors.primary}
             />
-          </View>
+          </RetroCard>
 
-          <View style={styles.tagSection}>
-            <Text style={styles.inputLabel}>태그</Text>
+          <RetroCard accent="green" style={styles.inputCard}>
+            <Text style={styles.inputLabel}>MOOD</Text>
+            <View style={styles.moodRow}>
+              {MOODS.map(item => (
+                <TouchableOpacity
+                  key={item.value}
+                  style={[styles.moodChip, mood === item.value && styles.moodChipSelected]}
+                  onPress={() => setMood(item.value)}
+                >
+                  <Text style={[styles.moodText, mood === item.value && styles.moodTextSelected]}>{item.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </RetroCard>
+
+          <RetroCard accent="purple" style={styles.inputCard}>
+            <Text style={styles.inputLabel}>TAG</Text>
             <View style={styles.tagRow}>
               {DEFAULT_TAGS.map(tag => (
-                <TouchableOpacity 
-                  key={tag} 
+                <TouchableOpacity
+                  key={tag}
                   style={[styles.tagChip, selectedTags.includes(tag) && styles.tagChipSelected]}
                   onPress={() => toggleTag(tag)}
                 >
-                  <Text style={[styles.tagText, selectedTags.includes(tag) && styles.tagTextSelected]}>{tag}</Text>
+                  <Text style={styles.tagText}>#{tag}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-          </View>
+          </RetroCard>
 
-          <View style={styles.inputLabelGroup}>
-            <Text style={styles.inputLabel}>기분</Text>
-            <View style={styles.moodRow}>
-              {MOODS.map((item) => (
-                <TouchableOpacity
-                  key={item.value}
-                  style={[
-                    styles.moodBox,
-                    mood === item.value && styles.moodBoxSelected
-                  ]}
-                  onPress={() => setMood(item.value)}
-                >
-                  <Text style={styles.moodEmoji}>{item.emoji}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          <InsightInput 
-            label="상세 내용"
-            value={content}
-            onChangeText={setContent}
-            placeholder="오늘의 과정을 기록해보세요."
-          />
-
-          <InsightInput 
-            label="배운 점"
-            value={learned}
-            onChangeText={setLearned}
-            placeholder="새롭게 알게 된 것이 있나요?"
-          />
-
-          <InsightInput 
-            label="문제와 해결"
-            value={issue}
-            onChangeText={setIssue}
-            placeholder="어려웠던 점과 해결 방법을 적어보세요."
-          />
-
-          <InsightInput 
-            label="메모"
-            value={memo}
-            onChangeText={setMemo}
-            placeholder="기타 남기고 싶은 생각..."
-          />
+          <InsightInput label="진행 기록" value={content} onChangeText={setContent} placeholder="오늘 진행한 내용을 기록하세요." />
+          <InsightInput label="획득한 경험치" value={learned} onChangeText={setLearned} placeholder="새로 배운 점은 무엇인가요?" />
+          <InsightInput label="장애물 / 해결" value={issue} onChangeText={setIssue} placeholder="막힌 점과 해결 과정을 적어보세요." />
+          <InsightInput label="메모" value={memo} onChangeText={setMemo} placeholder="다음 퀘스트를 위한 메모" />
         </ScrollView>
 
-        <TouchableOpacity 
-          style={[styles.saveButton, { bottom: insets.bottom + 20 }]} 
+        <RetroButton
+          label={editingLog ? '수정 완료' : '저장하기'}
+          style={[styles.saveButton, { bottom: insets.bottom + 20 }]}
           onPress={handleSave}
-        >
-          <Text style={styles.saveButtonText}>{editingLog ? '수정 완료' : '저장하기'}</Text>
-        </TouchableOpacity>
+        />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -234,84 +202,90 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: DESIGN.colors.bg,
     borderBottomWidth: DESIGN.borders.heavy,
     borderBottomColor: DESIGN.colors.border,
   },
-  cancelBtn: {
-    width: 60,
+  headerButton: {
+    width: 70,
   },
-  cancelBtnText: {
-    fontSize: 17,
-    color: DESIGN.colors.error,
+  headerButtonText: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.primaryLight,
+    fontWeight: '900',
   },
   headerTitle: {
-    fontSize: 17,
+    fontFamily: 'monospace',
+    fontSize: 18,
     fontWeight: '900',
     color: DESIGN.colors.yellow,
-    fontFamily: 'monospace',
   },
   content: {
     flex: 1,
-    backgroundColor: DESIGN.colors.bg,
     paddingHorizontal: 24,
+    backgroundColor: DESIGN.colors.bg,
   },
-  inputGroup: {
-    marginTop: 32,
-  },
-  mantraGroup: {
-    marginTop: 40,
+  inputCard: {
+    padding: 14,
+    marginTop: 22,
   },
   inputLabel: {
+    fontFamily: 'monospace',
     fontSize: 13,
     fontWeight: '900',
     color: DESIGN.colors.primaryLight,
-    fontFamily: 'monospace',
     marginBottom: 12,
-    textTransform: 'uppercase',
-  },
-  mantraInput: {
-    fontSize: 24,
-    fontWeight: '900',
-    color: DESIGN.colors.primary,
-    fontStyle: 'italic',
-    lineHeight: 32,
   },
   titleInput: {
-    ...retroStyles.input,
-    fontSize: 20,
-    fontWeight: '900',
+    minHeight: 44,
     color: DESIGN.colors.text,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    paddingBottom: 8,
+    fontSize: 18,
+    fontWeight: '900',
   },
   textInput: {
-    ...retroStyles.input,
-    fontSize: 17,
+    minHeight: 86,
+    fontSize: 16,
     color: DESIGN.colors.text,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    lineHeight: 26,
-    minHeight: 44,
+    lineHeight: 24,
   },
-  divider: {
-    height: 0,
-    borderBottomWidth: DESIGN.borders.pixel,
-    borderStyle: 'dashed',
-    borderBottomColor: DESIGN.colors.primaryLight,
-    marginTop: 32,
+  bigInput: {
+    minHeight: 90,
+    fontSize: 22,
+    fontWeight: '900',
+    color: DESIGN.colors.primary,
   },
-  tagSection: {
-    marginTop: 40,
+  moodRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  moodChip: {
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.primaryLight,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  moodChipSelected: {
+    backgroundColor: DESIGN.colors.primary,
+    borderColor: DESIGN.colors.yellow,
+  },
+  moodText: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.text,
+    fontWeight: '900',
+    fontSize: 12,
+  },
+  moodTextSelected: {
+    color: DESIGN.colors.text,
   },
   tagRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
   tagChip: {
-    ...retroStyles.card,
-    paddingHorizontal: 14,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.purple,
+    paddingHorizontal: 12,
     paddingVertical: 8,
     marginRight: 8,
     marginBottom: 8,
@@ -321,49 +295,14 @@ const styles = StyleSheet.create({
     borderColor: DESIGN.colors.yellow,
   },
   tagText: {
-    fontSize: 14,
+    fontFamily: 'monospace',
+    fontSize: 13,
     color: DESIGN.colors.text,
     fontWeight: '900',
-    fontFamily: 'monospace',
-  },
-  tagTextSelected: {
-    color: '#FFFFFF',
-  },
-  inputLabelGroup: {
-    marginTop: 40,
-  },
-  moodRow: {
-    flexDirection: 'row',
-  },
-  moodBox: {
-    ...retroStyles.card,
-    width: 48,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  moodBoxSelected: {
-    backgroundColor: DESIGN.colors.bgSecondary,
-    borderWidth: DESIGN.borders.heavy,
-    borderColor: DESIGN.colors.primary,
-  },
-  moodEmoji: {
-    fontSize: 22,
   },
   saveButton: {
-    ...retroStyles.button,
     position: 'absolute',
     left: 24,
     right: 24,
-    height: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  saveButtonText: {
-    fontSize: 17,
-    fontWeight: '900',
-    color: '#FFFFFF',
-    fontFamily: 'monospace',
   },
 });

@@ -2,17 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, StatusBar } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
 import { searchLogs, WorkLog } from '../database/db';
 import { DESIGN } from '../theme/design';
-import { retroStyles } from '../theme/retro';
+import RetroCard from '../components/RetroCard';
 
-const MOOD_MAP: any = {
-  best: '🔥',
-  good: '✨',
-  normal: '☁️',
-  hard: '🌊',
-};
+const QUICK_TAGS = ['ReactNative', 'SQLite', 'UI', '공부', '운동', '개발'];
 
 export default function SearchScreen() {
   const navigation = useNavigation<any>();
@@ -22,64 +16,24 @@ export default function SearchScreen() {
 
   useEffect(() => {
     if (keyword.trim().length > 0) {
-      const searchResults = searchLogs(keyword.trim());
-      setResults(searchResults);
+      setResults(searchLogs(keyword.trim()));
     } else {
       setResults([]);
     }
   }, [keyword]);
 
   const renderResultItem = ({ item }: { item: WorkLog }) => (
-    <TouchableOpacity 
-      style={styles.resultItem}
-      onPress={() => navigation.navigate('Detail', { log: item })}
-      activeOpacity={0.6}
-    >
-      <View style={styles.resultHeader}>
-        <Text style={styles.resultDate}>{item.date.replace(/-/g, ' / ')}</Text>
-        {item.mood && <Text style={styles.resultMood}>{MOOD_MAP[item.mood]}</Text>}
-      </View>
+    <TouchableOpacity style={styles.resultItem} onPress={() => navigation.navigate('Detail', { log: item })}>
+      <Text style={styles.resultDate}>{item.date.replace(/-/g, '.')}</Text>
       <Text style={styles.resultTitle} numberOfLines={1}>{item.title}</Text>
-      
-      {item.daily_summary && (
-        <Text style={styles.resultSummary} numberOfLines={1}>"{item.daily_summary}"</Text>
-      )}
-
-      {item.tags && (
-        <View style={styles.resultTagList}>
-          {item.tags.split(',').map(tag => (
-            <TouchableOpacity key={tag} onPress={() => setKeyword(tag)} style={styles.tagChip}>
-              <Text style={styles.tagText}>#{tag}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
+      {item.daily_summary && <Text style={styles.resultSummary} numberOfLines={2}>{item.daily_summary}</Text>}
+      <Text style={styles.openMark}>▶</Text>
     </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
-      
-      <View style={styles.header}>
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={18} color={DESIGN.colors.textDim} style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            value={keyword}
-            onChangeText={setKeyword}
-            placeholder="기록 및 태그 검색"
-            placeholderTextColor={DESIGN.colors.textDim}
-            selectionColor={DESIGN.colors.primary}
-            autoFocus
-          />
-          {keyword.length > 0 && (
-            <TouchableOpacity onPress={() => setKeyword('')}>
-              <Ionicons name="close-circle" size={18} color={DESIGN.colors.textDim} />
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
 
       <FlatList
         data={results}
@@ -87,14 +41,52 @@ export default function SearchScreen() {
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
         contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 40 }]}
         showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>
-              {keyword.length > 0 
-                ? "검색 결과가 없습니다." 
-                : "키워드를 입력해 기록을 찾아보세요."}
-            </Text>
-          </View>
+        ListHeaderComponent={
+          <>
+            <Text style={styles.screenTitle}>SEARCH</Text>
+            <Text style={styles.screenSub}>기록과 태그 탐색</Text>
+
+            <RetroCard accent="purple" style={styles.searchCard}>
+              <View style={styles.searchBox}>
+                <Text style={styles.searchIcon}>⌕</Text>
+                <TextInput
+                  style={styles.searchInput}
+                  value={keyword}
+                  onChangeText={setKeyword}
+                  placeholder="기록 및 태그 검색"
+                  placeholderTextColor={DESIGN.colors.textDim}
+                  selectionColor={DESIGN.colors.primary}
+                  autoFocus
+                />
+                {keyword.length > 0 && (
+                  <TouchableOpacity onPress={() => setKeyword('')}>
+                    <Text style={styles.clearText}>X</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </RetroCard>
+
+            <Text style={styles.sectionTitle}>RECENT TAG</Text>
+            <View style={styles.tagGrid}>
+              {QUICK_TAGS.map(tag => (
+                <TouchableOpacity key={tag} style={styles.tagChip} onPress={() => setKeyword(tag)}>
+                  <Text style={styles.tagText}>#{tag}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.sectionTitle}>SEARCH RESULT</Text>
+            {keyword.length === 0 && (
+              <RetroCard accent="cyan" style={styles.emptyCard}>
+                <Text style={styles.emptyText}>검색어를 입력하면 기록 목록이 표시됩니다.</Text>
+              </RetroCard>
+            )}
+            {keyword.length > 0 && results.length === 0 && (
+              <RetroCard accent="pink" style={styles.emptyCard}>
+                <Text style={styles.emptyText}>검색 결과가 없습니다.</Text>
+              </RetroCard>
+            )}
+          </>
         }
       />
     </SafeAreaView>
@@ -106,86 +98,116 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: DESIGN.colors.bg,
   },
-  header: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderBottomWidth: DESIGN.borders.pixel,
-    borderBottomColor: DESIGN.colors.border,
+  list: {
+    paddingHorizontal: DESIGN.spacing.padding,
+    paddingTop: 22,
   },
-  searchContainer: {
-    ...retroStyles.input,
+  screenTitle: {
+    ...DESIGN.typography.largeTitle,
+    color: DESIGN.colors.purple,
+  },
+  screenSub: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.textDim,
+    fontWeight: '900',
+    marginTop: 4,
+    marginBottom: 18,
+  },
+  searchCard: {
+    padding: 14,
+    marginBottom: 24,
+  },
+  searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
     minHeight: 48,
+    backgroundColor: DESIGN.colors.bg,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.primaryLight,
+    paddingHorizontal: 12,
   },
   searchIcon: {
+    color: DESIGN.colors.text,
+    fontFamily: 'monospace',
+    fontWeight: '900',
+    fontSize: 18,
     marginRight: 10,
   },
   searchInput: {
     flex: 1,
-    fontSize: 17,
+    fontSize: 16,
     color: DESIGN.colors.text,
   },
-  list: {
-    paddingHorizontal: 24,
+  clearText: {
+    color: DESIGN.colors.error,
+    fontFamily: 'monospace',
+    fontWeight: '900',
   },
-  resultItem: {
-    ...retroStyles.card,
-    paddingVertical: 20,
-    paddingHorizontal: 14,
+  sectionTitle: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.yellow,
+    fontWeight: '900',
+    letterSpacing: 1,
     marginBottom: 12,
   },
-  resultHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 6,
-  },
-  resultDate: {
-    fontSize: 13,
-    fontWeight: '900',
-    color: DESIGN.colors.yellow,
-    fontFamily: 'monospace',
-  },
-  resultMood: {
-    fontSize: 14,
-  },
-  resultTitle: {
-    fontSize: 18,
-    fontWeight: '900',
-    color: DESIGN.colors.text,
-    fontFamily: 'monospace',
-    marginBottom: 4,
-  },
-  resultSummary: {
-    fontSize: 15,
-    fontWeight: '900',
-    color: DESIGN.colors.primary,
-    fontStyle: 'italic',
-    marginBottom: 10,
-  },
-  resultTagList: {
+  tagGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    marginBottom: 24,
   },
   tagChip: {
-    ...retroStyles.card,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.purple,
+    backgroundColor: DESIGN.colors.surface,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     marginRight: 8,
-    marginBottom: 4,
+    marginBottom: 8,
   },
   tagText: {
-    fontSize: 13,
-    color: DESIGN.colors.text,
     fontFamily: 'monospace',
+    color: DESIGN.colors.text,
+    fontWeight: '900',
+    fontSize: 13,
   },
-  emptyState: {
-    marginTop: 60,
-    alignItems: 'center',
+  resultItem: {
+    backgroundColor: DESIGN.colors.surface,
+    borderWidth: DESIGN.borders.heavy,
+    borderColor: DESIGN.colors.primaryLight,
+    borderRightColor: DESIGN.colors.primary,
+    borderBottomColor: DESIGN.colors.yellow,
+    padding: 14,
+    marginBottom: 12,
+  },
+  resultDate: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.purple,
+    fontWeight: '900',
+    marginBottom: 4,
+  },
+  resultTitle: {
+    color: DESIGN.colors.text,
+    fontSize: 17,
+    fontWeight: '900',
+    marginBottom: 6,
+  },
+  resultSummary: {
+    color: DESIGN.colors.textDim,
+    lineHeight: 20,
+  },
+  openMark: {
+    position: 'absolute',
+    right: 12,
+    top: 16,
+    color: DESIGN.colors.primary,
+    fontFamily: 'monospace',
+    fontWeight: '900',
+  },
+  emptyCard: {
+    padding: 20,
   },
   emptyText: {
-    fontSize: 15,
     color: DESIGN.colors.textDim,
+    lineHeight: 21,
   },
 });

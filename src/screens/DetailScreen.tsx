@@ -2,16 +2,15 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
 import { WorkLog, deleteLog, getDailyGoalsWithCheck } from '../database/db';
 import { DESIGN } from '../theme/design';
-import { retroStyles } from '../theme/retro';
+import RetroCard from '../components/RetroCard';
 
 const MOOD_MAP: any = {
-  best: { emoji: '🔥', label: '최고' },
-  good: { emoji: '✨', label: '좋음' },
-  normal: { emoji: '☁️', label: '보통' },
-  hard: { emoji: '🌊', label: '힘듦' },
+  best: 'BEST',
+  good: 'GOOD',
+  normal: 'NORM',
+  hard: 'HARD',
 };
 
 export default function DetailScreen() {
@@ -19,36 +18,31 @@ export default function DetailScreen() {
   const insets = useSafeAreaInsets();
   const route = useRoute();
   const { log } = route.params as { log: WorkLog };
-  
   const dailyGoals = getDailyGoalsWithCheck(log.date);
 
   const handleDelete = () => {
-    Alert.alert(
-      '기록 삭제',
-      '이 기록을 영구적으로 삭제하시겠습니까?',
-      [
-        { text: '취소', style: 'cancel' },
-        { 
-          text: '삭제', 
-          style: 'destructive',
-          onPress: () => {
-            if (log.id) {
-              deleteLog(log.id);
-              navigation.goBack();
-            }
+    Alert.alert('기록 삭제', '이 기록을 삭제하시겠습니까?', [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '삭제',
+        style: 'destructive',
+        onPress: () => {
+          if (log.id) {
+            deleteLog(log.id);
+            navigation.goBack();
           }
-        }
-      ]
-    );
+        },
+      },
+    ]);
   };
 
   const InsightSection = ({ label, content }: { label: string, content: string }) => {
     if (!content || content.trim() === '') return null;
     return (
-      <View style={styles.section}>
+      <RetroCard accent="cyan" style={styles.section}>
         <Text style={styles.sectionLabel}>{label}</Text>
         <Text style={styles.sectionText}>{content}</Text>
-      </View>
+      </RetroCard>
     );
   };
 
@@ -56,80 +50,52 @@ export default function DetailScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={24} color={DESIGN.colors.primary} />
-          <Text style={styles.backText}>기록</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
+          <Text style={styles.headerButtonText}>BACK</Text>
         </TouchableOpacity>
+        <Text style={styles.headerTitle}>LOG DETAIL</Text>
         <View style={styles.headerActions}>
-          <TouchableOpacity 
-            onPress={() => navigation.navigate('Write', { log })}
-            style={styles.actionButton}
-          >
-            <Text style={styles.editText}>수정</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Write', { log })}>
+            <Text style={styles.actionText}>EDIT</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleDelete} style={styles.actionButton}>
-            <Ionicons name="trash-outline" size={20} color={DESIGN.colors.error} />
+          <TouchableOpacity onPress={handleDelete}>
+            <Text style={styles.deleteText}>DEL</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: insets.bottom + 60 }}
       >
-        <View style={styles.heroArea}>
-          <Text style={styles.dateText}>{log.date.replace(/-/g, ' / ')}</Text>
+        <RetroCard accent="pink" style={styles.heroCard}>
+          <Text style={styles.dateText}>{log.date.replace(/-/g, '.')}</Text>
           <Text style={styles.heroTitle}>{log.title}</Text>
-          
-          {log.daily_summary && (
-            <View style={styles.mantraContainer}>
-              <Text style={styles.mantraText}>"{log.daily_summary}"</Text>
-            </View>
-          )}
-
-          {log.mood && MOOD_MAP[log.mood] && (
-            <View style={styles.moodBadge}>
-              <Text style={styles.moodEmoji}>{MOOD_MAP[log.mood].emoji}</Text>
-              <Text style={styles.moodLabel}>{MOOD_MAP[log.mood].label}</Text>
-            </View>
-          )}
-
-          {log.tags && (
-            <View style={styles.tagList}>
-              {log.tags.split(',').map(tag => (
-                <Text key={tag} style={styles.tagText}>#{tag}</Text>
-              ))}
-            </View>
-          )}
-        </View>
-
-        <View style={styles.divider} />
+          {log.daily_summary && <Text style={styles.mantraText}>"{log.daily_summary}"</Text>}
+          <View style={styles.metaRow}>
+            {log.mood && <Text style={styles.metaBadge}>{MOOD_MAP[log.mood]}</Text>}
+            {log.tags?.split(',').map(tag => (
+              <Text key={tag} style={styles.tagText}>#{tag}</Text>
+            ))}
+          </View>
+        </RetroCard>
 
         {dailyGoals.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionLabel}>그날의 목표</Text>
-            <View style={styles.goalList}>
-              {dailyGoals.map(goal => (
-                <View key={goal.goal_id} style={styles.goalRow}>
-                  <Ionicons 
-                    name={goal.is_done === 1 ? "checkmark-circle" : "ellipse-outline"} 
-                    size={20} 
-                    color={goal.is_done === 1 ? DESIGN.colors.primary : DESIGN.colors.border} 
-                  />
-                  <Text style={[styles.goalText, goal.is_done === 1 && styles.goalTextDone]}>
-                    {goal.title}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
+          <RetroCard accent="green" style={styles.section}>
+            <Text style={styles.sectionLabel}>DAY MISSIONS</Text>
+            {dailyGoals.map(goal => (
+              <Text key={goal.goal_id} style={[styles.goalText, goal.is_done === 1 && styles.goalTextDone]}>
+                {goal.is_done === 1 ? '■' : '□'} {goal.title}
+              </Text>
+            ))}
+          </RetroCard>
         )}
 
-        <InsightSection label="과정" content={log.content} />
-        <InsightSection label="배운 점" content={log.learned} />
-        <InsightSection label="이슈와 해결" content={log.issue} />
-        <InsightSection label="메모" content={log.memo} />
+        <InsightSection label="PROGRESS" content={log.content} />
+        <InsightSection label="EXP GAINED" content={log.learned} />
+        <InsightSection label="OBSTACLE / SOLVE" content={log.issue} />
+        <InsightSection label="MEMO" content={log.memo} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -146,138 +112,102 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: DESIGN.borders.pixel,
+    borderBottomWidth: DESIGN.borders.heavy,
     borderBottomColor: DESIGN.colors.border,
   },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  headerButton: {
+    width: 70,
   },
-  backText: {
+  headerButtonText: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.primaryLight,
+    fontWeight: '900',
+  },
+  headerTitle: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.yellow,
+    fontWeight: '900',
     fontSize: 17,
-    color: DESIGN.colors.primary,
-    marginLeft: -4,
   },
   headerActions: {
     flexDirection: 'row',
-    alignItems: 'center',
+    gap: 14,
   },
-  actionButton: {
-    padding: 8,
-    marginLeft: 8,
-  },
-  editText: {
-    fontSize: 17,
-    color: DESIGN.colors.primary,
-    fontWeight: '900',
+  actionText: {
     fontFamily: 'monospace',
+    color: DESIGN.colors.mint,
+    fontWeight: '900',
+  },
+  deleteText: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.error,
+    fontWeight: '900',
   },
   content: {
     flex: 1,
     backgroundColor: DESIGN.colors.bg,
-  },
-  heroArea: {
     paddingHorizontal: 24,
-    paddingTop: 32,
-    paddingBottom: 32,
+  },
+  heroCard: {
+    padding: 18,
+    marginTop: 24,
+    marginBottom: 22,
   },
   dateText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: DESIGN.colors.textDim,
+    fontFamily: 'monospace',
+    color: DESIGN.colors.yellow,
+    fontWeight: '900',
     marginBottom: 8,
   },
   heroTitle: {
     ...DESIGN.typography.largeTitle,
     color: DESIGN.colors.text,
-    marginBottom: 16,
-  },
-  mantraContainer: {
-    ...retroStyles.cardPink,
-    padding: 20,
-    marginBottom: 20,
+    marginBottom: 12,
   },
   mantraText: {
-    fontSize: 18,
-    fontWeight: '900',
     color: DESIGN.colors.primary,
-    fontStyle: 'italic',
-    lineHeight: 26,
-  },
-  moodBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    backgroundColor: DESIGN.colors.bgSecondary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.yellow,
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    marginBottom: 16,
-  },
-  moodEmoji: {
     fontSize: 18,
-    marginRight: 6,
-  },
-  moodLabel: {
-    fontSize: 15,
-    color: DESIGN.colors.text,
     fontWeight: '900',
-    fontFamily: 'monospace',
+    lineHeight: 26,
+    marginBottom: 12,
   },
-  tagList: {
+  metaRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
-  tagText: {
-    fontSize: 15,
-    color: DESIGN.colors.mint,
+  metaBadge: {
     fontFamily: 'monospace',
+    color: DESIGN.colors.mint,
+    fontWeight: '900',
     marginRight: 12,
   },
-  divider: {
-    height: 1,
-    backgroundColor: DESIGN.colors.primary,
-    marginHorizontal: 24,
-    marginBottom: 32,
+  tagText: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.textDim,
+    fontWeight: '900',
+    marginRight: 10,
   },
   section: {
-    paddingHorizontal: 24,
-    marginBottom: 40,
+    padding: 16,
+    marginBottom: 18,
   },
   sectionLabel: {
-    fontSize: 13,
-    fontWeight: '900',
-    color: DESIGN.colors.primaryLight,
     fontFamily: 'monospace',
-    textTransform: 'uppercase',
-    marginBottom: 12,
+    color: DESIGN.colors.primaryLight,
+    fontWeight: '900',
+    marginBottom: 10,
   },
   sectionText: {
-    ...retroStyles.card,
-    fontSize: 17,
     color: DESIGN.colors.text,
-    lineHeight: 26,
-    padding: 14,
-  },
-  goalList: {
-    marginTop: 8,
-  },
-  goalRow: {
-    ...retroStyles.card,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    marginBottom: 12,
+    fontSize: 16,
+    lineHeight: 25,
   },
   goalText: {
-    marginLeft: 12,
-    fontSize: 16,
     color: DESIGN.colors.text,
+    fontSize: 16,
+    marginBottom: 8,
   },
   goalTextDone: {
-    color: DESIGN.colors.textDim,
-    textDecorationLine: 'line-through',
+    color: DESIGN.colors.mint,
   },
 });

@@ -3,18 +3,17 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar } from 'r
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { Ionicons } from '@expo/vector-icons';
-import { getLogsByDate, getLoggedDates, getDailyGoalsWithCheck, getGrowthStats, WorkLog } from '../database/db';
+import { getLogsByDate, getLoggedDates, getDailyGoalsWithCheck, WorkLog } from '../database/db';
 import { DESIGN } from '../theme/design';
-import { retroStyles } from '../theme/retro';
+import RetroCard from '../components/RetroCard';
+import RetroButton from '../components/RetroButton';
 
-// Locale config
 LocaleConfig.locales['en'] = {
   monthNames: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
   monthNamesShort: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
   dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
   dayNamesShort: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-  today: 'TODAY'
+  today: 'TODAY',
 };
 LocaleConfig.defaultLocale = 'en';
 
@@ -25,7 +24,6 @@ export default function CalendarScreen() {
   const [markedDates, setMarkedDates] = useState<any>({});
   const [logs, setLogs] = useState<WorkLog[]>([]);
   const [dailyGoals, setDailyGoals] = useState<any[]>([]);
-  const [stats, setStats] = useState({ total: 0, completed: 0, rate: 0 });
 
   useFocusEffect(
     useCallback(() => {
@@ -36,111 +34,108 @@ export default function CalendarScreen() {
   const loadData = () => {
     const dates = getLoggedDates();
     const marks: any = {};
-    dates.forEach(date => {
-    marks[date] = { marked: true, dotColor: DESIGN.colors.yellow };
-    });
-    
-    marks[selectedDate] = { 
-      ...marks[selectedDate], 
-      selected: true, 
-      selectedColor: DESIGN.colors.primary,
-      selectedTextColor: '#FFFFFF' 
-    };
-    setMarkedDates(marks);
 
+    dates.forEach(date => {
+      marks[date] = {
+        marked: true,
+        dotColor: DESIGN.colors.yellow,
+        customStyles: {
+          container: styles.loggedDay,
+          text: styles.loggedDayText,
+        },
+      };
+    });
+
+    marks[selectedDate] = {
+      ...marks[selectedDate],
+      selected: true,
+      selectedColor: DESIGN.colors.primary,
+      selectedTextColor: DESIGN.colors.text,
+    };
+
+    setMarkedDates(marks);
     setLogs(getLogsByDate(selectedDate));
     setDailyGoals(getDailyGoalsWithCheck(selectedDate));
-    setStats(getGrowthStats(selectedDate));
   };
 
-  const renderTimelineItem = ({ item }: { item: WorkLog }) => (
-    <TouchableOpacity 
-      style={styles.timelineItem}
-      onPress={() => navigation.navigate('Detail', { log: item })}
-      activeOpacity={0.6}
-    >
-      <View style={styles.timelineLine} />
-      <View style={styles.timelineDot} />
-      <View style={styles.timelineContent}>
-        <Text style={styles.timelineTitle}>{item.title}</Text>
-        {item.daily_summary && <Text style={styles.timelineSummary}>"{item.daily_summary}"</Text>}
-        {item.tags && (
-          <View style={styles.tagRow}>
-            {item.tags.split(',').map(tag => (
-              <Text key={tag} style={styles.tagText}>#{tag}</Text>
-            ))}
-          </View>
-        )}
-      </View>
+  const completedGoals = dailyGoals.filter(goal => goal.is_done === 1);
+
+  const renderArchiveLog = ({ item }: { item: WorkLog }) => (
+    <TouchableOpacity style={styles.archiveLog} onPress={() => navigation.navigate('Detail', { log: item })}>
+      <Text style={styles.logDate}>{item.date}</Text>
+      <Text style={styles.logTitle}>{item.title}</Text>
+      {item.daily_summary && <Text style={styles.logSummary} numberOfLines={2}>{item.daily_summary}</Text>}
+      <Text style={styles.openMark}>▶</Text>
     </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>성장 아카이브</Text>
-      </View>
 
       <FlatList
         data={logs}
-        renderItem={renderTimelineItem}
+        renderItem={renderArchiveLog}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
         contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 40 }]}
+        showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
-            <View style={styles.calendarWrapper}>
+            <Text style={styles.screenTitle}>ARCHIVE</Text>
+            <Text style={styles.screenSub}>기록 열람</Text>
+
+            <RetroCard accent="cyan" style={styles.calendarCard}>
               <Calendar
                 onDayPress={(day: any) => setSelectedDate(day.dateString)}
                 markedDates={markedDates}
+                markingType="custom"
                 theme={{
-                  backgroundColor: DESIGN.colors.bg,
+                  backgroundColor: DESIGN.colors.surface,
                   calendarBackground: DESIGN.colors.surface,
-                  textSectionTitleColor: DESIGN.colors.textDim,
+                  textSectionTitleColor: DESIGN.colors.primaryLight,
                   selectedDayBackgroundColor: DESIGN.colors.primary,
-                  selectedDayTextColor: '#FFFFFF',
+                  selectedDayTextColor: DESIGN.colors.text,
                   todayTextColor: DESIGN.colors.yellow,
                   dayTextColor: DESIGN.colors.text,
-                  textDisabledColor: DESIGN.colors.border,
-                  dotColor: DESIGN.colors.primary,
+                  textDisabledColor: '#3E4654',
+                  dotColor: DESIGN.colors.yellow,
                   monthTextColor: DESIGN.colors.yellow,
-                  indicatorColor: DESIGN.colors.primary,
-                  textDayFontWeight: '700',
+                  arrowColor: DESIGN.colors.yellow,
+                  textDayFontWeight: '900',
                   textMonthFontWeight: '900',
                   textDayHeaderFontWeight: '900',
                   textDayFontSize: 15,
-                  textMonthFontSize: 17,
+                  textMonthFontSize: 18,
                   textDayHeaderFontSize: 12,
                 }}
               />
-            </View>
+            </RetroCard>
 
-            <View style={styles.archiveHeader}>
-              <View style={styles.archiveDateInfo}>
-                <Text style={styles.archiveDateText}>{selectedDate.replace(/-/g, ' / ')}</Text>
-                <Text style={styles.archiveStatsText}>달성률 {stats.rate}%</Text>
-              </View>
-            </View>
-
-            <View style={styles.goalsSummary}>
-              <Text style={styles.sectionLabel}>완료한 목표</Text>
-              <View style={styles.goalPillRow}>
-                {dailyGoals.filter(g => g.is_done === 1).map(goal => (
-                  <View key={goal.goal_id} style={styles.goalPill}>
-                    <Text style={styles.goalPillText}>{goal.title}</Text>
-                  </View>
-                ))}
-                {dailyGoals.filter(g => g.is_done === 1).length === 0 && (
-                  <Text style={styles.emptyText}>완료한 목표가 없습니다.</Text>
+            <RetroCard accent="green" style={styles.datePanel}>
+              <Text style={styles.panelTitle}>{selectedDate.replace(/-/g, '.')} LOG</Text>
+              <View style={styles.goalGrid}>
+                {completedGoals.length > 0 ? completedGoals.map(goal => (
+                  <Text key={goal.goal_id} style={styles.goalGem}>■ {goal.title}</Text>
+                )) : (
+                  <Text style={styles.emptyText}>완료된 미션 기록이 없습니다.</Text>
                 )}
               </View>
-            </View>
+              <RetroButton
+                label="오늘 기록 보기"
+                variant="secondary"
+                onPress={() => {
+                  if (logs[0]) navigation.navigate('Detail', { log: logs[0] });
+                }}
+                disabled={!logs[0]}
+                style={!logs[0] ? styles.disabledButton : undefined}
+              />
+            </RetroCard>
 
-            <Text style={styles.sectionLabel}>기록 타임라인</Text>
+            <Text style={styles.sectionTitle}>SELECTED RECORDS</Text>
             {logs.length === 0 && (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyText}>기록된 회고가 없습니다.</Text>
-              </View>
+              <RetroCard accent="purple" style={styles.emptyCard}>
+                <Text style={styles.emptyText}>선택한 날짜의 기록이 없습니다.</Text>
+              </RetroCard>
             )}
           </>
         }
@@ -154,128 +149,99 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: DESIGN.colors.bg,
   },
-  header: {
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderBottomWidth: DESIGN.borders.pixel,
-    borderBottomColor: DESIGN.colors.border,
-  },
-  headerTitle: {
-    ...DESIGN.typography.title,
-    color: DESIGN.colors.text,
-  },
-  calendarWrapper: {
-    ...retroStyles.card,
-    marginTop: 16,
-    paddingTop: 10,
-    paddingBottom: 20,
-  },
   list: {
-    paddingHorizontal: 24,
+    paddingHorizontal: DESIGN.spacing.padding,
+    paddingTop: 22,
   },
-  archiveHeader: {
-    marginTop: 24,
-    marginBottom: 20,
-  },
-  archiveDateInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'baseline',
-  },
-  archiveDateText: {
-    fontSize: 22,
-    fontWeight: '900',
-    color: DESIGN.colors.yellow,
-    fontFamily: 'monospace',
-  },
-  archiveStatsText: {
-    fontSize: 15,
-    fontWeight: '900',
-    color: DESIGN.colors.primary,
-    fontFamily: 'monospace',
-  },
-  sectionLabel: {
-    fontSize: 13,
-    fontWeight: '900',
+  screenTitle: {
+    ...DESIGN.typography.largeTitle,
     color: DESIGN.colors.primaryLight,
+  },
+  screenSub: {
     fontFamily: 'monospace',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginTop: 24,
+    color: DESIGN.colors.textDim,
+    fontWeight: '900',
+    marginTop: 4,
+    marginBottom: 18,
+  },
+  calendarCard: {
+    padding: 10,
+    marginBottom: 18,
+  },
+  loggedDay: {
+    borderWidth: 2,
+    borderColor: DESIGN.colors.yellow,
+    borderRadius: 4,
+  },
+  loggedDayText: {
+    color: DESIGN.colors.yellow,
+  },
+  datePanel: {
+    padding: 16,
+    marginBottom: 24,
+  },
+  panelTitle: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.yellow,
+    fontWeight: '900',
+    fontSize: 15,
+    marginBottom: 12,
+  },
+  goalGrid: {
     marginBottom: 16,
   },
-  goalsSummary: {
-    marginBottom: 8,
-  },
-  goalPillRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  goalPill: {
-    ...retroStyles.card,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  goalPillText: {
-    fontSize: 14,
-    fontWeight: '900',
-    color: DESIGN.colors.text,
+  goalGem: {
     fontFamily: 'monospace',
+    color: DESIGN.colors.mint,
+    fontWeight: '900',
+    marginBottom: 8,
   },
-  timelineItem: {
-    flexDirection: 'row',
-    paddingBottom: 32,
+  sectionTitle: {
+    ...DESIGN.typography.title,
+    color: DESIGN.colors.text,
+    marginBottom: 12,
   },
-  timelineLine: {
-    position: 'absolute',
-    left: 4,
-    top: 10,
-    bottom: 0,
-    width: 2,
-    backgroundColor: DESIGN.colors.primary,
-  },
-  timelineDot: {
-    width: 9,
-    height: 9,
-    borderRadius: 2,
-    backgroundColor: DESIGN.colors.yellow,
-    marginTop: 8,
-  },
-  timelineContent: {
-    flex: 1,
-    marginLeft: 20,
-    ...retroStyles.card,
+  archiveLog: {
+    backgroundColor: DESIGN.colors.surface,
+    borderWidth: DESIGN.borders.heavy,
+    borderColor: DESIGN.colors.primaryLight,
+    borderBottomColor: DESIGN.colors.yellow,
+    borderRightColor: DESIGN.colors.primary,
     padding: 14,
+    marginBottom: 12,
   },
-  timelineTitle: {
-    fontSize: 18,
-    fontWeight: '900',
-    color: DESIGN.colors.text,
+  logDate: {
     fontFamily: 'monospace',
+    color: DESIGN.colors.purple,
+    fontWeight: '900',
+    marginBottom: 4,
+  },
+  logTitle: {
+    color: DESIGN.colors.text,
+    fontWeight: '900',
+    fontSize: 17,
     marginBottom: 6,
   },
-  timelineSummary: {
-    fontSize: 15,
-    color: DESIGN.colors.primary,
-    fontStyle: 'italic',
-    lineHeight: 22,
-    marginBottom: 8,
-  },
-  tagRow: {
-    flexDirection: 'row',
-  },
-  tagText: {
-    fontSize: 13,
+  logSummary: {
     color: DESIGN.colors.textDim,
-    marginRight: 10,
+    lineHeight: 20,
   },
-  emptyState: {
-    paddingVertical: 20,
+  openMark: {
+    position: 'absolute',
+    right: 12,
+    top: 16,
+    color: DESIGN.colors.primary,
+    fontFamily: 'monospace',
+    fontWeight: '900',
+  },
+  emptyCard: {
+    padding: 20,
   },
   emptyText: {
-    fontSize: 15,
     color: DESIGN.colors.textDim,
-  }
+    lineHeight: 21,
+  },
+  disabledButton: {
+    opacity: 0.45,
+  },
 });

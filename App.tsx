@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from './src/screens/HomeScreen';
 import WriteScreen from './src/screens/WriteScreen';
 import DetailScreen from './src/screens/DetailScreen';
@@ -32,6 +31,12 @@ const AppTheme = {
 
 function TabNavigator() {
   const insets = useSafeAreaInsets();
+  const getTabIcon = (name: string) => {
+    if (name === 'Home') return '★';
+    if (name === 'Archive') return '▣';
+    if (name === 'Search') return '⌕';
+    return '⚙';
+  };
 
   return (
     <Tab.Navigator
@@ -42,16 +47,6 @@ function TabNavigator() {
           backgroundColor: DESIGN.colors.bg,
         },
         tabBarIcon: ({ focused, color }) => {
-          let iconName: any = 'sparkles-outline';
-
-          if (route.name === 'Home') {
-            iconName = focused ? 'sparkles' : 'sparkles-outline';
-          } else if (route.name === 'Calendar') {
-            iconName = focused ? 'calendar' : 'calendar-outline';
-          } else if (route.name === 'Search') {
-            iconName = focused ? 'search' : 'search-outline';
-          }
-
           return (
             <View
               style={{
@@ -63,7 +58,28 @@ function TabNavigator() {
                 borderRadius: 6,
               }}
             >
-              <Ionicons name={iconName} size={22} color={color} />
+              <View
+                style={{
+                  width: 22,
+                  height: 22,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <View>
+                  <Text
+                    style={{
+                      color,
+                      fontFamily: 'monospace',
+                      fontWeight: '900',
+                      fontSize: 17,
+                      lineHeight: 20,
+                    }}
+                  >
+                    {getTabIcon(route.name)}
+                  </Text>
+                </View>
+              </View>
             </View>
           );
         },
@@ -86,8 +102,9 @@ function TabNavigator() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: 'TODAY' }} />
-      <Tab.Screen name="Calendar" component={CalendarScreen} options={{ tabBarLabel: 'CAL' }} />
-      <Tab.Screen name="Search" component={SearchScreen} options={{ tabBarLabel: 'FIND' }} />
+      <Tab.Screen name="Archive" component={CalendarScreen} options={{ tabBarLabel: 'ARCHIVE' }} />
+      <Tab.Screen name="Search" component={SearchScreen} options={{ tabBarLabel: 'SEARCH' }} />
+      <Tab.Screen name="System" component={GoalManageScreen} options={{ tabBarLabel: 'SYSTEM' }} />
     </Tab.Navigator>
   );
 }

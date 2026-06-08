@@ -1,10 +1,9 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, TextInput, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, TextInput, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import {
-  getAllLogs,
   getLogsByDate,
   getDailyGoalsWithStats,
   getTodayOnlyGoals,
@@ -18,14 +17,8 @@ import {
   TodayOnlyGoal,
 } from '../database/db';
 import { DESIGN } from '../theme/design';
-import { retroStyles } from '../theme/retro';
-
-const MOOD_MAP: Record<string, string> = {
-  best: 'BEST',
-  good: 'GOOD',
-  normal: 'NORM',
-  hard: 'HARD',
-};
+import RetroCard from '../components/RetroCard';
+import RetroButton from '../components/RetroButton';
 
 const PixelCheck = ({ checked }: { checked: boolean }) => (
   <View style={[styles.pixelCheck, checked && styles.pixelCheckDone]}>
@@ -36,7 +29,6 @@ const PixelCheck = ({ checked }: { checked: boolean }) => (
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const [logs, setLogs] = useState<WorkLog[]>([]);
   const [dailyGoals, setDailyGoals] = useState<any[]>([]);
   const [todayOnlyGoals, setTodayOnlyGoals] = useState<TodayOnlyGoal[]>([]);
   const [streak, setStreak] = useState(0);
@@ -45,8 +37,7 @@ export default function HomeScreen() {
   const [todayOnlyTitle, setTodayOnlyTitle] = useState('');
 
   const today = new Date().toISOString().split('T')[0];
-  const hasTodayGoals = dailyGoals.length > 0 || todayOnlyGoals.length > 0;
-  const progressBlocks = Array.from({ length: 10 }, (_, index) => index < Math.round(stats.rate / 10));
+  const missionBlocks = Array.from({ length: 10 }, (_, index) => index < Math.round(stats.rate / 10));
 
   useFocusEffect(
     useCallback(() => {
@@ -55,7 +46,6 @@ export default function HomeScreen() {
   );
 
   const loadData = () => {
-    setLogs(getAllLogs());
     setDailyGoals(getDailyGoalsWithStats(today));
     setTodayOnlyGoals(getTodayOnlyGoals(today));
     setStreak(getCurrentStreak());
@@ -89,67 +79,35 @@ export default function HomeScreen() {
     loadData();
   };
 
-  const renderInsight = ({ item }: { item: WorkLog }) => (
-    <TouchableOpacity
-      style={styles.insightItem}
-      onPress={() => navigation.navigate('Detail', { log: item })}
-      activeOpacity={0.7}
-    >
-      <View style={styles.pixelCorner} />
-      <View style={styles.insightHeader}>
-        <Text style={styles.insightDate}>{item.date.split('-').slice(1).join(' / ')}</Text>
-        {item.mood && <Text style={styles.insightMood}>{MOOD_MAP[item.mood]}</Text>}
-      </View>
-      <Text style={styles.insightTitle} numberOfLines={1}>{item.title}</Text>
-      {item.daily_summary && (
-        <Text style={styles.insightSummary} numberOfLines={1}>"{item.daily_summary}"</Text>
-      )}
-      <View style={styles.tagRow}>
-        {item.tags?.split(',').slice(0, 3).map(tag => (
-          <Text key={tag} style={styles.tagText}>#{tag}</Text>
-        ))}
-      </View>
-    </TouchableOpacity>
-  );
-
   const renderRoutineGoal = (item: any) => (
     <TouchableOpacity
       key={item.goal_id}
-      style={styles.goalItem}
+      style={styles.missionRow}
       onPress={() => handleToggleGoal(item.goal_id, item.is_done)}
       activeOpacity={0.75}
     >
       <PixelCheck checked={item.is_done === 1} />
-      <View style={styles.goalTextWrapper}>
-        <Text style={styles.goalCategory}>{item.category}</Text>
-        <Text style={[styles.goalTitle, item.is_done === 1 && styles.goalTitleDone]}>
-          {item.title}
-        </Text>
-        {item.streak > 1 && (
-          <Text style={styles.goalStreak}>{item.streak}일 연속</Text>
-        )}
+      <View style={styles.missionTextWrap}>
+        <Text style={[styles.missionTitle, item.is_done === 1 && styles.missionDone]}>{item.title}</Text>
+        <Text style={styles.missionMeta}>{item.category}{item.streak > 1 ? ` / ${item.streak}일 연속` : ''}</Text>
       </View>
     </TouchableOpacity>
   );
 
   const renderTodayOnlyGoal = (item: TodayOnlyGoal) => (
-    <View key={item.id} style={styles.goalItem}>
+    <View key={item.id} style={styles.missionRow}>
       <TouchableOpacity
-        style={styles.goalCheckArea}
+        style={styles.todayOnlyTapArea}
         onPress={() => handleToggleTodayOnlyGoal(item)}
         activeOpacity={0.75}
       >
         <PixelCheck checked={item.is_done === 1} />
-        <Text style={[styles.goalTitle, styles.todayOnlyTitle, item.is_done === 1 && styles.goalTitleDone]}>
+        <Text style={[styles.missionTitle, styles.todayOnlyTitle, item.is_done === 1 && styles.missionDone]}>
           {item.title}
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => handleDeleteTodayOnlyGoal(item.id!)}
-        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-      >
-        <Ionicons name="close" size={22} color={DESIGN.colors.error} />
+      <TouchableOpacity onPress={() => handleDeleteTodayOnlyGoal(item.id!)} hitSlop={10}>
+        <Text style={styles.deleteText}>X</Text>
       </TouchableOpacity>
     </View>
   );
@@ -157,128 +115,75 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
-
-      <FlatList
+      <ScrollView
         style={styles.container}
-        data={logs}
-        renderItem={renderInsight}
-        keyExtractor={item => item.id?.toString() || Math.random().toString()}
-        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 100 }]}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={
-          <View style={styles.header}>
-            <Text style={styles.arcadeTitle}>TODAY QUEST</Text>
-            <View style={styles.subHeader}>
-              <Text style={styles.dateLabel}>{today.replace(/-/g, ' / ')}</Text>
-              <View style={styles.streakBadge}>
-                <Text style={styles.streakText}>{streak} DAY RUN</Text>
-              </View>
-            </View>
-
-            <View style={styles.mantraSection}>
-              <Text style={styles.sectionLabel}>TODAY LINE</Text>
-              {todayLog ? (
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('Detail', { log: todayLog })}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.mantraText}>"{todayLog.daily_summary || todayLog.title}"</Text>
-                </TouchableOpacity>
-              ) : (
-                <View>
-                  <Text style={styles.mantraPlaceholder}>오늘의 성장을 한 문장으로 남겨보세요.</Text>
-                  <Pressable
-                    style={({ pressed }) => [styles.pixelButton, pressed && styles.pixelButtonPressed]}
-                    onPress={() => navigation.navigate('Write')}
-                  >
-                    <Text style={styles.pixelButtonText}>기록 작성하기</Text>
-                  </Pressable>
-                </View>
-              )}
-            </View>
-
-            <View style={styles.scoreBoard}>
-              <View style={styles.pixelCorner} />
-              <View style={styles.statBox}>
-                <Text style={styles.scoreLabel}>CLEAR RATE</Text>
-                <Text style={styles.statValue}>{stats.rate}%</Text>
-              </View>
-              <View style={styles.statBox}>
-                <Text style={styles.scoreLabel}>MISSION</Text>
-                <Text style={styles.statValue}>{stats.completed} / {stats.total}</Text>
-              </View>
-              <View style={styles.blockProgress}>
-                {progressBlocks.map((filled, index) => (
-                  <View key={index} style={[styles.progressBlock, filled && styles.progressBlockFilled]} />
-                ))}
-              </View>
-            </View>
-
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>오늘의 목표</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('GoalManage')}>
-                <Text style={styles.manageText}>반복 목표 관리</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.goalSection}>
-              <Text style={styles.goalGroupTitle}>매일 반복 목표</Text>
-              <Text style={styles.goalGroupDescription}>매일 반복해서 체크하는 성장 루틴</Text>
-              {dailyGoals.map(renderRoutineGoal)}
-            </View>
-
-            <View style={styles.goalSection}>
-              <Text style={styles.goalGroupTitle}>오늘만 목표</Text>
-              <Text style={styles.goalGroupDescription}>오늘만 처리하면 되는 임시 목표</Text>
-              <View style={styles.todayOnlyInputRow}>
-                <TextInput
-                  style={styles.todayOnlyInput}
-                  value={todayOnlyTitle}
-                  onChangeText={setTodayOnlyTitle}
-                  placeholder="오늘만 할 목표 추가"
-                  placeholderTextColor={DESIGN.colors.textDim}
-                  returnKeyType="done"
-                  onSubmitEditing={handleAddTodayOnlyGoal}
-                  selectionColor={DESIGN.colors.primary}
-                />
-                <Pressable
-                  style={({ pressed }) => [styles.addGoalButton, pressed && styles.pixelButtonPressed]}
-                  onPress={handleAddTodayOnlyGoal}
-                >
-                  <Text style={styles.addGoalButtonText}>+</Text>
-                </Pressable>
-              </View>
-              {todayOnlyGoals.map(renderTodayOnlyGoal)}
-            </View>
-
-            {!hasTodayGoals && (
-              <View style={styles.emptyGoalBox}>
-                <Text style={styles.emptyGoalTitle}>아직 오늘의 목표가 없습니다.</Text>
-                <Text style={styles.emptyGoalText}>반복 목표를 추가하거나 오늘만 할 목표를 입력해보세요.</Text>
-              </View>
-            )}
-
-            <View style={styles.pixelDivider} />
-            <Text style={styles.sectionTitle}>지난 기록</Text>
-          </View>
-        }
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>아직 기록이 없습니다.</Text>
-          </View>
-        }
-      />
-
-      <Pressable
-        style={({ pressed }) => [
-          styles.floatingButton,
-          { bottom: insets.bottom + 20 },
-          pressed && styles.pixelButtonPressed,
-        ]}
-        onPress={() => navigation.navigate('Write')}
       >
-        <Text style={styles.buttonText}>기록하기</Text>
-      </Pressable>
+        <Text style={styles.arcadeTitle}>GROWTH QUEST</Text>
+        <Text style={styles.subtitle}>성장 로그 RPG</Text>
+
+        <View style={styles.statusRow}>
+          <RetroCard accent="pink" style={styles.statusChip}>
+            <Text style={styles.statusLabel}>STREAK</Text>
+            <Text style={styles.statusValue}>{streak} DAY</Text>
+          </RetroCard>
+          <RetroCard accent="green" style={styles.statusChip}>
+            <Text style={styles.statusLabel}>STATE</Text>
+            <Text style={styles.statusValue}>{todayLog ? 'LOGGED' : 'READY'}</Text>
+          </RetroCard>
+        </View>
+
+        <RetroCard accent="pink" style={styles.missionStatus}>
+          <Text style={styles.cardTitle}>MISSION STATUS</Text>
+          <View style={styles.rpgBar}>
+            {missionBlocks.map((filled, index) => (
+              <View key={index} style={[styles.rpgBlock, filled && styles.rpgBlockFilled]} />
+            ))}
+          </View>
+          <Text style={styles.percentText}>{stats.rate}%</Text>
+          <Text style={styles.completeText}>{stats.completed} / {stats.total} COMPLETE</Text>
+        </RetroCard>
+
+        <RetroCard accent="cyan" style={styles.missionList}>
+          <View style={styles.missionHeader}>
+            <Text style={styles.cardTitle}>TODAY MISSION</Text>
+            <Text style={styles.completeText}>{stats.completed} / {stats.total}</Text>
+          </View>
+
+          {dailyGoals.map(renderRoutineGoal)}
+          {todayOnlyGoals.map(renderTodayOnlyGoal)}
+
+          {stats.total === 0 && (
+            <View style={styles.emptyMission}>
+              <Text style={styles.emptyTitle}>NO MISSION</Text>
+              <Text style={styles.emptyText}>SYSTEM 탭에서 반복 목표를 만들거나 오늘만 목표를 추가하세요.</Text>
+            </View>
+          )}
+
+          <View style={styles.addMissionRow}>
+            <TextInput
+              style={styles.todayOnlyInput}
+              value={todayOnlyTitle}
+              onChangeText={setTodayOnlyTitle}
+              placeholder="오늘만 할 목표 추가"
+              placeholderTextColor={DESIGN.colors.textDim}
+              returnKeyType="done"
+              onSubmitEditing={handleAddTodayOnlyGoal}
+              selectionColor={DESIGN.colors.primary}
+            />
+            <TouchableOpacity style={styles.addMissionButton} onPress={handleAddTodayOnlyGoal}>
+              <Text style={styles.addMissionText}>+</Text>
+            </TouchableOpacity>
+          </View>
+        </RetroCard>
+      </ScrollView>
+
+      <RetroButton
+        label="+ 오늘 기록하기"
+        style={[styles.floatingButton, { bottom: insets.bottom + 20 }]}
+        onPress={() => navigation.navigate('Write')}
+      />
     </SafeAreaView>
   );
 }
@@ -288,183 +193,115 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: DESIGN.colors.bg,
   },
-  list: {
+  content: {
     paddingHorizontal: DESIGN.spacing.padding,
-  },
-  header: {
-    paddingTop: 20,
-    marginBottom: 40,
+    paddingTop: 22,
   },
   arcadeTitle: {
     ...DESIGN.typography.largeTitle,
-    color: DESIGN.colors.yellow,
-    marginBottom: 8,
-    textAlign: 'center',
-    textShadowColor: DESIGN.colors.primary,
+    color: DESIGN.colors.primary,
+    textShadowColor: DESIGN.colors.primaryLight,
     textShadowOffset: { width: 3, height: 3 },
     textShadowRadius: 0,
   },
-  subHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 32,
-  },
-  dateLabel: {
-    fontSize: 15,
-    color: DESIGN.colors.textDim,
-    fontWeight: '900',
+  subtitle: {
     fontFamily: 'monospace',
-  },
-  streakBadge: {
-    backgroundColor: DESIGN.colors.surface,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.mint,
-    borderRightWidth: DESIGN.borders.heavy,
-    borderBottomWidth: DESIGN.borders.heavy,
-    borderRightColor: DESIGN.colors.primary,
-    borderBottomColor: DESIGN.colors.yellow,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  streakText: {
-    fontSize: 12,
-    fontWeight: '900',
     color: DESIGN.colors.mint,
-    fontFamily: 'monospace',
-  },
-  mantraSection: {
-    ...retroStyles.card,
-    padding: 18,
-    marginBottom: 30,
-  },
-  sectionLabel: {
-    fontSize: 13,
     fontWeight: '900',
-    color: DESIGN.colors.primaryLight,
-    fontFamily: 'monospace',
-    letterSpacing: 1,
-    marginBottom: 16,
-  },
-  mantraText: {
-    fontSize: 23,
-    fontWeight: '900',
-    color: DESIGN.colors.text,
-    lineHeight: 32,
-  },
-  mantraPlaceholder: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: DESIGN.colors.text,
-    lineHeight: 28,
-    marginBottom: 18,
-  },
-  pixelButton: {
-    ...retroStyles.button,
-    alignSelf: 'flex-start',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-  },
-  pixelButtonPressed: {
-    transform: [{ translateX: 3 }, { translateY: 3 }],
-    borderRightWidth: DESIGN.borders.pixel,
-    borderBottomWidth: DESIGN.borders.pixel,
-  },
-  pixelButtonText: {
-    ...retroStyles.pixelText,
-    fontSize: 15,
-    color: DESIGN.colors.text,
-  },
-  scoreBoard: {
-    ...retroStyles.cardPink,
-    padding: 22,
-    marginBottom: 34,
-  },
-  pixelCorner: {
-    position: 'absolute',
-    right: 10,
-    top: 10,
-    width: 8,
-    height: 8,
-    backgroundColor: DESIGN.colors.yellow,
-  },
-  statBox: {
-    marginBottom: 12,
-  },
-  scoreLabel: {
-    ...retroStyles.pixelText,
-    fontSize: 12,
-    color: DESIGN.colors.primaryLight,
-    marginBottom: 4,
-  },
-  statValue: {
-    ...retroStyles.pixelText,
-    fontSize: 34,
-    color: DESIGN.colors.yellow,
-  },
-  blockProgress: {
-    flexDirection: 'row',
-    marginTop: 8,
-  },
-  progressBlock: {
-    flex: 1,
-    height: 14,
-    backgroundColor: DESIGN.colors.bg,
-    borderWidth: 2,
-    borderColor: DESIGN.colors.border,
-    marginRight: 4,
-  },
-  progressBlockFilled: {
-    backgroundColor: DESIGN.colors.mint,
-    borderColor: DESIGN.colors.yellow,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    fontSize: 16,
+    marginTop: 6,
     marginBottom: 20,
   },
-  sectionTitle: {
-    ...DESIGN.typography.title,
-    color: DESIGN.colors.text,
+  statusRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 18,
   },
-  manageText: {
-    ...retroStyles.pixelText,
-    fontSize: 13,
-    color: DESIGN.colors.primary,
+  statusChip: {
+    flex: 1,
+    padding: 14,
   },
-  goalSection: {
-    marginBottom: 28,
+  statusLabel: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.primaryLight,
+    fontWeight: '900',
+    fontSize: 11,
+    marginBottom: 6,
   },
-  goalGroupTitle: {
-    ...retroStyles.pixelText,
-    fontSize: 17,
+  statusValue: {
+    fontFamily: 'monospace',
     color: DESIGN.colors.yellow,
-    marginBottom: 4,
+    fontWeight: '900',
+    fontSize: 18,
   },
-  goalGroupDescription: {
-    fontSize: 14,
-    color: DESIGN.colors.textDim,
+  missionStatus: {
+    padding: 22,
+    marginBottom: 18,
+  },
+  cardTitle: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.yellow,
+    fontWeight: '900',
+    fontSize: 16,
+    letterSpacing: 1,
     marginBottom: 12,
   },
-  goalItem: {
-    ...retroStyles.card,
+  rpgBar: {
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  rpgBlock: {
+    flex: 1,
+    height: 18,
+    backgroundColor: DESIGN.colors.bg,
+    borderWidth: 2,
+    borderColor: '#252A35',
+    marginRight: 5,
+  },
+  rpgBlockFilled: {
+    backgroundColor: DESIGN.colors.primary,
+    borderColor: DESIGN.colors.yellow,
+  },
+  percentText: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.yellow,
+    fontWeight: '900',
+    fontSize: 34,
+    textAlign: 'center',
+  },
+  completeText: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.primaryLight,
+    fontWeight: '900',
+    fontSize: 13,
+    textAlign: 'center',
+  },
+  missionList: {
+    padding: 16,
+  },
+  missionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 13,
+  },
+  missionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 44,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: '#343B49',
+    backgroundColor: DESIGN.colors.bgSecondary,
     paddingHorizontal: 12,
     marginBottom: 10,
   },
   pixelCheck: {
-    width: 26,
-    height: 26,
-    backgroundColor: DESIGN.colors.bg,
+    width: 24,
+    height: 24,
     borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.border,
-    justifyContent: 'center',
+    borderColor: DESIGN.colors.textDim,
+    backgroundColor: DESIGN.colors.bg,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   pixelCheckDone: {
     borderColor: DESIGN.colors.mint,
@@ -474,155 +311,89 @@ const styles = StyleSheet.create({
     height: 12,
     backgroundColor: DESIGN.colors.mint,
   },
-  goalCheckArea: {
+  missionTextWrap: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  todayOnlyTapArea: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
   },
-  goalTextWrapper: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  goalCategory: {
-    ...retroStyles.pixelText,
-    fontSize: 11,
-    color: DESIGN.colors.yellow,
-    marginBottom: 2,
-  },
-  goalTitle: {
-    flexShrink: 1,
-    fontSize: 17,
-    fontWeight: '700',
+  missionTitle: {
     color: DESIGN.colors.text,
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  missionMeta: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.textDim,
+    fontSize: 11,
+    marginTop: 2,
   },
   todayOnlyTitle: {
-    marginLeft: 16,
+    marginLeft: 12,
   },
-  goalTitleDone: {
-    color: DESIGN.colors.textDim,
+  missionDone: {
+    color: DESIGN.colors.mint,
     textDecorationLine: 'line-through',
   },
-  goalStreak: {
-    ...retroStyles.pixelText,
-    fontSize: 12,
-    color: DESIGN.colors.primary,
-    marginTop: 4,
-  },
-  todayOnlyInputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  todayOnlyInput: {
-    ...retroStyles.input,
-    flex: 1,
-    minHeight: 48,
-    paddingHorizontal: 14,
+  deleteText: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.error,
+    fontWeight: '900',
     fontSize: 16,
-    color: DESIGN.colors.text,
+    paddingLeft: 10,
   },
-  addGoalButton: {
-    ...retroStyles.button,
-    width: 48,
-    height: 48,
-    justifyContent: 'center',
+  emptyMission: {
     alignItems: 'center',
-    marginLeft: 10,
+    paddingVertical: 24,
   },
-  addGoalButtonText: {
-    ...retroStyles.pixelText,
-    fontSize: 24,
-    color: DESIGN.colors.text,
-  },
-  deleteButton: {
-    paddingLeft: 12,
-  },
-  emptyGoalBox: {
-    ...retroStyles.card,
-    padding: 24,
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  emptyGoalTitle: {
-    ...retroStyles.pixelText,
-    fontSize: 16,
-    color: DESIGN.colors.text,
+  emptyTitle: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.yellow,
+    fontWeight: '900',
     marginBottom: 6,
   },
-  emptyGoalText: {
-    fontSize: 15,
+  emptyText: {
     color: DESIGN.colors.textDim,
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 21,
   },
-  pixelDivider: {
-    ...retroStyles.dotLine,
-    marginTop: 8,
-    marginBottom: 22,
-  },
-  insightItem: {
-    ...retroStyles.card,
-    paddingVertical: 18,
-    paddingHorizontal: 14,
-    marginBottom: 12,
-  },
-  insightHeader: {
+  addMissionRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 6,
-  },
-  insightDate: {
-    ...retroStyles.pixelText,
-    fontSize: 13,
-    color: DESIGN.colors.textDim,
-  },
-  insightMood: {
-    ...retroStyles.pixelText,
-    fontSize: 12,
-    color: DESIGN.colors.mint,
-  },
-  insightTitle: {
-    ...retroStyles.pixelText,
-    fontSize: 18,
-    color: DESIGN.colors.text,
-    marginBottom: 4,
-  },
-  insightSummary: {
-    fontSize: 15,
-    color: DESIGN.colors.primary,
-    fontStyle: 'italic',
-    marginBottom: 8,
-  },
-  tagRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  tagText: {
-    ...retroStyles.pixelText,
-    fontSize: 12,
-    color: DESIGN.colors.textDim,
-    marginRight: 8,
-  },
-  emptyState: {
-    marginTop: 40,
     alignItems: 'center',
+    marginTop: 8,
   },
-  emptyStateText: {
-    fontSize: 15,
-    color: DESIGN.colors.textDim,
+  todayOnlyInput: {
+    flex: 1,
+    minHeight: 46,
+    color: DESIGN.colors.text,
+    backgroundColor: DESIGN.colors.bg,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.primaryLight,
+    paddingHorizontal: 12,
+  },
+  addMissionButton: {
+    width: 46,
+    height: 46,
+    marginLeft: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: DESIGN.colors.primary,
+    borderWidth: DESIGN.borders.heavy,
+    borderColor: DESIGN.colors.primaryLight,
+    borderBottomColor: DESIGN.colors.yellow,
+  },
+  addMissionText: {
+    fontFamily: 'monospace',
+    color: DESIGN.colors.text,
+    fontWeight: '900',
+    fontSize: 22,
   },
   floatingButton: {
-    ...retroStyles.button,
     position: 'absolute',
     left: DESIGN.spacing.padding,
     right: DESIGN.spacing.padding,
-    height: 58,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    ...retroStyles.pixelText,
-    fontSize: 17,
-    color: DESIGN.colors.text,
   },
 });
