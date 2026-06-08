@@ -5,6 +5,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { getAllGoals, addGoal, updateGoal, Goal } from '../database/db';
 import { DESIGN } from '../theme/design';
+import { retroStyles } from '../theme/retro';
 
 const CATEGORIES = ['건강', '공부', '일', '생활', '성장', '기타'];
 
@@ -144,11 +145,9 @@ const styles = StyleSheet.create({
     borderBottomColor: DESIGN.colors.primary,
   },
   input: {
+    ...retroStyles.input,
     fontSize: 17,
     color: DESIGN.colors.text,
-    backgroundColor: DESIGN.colors.bgSecondary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.border,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 12,
@@ -159,12 +158,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   catChip: {
+    ...retroStyles.card,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 12,
-    backgroundColor: DESIGN.colors.bgSecondary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.border,
     marginRight: 8,
   },
   catChipSelected: {
@@ -181,11 +177,8 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   addButton: {
-    backgroundColor: DESIGN.colors.primary,
+    ...retroStyles.button,
     height: 50,
-    borderWidth: DESIGN.borders.heavy,
-    borderColor: DESIGN.colors.yellow,
-    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -199,14 +192,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   templateItem: {
+    ...retroStyles.card,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: DESIGN.colors.bgSecondary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.border,
-    borderRadius: 12,
     marginBottom: 12,
   },
   templateInfo: {

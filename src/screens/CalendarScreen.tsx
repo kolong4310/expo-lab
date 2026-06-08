@@ -6,6 +6,7 @@ import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
 import { getLogsByDate, getLoggedDates, getDailyGoalsWithCheck, getGrowthStats, WorkLog } from '../database/db';
 import { DESIGN } from '../theme/design';
+import { retroStyles } from '../theme/retro';
 
 // Locale config
 LocaleConfig.locales['en'] = {
@@ -36,7 +37,7 @@ export default function CalendarScreen() {
     const dates = getLoggedDates();
     const marks: any = {};
     dates.forEach(date => {
-      marks[date] = { marked: true, dotColor: DESIGN.colors.primary };
+    marks[date] = { marked: true, dotColor: DESIGN.colors.yellow };
     });
     
     marks[selectedDate] = { 
@@ -164,10 +165,7 @@ const styles = StyleSheet.create({
     color: DESIGN.colors.text,
   },
   calendarWrapper: {
-    backgroundColor: DESIGN.colors.surface,
-    borderWidth: DESIGN.borders.heavy,
-    borderColor: DESIGN.colors.border,
-    borderRadius: DESIGN.spacing.radius,
+    ...retroStyles.card,
     marginTop: 16,
     paddingTop: 10,
     paddingBottom: 20,
@@ -214,12 +212,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   goalPill: {
-    backgroundColor: DESIGN.colors.surface,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.mint,
+    ...retroStyles.card,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 12,
     marginRight: 8,
     marginBottom: 8,
   },
@@ -251,10 +246,7 @@ const styles = StyleSheet.create({
   timelineContent: {
     flex: 1,
     marginLeft: 20,
-    backgroundColor: DESIGN.colors.bgSecondary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.border,
-    borderRadius: 12,
+    ...retroStyles.card,
     padding: 14,
   },
   timelineTitle: {

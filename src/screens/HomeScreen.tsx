@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, TextInput, Pressable } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,13 +18,20 @@ import {
   TodayOnlyGoal,
 } from '../database/db';
 import { DESIGN } from '../theme/design';
+import { retroStyles } from '../theme/retro';
 
 const MOOD_MAP: Record<string, string> = {
-  best: '🔥',
-  good: '🙂',
-  normal: '😐',
-  hard: '😮‍💨',
+  best: 'BEST',
+  good: 'GOOD',
+  normal: 'NORM',
+  hard: 'HARD',
 };
+
+const PixelCheck = ({ checked }: { checked: boolean }) => (
+  <View style={[styles.pixelCheck, checked && styles.pixelCheckDone]}>
+    {checked && <View style={styles.pixelCheckInner} />}
+  </View>
+);
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
@@ -39,6 +46,7 @@ export default function HomeScreen() {
 
   const today = new Date().toISOString().split('T')[0];
   const hasTodayGoals = dailyGoals.length > 0 || todayOnlyGoals.length > 0;
+  const progressBlocks = Array.from({ length: 10 }, (_, index) => index < Math.round(stats.rate / 10));
 
   useFocusEffect(
     useCallback(() => {
@@ -85,8 +93,9 @@ export default function HomeScreen() {
     <TouchableOpacity
       style={styles.insightItem}
       onPress={() => navigation.navigate('Detail', { log: item })}
-      activeOpacity={0.6}
+      activeOpacity={0.7}
     >
+      <View style={styles.pixelCorner} />
       <View style={styles.insightHeader}>
         <Text style={styles.insightDate}>{item.date.split('-').slice(1).join(' / ')}</Text>
         {item.mood && <Text style={styles.insightMood}>{MOOD_MAP[item.mood]}</Text>}
@@ -108,13 +117,9 @@ export default function HomeScreen() {
       key={item.goal_id}
       style={styles.goalItem}
       onPress={() => handleToggleGoal(item.goal_id, item.is_done)}
-      activeOpacity={0.7}
+      activeOpacity={0.75}
     >
-      <Ionicons
-        name={item.is_done === 1 ? 'checkmark-circle' : 'ellipse-outline'}
-        size={28}
-        color={item.is_done === 1 ? DESIGN.colors.primary : DESIGN.colors.border}
-      />
+      <PixelCheck checked={item.is_done === 1} />
       <View style={styles.goalTextWrapper}>
         <Text style={styles.goalCategory}>{item.category}</Text>
         <Text style={[styles.goalTitle, item.is_done === 1 && styles.goalTitleDone]}>
@@ -132,13 +137,9 @@ export default function HomeScreen() {
       <TouchableOpacity
         style={styles.goalCheckArea}
         onPress={() => handleToggleTodayOnlyGoal(item)}
-        activeOpacity={0.7}
+        activeOpacity={0.75}
       >
-        <Ionicons
-          name={item.is_done === 1 ? 'checkmark-circle' : 'ellipse-outline'}
-          size={28}
-          color={item.is_done === 1 ? DESIGN.colors.primary : DESIGN.colors.border}
-        />
+        <PixelCheck checked={item.is_done === 1} />
         <Text style={[styles.goalTitle, styles.todayOnlyTitle, item.is_done === 1 && styles.goalTitleDone]}>
           {item.title}
         </Text>
@@ -148,7 +149,7 @@ export default function HomeScreen() {
         onPress={() => handleDeleteTodayOnlyGoal(item.id!)}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
-        <Ionicons name="trash-outline" size={20} color={DESIGN.colors.error} />
+        <Ionicons name="close" size={22} color={DESIGN.colors.error} />
       </TouchableOpacity>
     </View>
   );
@@ -166,16 +167,16 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View style={styles.header}>
-            <Text style={styles.largeTitle}>오늘의 성장</Text>
+            <Text style={styles.arcadeTitle}>TODAY QUEST</Text>
             <View style={styles.subHeader}>
               <Text style={styles.dateLabel}>{today.replace(/-/g, ' / ')}</Text>
               <View style={styles.streakBadge}>
-                <Text style={styles.streakText}>{streak}일 연속 기록 중</Text>
+                <Text style={styles.streakText}>{streak} DAY RUN</Text>
               </View>
             </View>
 
             <View style={styles.mantraSection}>
-              <Text style={styles.sectionLabel}>오늘의 한 줄</Text>
+              <Text style={styles.sectionLabel}>TODAY LINE</Text>
               {todayLog ? (
                 <TouchableOpacity
                   onPress={() => navigation.navigate('Detail', { log: todayLog })}
@@ -186,24 +187,30 @@ export default function HomeScreen() {
               ) : (
                 <View>
                   <Text style={styles.mantraPlaceholder}>오늘의 성장을 한 문장으로 남겨보세요.</Text>
-                  <TouchableOpacity
-                    style={styles.mantraButton}
+                  <Pressable
+                    style={({ pressed }) => [styles.pixelButton, pressed && styles.pixelButtonPressed]}
                     onPress={() => navigation.navigate('Write')}
                   >
-                    <Text style={styles.mantraButtonText}>기록 작성하기</Text>
-                  </TouchableOpacity>
+                    <Text style={styles.pixelButtonText}>기록 작성하기</Text>
+                  </Pressable>
                 </View>
               )}
             </View>
 
-            <View style={styles.statsContainer}>
+            <View style={styles.scoreBoard}>
+              <View style={styles.pixelCorner} />
               <View style={styles.statBox}>
+                <Text style={styles.scoreLabel}>CLEAR RATE</Text>
                 <Text style={styles.statValue}>{stats.rate}%</Text>
-                <Text style={styles.statLabel}>오늘 목표 달성률</Text>
               </View>
               <View style={styles.statBox}>
+                <Text style={styles.scoreLabel}>MISSION</Text>
                 <Text style={styles.statValue}>{stats.completed} / {stats.total}</Text>
-                <Text style={styles.statLabel}>완료</Text>
+              </View>
+              <View style={styles.blockProgress}>
+                {progressBlocks.map((filled, index) => (
+                  <View key={index} style={[styles.progressBlock, filled && styles.progressBlockFilled]} />
+                ))}
               </View>
             </View>
 
@@ -234,9 +241,12 @@ export default function HomeScreen() {
                   onSubmitEditing={handleAddTodayOnlyGoal}
                   selectionColor={DESIGN.colors.primary}
                 />
-                <TouchableOpacity style={styles.addGoalButton} onPress={handleAddTodayOnlyGoal}>
-                  <Ionicons name="add" size={22} color="#FFFFFF" />
-                </TouchableOpacity>
+                <Pressable
+                  style={({ pressed }) => [styles.addGoalButton, pressed && styles.pixelButtonPressed]}
+                  onPress={handleAddTodayOnlyGoal}
+                >
+                  <Text style={styles.addGoalButtonText}>+</Text>
+                </Pressable>
               </View>
               {todayOnlyGoals.map(renderTodayOnlyGoal)}
             </View>
@@ -248,6 +258,7 @@ export default function HomeScreen() {
               </View>
             )}
 
+            <View style={styles.pixelDivider} />
             <Text style={styles.sectionTitle}>지난 기록</Text>
           </View>
         }
@@ -258,12 +269,16 @@ export default function HomeScreen() {
         }
       />
 
-      <TouchableOpacity
-        style={[styles.floatingButton, { bottom: insets.bottom + 20 }]}
+      <Pressable
+        style={({ pressed }) => [
+          styles.floatingButton,
+          { bottom: insets.bottom + 20 },
+          pressed && styles.pixelButtonPressed,
+        ]}
         onPress={() => navigation.navigate('Write')}
       >
         <Text style={styles.buttonText}>기록하기</Text>
-      </TouchableOpacity>
+      </Pressable>
     </SafeAreaView>
   );
 }
@@ -280,10 +295,14 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     marginBottom: 40,
   },
-  largeTitle: {
+  arcadeTitle: {
     ...DESIGN.typography.largeTitle,
-    color: DESIGN.colors.text,
+    color: DESIGN.colors.yellow,
     marginBottom: 8,
+    textAlign: 'center',
+    textShadowColor: DESIGN.colors.primary,
+    textShadowOffset: { width: 3, height: 3 },
+    textShadowRadius: 0,
   },
   subHeader: {
     flexDirection: 'row',
@@ -294,86 +313,111 @@ const styles = StyleSheet.create({
   dateLabel: {
     fontSize: 15,
     color: DESIGN.colors.textDim,
-    fontWeight: '500',
+    fontWeight: '900',
+    fontFamily: 'monospace',
   },
   streakBadge: {
     backgroundColor: DESIGN.colors.surface,
     borderWidth: DESIGN.borders.pixel,
     borderColor: DESIGN.colors.mint,
+    borderRightWidth: DESIGN.borders.heavy,
+    borderBottomWidth: DESIGN.borders.heavy,
+    borderRightColor: DESIGN.colors.primary,
+    borderBottomColor: DESIGN.colors.yellow,
     paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 10,
+    borderRadius: 8,
   },
   streakText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '900',
     color: DESIGN.colors.mint,
     fontFamily: 'monospace',
   },
   mantraSection: {
-    marginBottom: 40,
-    paddingVertical: 8,
+    ...retroStyles.card,
+    padding: 18,
+    marginBottom: 30,
   },
   sectionLabel: {
     fontSize: 13,
-    fontWeight: '600',
-    color: DESIGN.colors.textDim,
-    textTransform: 'uppercase',
+    fontWeight: '900',
+    color: DESIGN.colors.primaryLight,
+    fontFamily: 'monospace',
     letterSpacing: 1,
     marginBottom: 16,
   },
   mantraText: {
-    fontSize: 26,
-    fontWeight: '600',
+    fontSize: 23,
+    fontWeight: '900',
     color: DESIGN.colors.text,
-    fontStyle: 'italic',
-    lineHeight: 34,
+    lineHeight: 32,
   },
   mantraPlaceholder: {
-    fontSize: 22,
-    fontWeight: '500',
-    color: DESIGN.colors.textDim,
-    lineHeight: 30,
-    marginBottom: 20,
+    fontSize: 18,
+    fontWeight: '700',
+    color: DESIGN.colors.text,
+    lineHeight: 28,
+    marginBottom: 18,
   },
-  mantraButton: {
+  pixelButton: {
+    ...retroStyles.button,
     alignSelf: 'flex-start',
-    backgroundColor: DESIGN.colors.primary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.yellow,
     paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 14,
+    paddingVertical: 12,
   },
-  mantraButtonText: {
+  pixelButtonPressed: {
+    transform: [{ translateX: 3 }, { translateY: 3 }],
+    borderRightWidth: DESIGN.borders.pixel,
+    borderBottomWidth: DESIGN.borders.pixel,
+  },
+  pixelButtonText: {
+    ...retroStyles.pixelText,
     fontSize: 15,
-    fontWeight: '600',
-    color: '#FFFFFF',
+    color: DESIGN.colors.text,
   },
-  statsContainer: {
-    flexDirection: 'row',
-    backgroundColor: DESIGN.colors.surface,
-    borderWidth: DESIGN.borders.heavy,
-    borderColor: DESIGN.colors.primary,
-    borderRadius: DESIGN.spacing.radius,
-    padding: 24,
-    marginBottom: 36,
+  scoreBoard: {
+    ...retroStyles.cardPink,
+    padding: 22,
+    marginBottom: 34,
+  },
+  pixelCorner: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
+    width: 8,
+    height: 8,
+    backgroundColor: DESIGN.colors.yellow,
   },
   statBox: {
-    flex: 1,
+    marginBottom: 12,
   },
-  statValue: {
-    fontSize: 32,
-    fontWeight: '900',
-    color: DESIGN.colors.yellow,
-    fontFamily: 'monospace',
+  scoreLabel: {
+    ...retroStyles.pixelText,
+    fontSize: 12,
+    color: DESIGN.colors.primaryLight,
     marginBottom: 4,
   },
-  statLabel: {
-    fontSize: 13,
-    color: DESIGN.colors.text,
-    fontWeight: '700',
-    fontFamily: 'monospace',
+  statValue: {
+    ...retroStyles.pixelText,
+    fontSize: 34,
+    color: DESIGN.colors.yellow,
+  },
+  blockProgress: {
+    flexDirection: 'row',
+    marginTop: 8,
+  },
+  progressBlock: {
+    flex: 1,
+    height: 14,
+    backgroundColor: DESIGN.colors.bg,
+    borderWidth: 2,
+    borderColor: DESIGN.colors.border,
+    marginRight: 4,
+  },
+  progressBlockFilled: {
+    backgroundColor: DESIGN.colors.mint,
+    borderColor: DESIGN.colors.yellow,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -386,17 +430,17 @@ const styles = StyleSheet.create({
     color: DESIGN.colors.text,
   },
   manageText: {
-    fontSize: 15,
+    ...retroStyles.pixelText,
+    fontSize: 13,
     color: DESIGN.colors.primary,
-    fontWeight: '500',
   },
   goalSection: {
     marginBottom: 28,
   },
   goalGroupTitle: {
+    ...retroStyles.pixelText,
     fontSize: 17,
-    fontWeight: '700',
-    color: DESIGN.colors.text,
+    color: DESIGN.colors.yellow,
     marginBottom: 4,
   },
   goalGroupDescription: {
@@ -405,16 +449,30 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   goalItem: {
+    ...retroStyles.card,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
+    paddingVertical: 13,
     paddingHorizontal: 12,
-    backgroundColor: DESIGN.colors.bgSecondary,
+    marginBottom: 10,
+  },
+  pixelCheck: {
+    width: 26,
+    height: 26,
+    backgroundColor: DESIGN.colors.bg,
     borderWidth: DESIGN.borders.pixel,
     borderColor: DESIGN.colors.border,
-    borderRadius: 12,
-    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pixelCheckDone: {
+    borderColor: DESIGN.colors.mint,
+  },
+  pixelCheckInner: {
+    width: 12,
+    height: 12,
+    backgroundColor: DESIGN.colors.mint,
   },
   goalCheckArea: {
     flex: 1,
@@ -426,10 +484,9 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   goalCategory: {
+    ...retroStyles.pixelText,
     fontSize: 11,
-    fontWeight: '900',
     color: DESIGN.colors.yellow,
-    fontFamily: 'monospace',
     marginBottom: 2,
   },
   goalTitle: {
@@ -446,8 +503,8 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
   },
   goalStreak: {
+    ...retroStyles.pixelText,
     fontSize: 12,
-    fontWeight: '600',
     color: DESIGN.colors.primary,
     marginTop: 4,
   },
@@ -457,41 +514,38 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   todayOnlyInput: {
+    ...retroStyles.input,
     flex: 1,
-    minHeight: 46,
-    borderRadius: 12,
-    backgroundColor: DESIGN.colors.bgSecondary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.border,
+    minHeight: 48,
     paddingHorizontal: 14,
     fontSize: 16,
     color: DESIGN.colors.text,
   },
   addGoalButton: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    backgroundColor: DESIGN.colors.primary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.yellow,
+    ...retroStyles.button,
+    width: 48,
+    height: 48,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 10,
+  },
+  addGoalButtonText: {
+    ...retroStyles.pixelText,
+    fontSize: 24,
+    color: DESIGN.colors.text,
   },
   deleteButton: {
     paddingLeft: 12,
   },
   emptyGoalBox: {
+    ...retroStyles.card,
     padding: 24,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: DESIGN.colors.primaryLight,
-    borderRadius: DESIGN.spacing.radius,
     marginBottom: 40,
   },
   emptyGoalTitle: {
+    ...retroStyles.pixelText,
     fontSize: 16,
-    fontWeight: '700',
     color: DESIGN.colors.text,
     marginBottom: 6,
   },
@@ -501,13 +555,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 22,
   },
+  pixelDivider: {
+    ...retroStyles.dotLine,
+    marginTop: 8,
+    marginBottom: 22,
+  },
   insightItem: {
-    paddingVertical: 20,
+    ...retroStyles.card,
+    paddingVertical: 18,
     paddingHorizontal: 14,
-    backgroundColor: DESIGN.colors.bgSecondary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.purple,
-    borderRadius: 12,
     marginBottom: 12,
   },
   insightHeader: {
@@ -516,18 +572,19 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   insightDate: {
+    ...retroStyles.pixelText,
     fontSize: 13,
     color: DESIGN.colors.textDim,
-    fontWeight: '500',
   },
   insightMood: {
-    fontSize: 14,
+    ...retroStyles.pixelText,
+    fontSize: 12,
+    color: DESIGN.colors.mint,
   },
   insightTitle: {
-    fontSize: 19,
-    fontWeight: '900',
+    ...retroStyles.pixelText,
+    fontSize: 18,
     color: DESIGN.colors.text,
-    fontFamily: 'monospace',
     marginBottom: 4,
   },
   insightSummary: {
@@ -538,9 +595,11 @@ const styles = StyleSheet.create({
   },
   tagRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   tagText: {
-    fontSize: 13,
+    ...retroStyles.pixelText,
+    fontSize: 12,
     color: DESIGN.colors.textDim,
     marginRight: 8,
   },
@@ -553,21 +612,17 @@ const styles = StyleSheet.create({
     color: DESIGN.colors.textDim,
   },
   floatingButton: {
+    ...retroStyles.button,
     position: 'absolute',
     left: DESIGN.spacing.padding,
     right: DESIGN.spacing.padding,
-    height: 56,
-    backgroundColor: DESIGN.colors.primary,
-    borderWidth: DESIGN.borders.heavy,
-    borderColor: DESIGN.colors.yellow,
-    borderRadius: 18,
+    height: 58,
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonText: {
+    ...retroStyles.pixelText,
     fontSize: 17,
-    fontWeight: '900',
-    color: '#FFFFFF',
-    fontFamily: 'monospace',
+    color: DESIGN.colors.text,
   },
 });

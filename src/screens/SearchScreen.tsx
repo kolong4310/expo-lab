@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { searchLogs, WorkLog } from '../database/db';
 import { DESIGN } from '../theme/design';
+import { retroStyles } from '../theme/retro';
 
 const MOOD_MAP: any = {
   best: '🔥',
@@ -112,14 +113,11 @@ const styles = StyleSheet.create({
     borderBottomColor: DESIGN.colors.border,
   },
   searchContainer: {
+    ...retroStyles.input,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: DESIGN.colors.bgSecondary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.border,
-    borderRadius: 12,
     paddingHorizontal: 12,
-    height: 44,
+    minHeight: 48,
   },
   searchIcon: {
     marginRight: 10,
@@ -133,12 +131,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   resultItem: {
+    ...retroStyles.card,
     paddingVertical: 20,
     paddingHorizontal: 14,
-    backgroundColor: DESIGN.colors.bgSecondary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.purple,
-    borderRadius: 12,
     marginBottom: 12,
   },
   resultHeader: {
@@ -174,10 +169,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   tagChip: {
-    backgroundColor: DESIGN.colors.surface,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.mint,
-    borderRadius: 10,
+    ...retroStyles.card,
     paddingHorizontal: 8,
     paddingVertical: 4,
     marginRight: 8,

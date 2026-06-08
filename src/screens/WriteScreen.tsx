@@ -5,6 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { addLog, updateLog, WorkLog } from '../database/db';
 import { DESIGN } from '../theme/design';
+import { retroStyles } from '../theme/retro';
 
 const MOODS = [
   { emoji: '🔥', value: 'best' },
@@ -234,7 +235,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     backgroundColor: DESIGN.colors.bg,
-    borderBottomWidth: DESIGN.borders.pixel,
+    borderBottomWidth: DESIGN.borders.heavy,
     borderBottomColor: DESIGN.colors.border,
   },
   cancelBtn: {
@@ -277,31 +278,28 @@ const styles = StyleSheet.create({
     lineHeight: 32,
   },
   titleInput: {
+    ...retroStyles.input,
     fontSize: 20,
     fontWeight: '900',
     color: DESIGN.colors.text,
-    backgroundColor: DESIGN.colors.bgSecondary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.border,
-    borderRadius: 12,
     paddingHorizontal: 14,
+    paddingVertical: 12,
     paddingBottom: 8,
   },
   textInput: {
+    ...retroStyles.input,
     fontSize: 17,
     color: DESIGN.colors.text,
-    backgroundColor: DESIGN.colors.bgSecondary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.border,
-    borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
     lineHeight: 26,
     minHeight: 44,
   },
   divider: {
-    height: 1,
-    backgroundColor: DESIGN.colors.primary,
+    height: 0,
+    borderBottomWidth: DESIGN.borders.pixel,
+    borderStyle: 'dashed',
+    borderBottomColor: DESIGN.colors.primaryLight,
     marginTop: 32,
   },
   tagSection: {
@@ -312,12 +310,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   tagChip: {
+    ...retroStyles.card,
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 12,
-    backgroundColor: DESIGN.colors.surface,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.border,
     marginRight: 8,
     marginBottom: 8,
   },
@@ -341,12 +336,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   moodBox: {
+    ...retroStyles.card,
     width: 48,
     height: 48,
-    borderRadius: 24,
-    backgroundColor: DESIGN.colors.surface,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.border,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -360,14 +352,11 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
   saveButton: {
+    ...retroStyles.button,
     position: 'absolute',
     left: 24,
     right: 24,
     height: 56,
-    backgroundColor: DESIGN.colors.primary,
-    borderWidth: DESIGN.borders.heavy,
-    borderColor: DESIGN.colors.yellow,
-    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -5,6 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { WorkLog, deleteLog, getDailyGoalsWithCheck } from '../database/db';
 import { DESIGN } from '../theme/design';
+import { retroStyles } from '../theme/retro';
 
 const MOOD_MAP: any = {
   best: { emoji: '🔥', label: '최고' },
@@ -192,11 +193,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   mantraContainer: {
-    backgroundColor: DESIGN.colors.surface,
-    borderWidth: DESIGN.borders.heavy,
-    borderColor: DESIGN.colors.primary,
+    ...retroStyles.cardPink,
     padding: 20,
-    borderRadius: 16,
     marginBottom: 20,
   },
   mantraText: {
@@ -257,25 +255,19 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionText: {
+    ...retroStyles.card,
     fontSize: 17,
     color: DESIGN.colors.text,
     lineHeight: 26,
-    backgroundColor: DESIGN.colors.bgSecondary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.border,
-    borderRadius: 12,
     padding: 14,
   },
   goalList: {
     marginTop: 8,
   },
   goalRow: {
+    ...retroStyles.card,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: DESIGN.colors.bgSecondary,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.border,
-    borderRadius: 12,
     padding: 12,
     marginBottom: 12,
   },

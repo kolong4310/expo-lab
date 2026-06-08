@@ -1,41 +1,45 @@
+import { RetroBorders, RetroColors, RetroFonts } from './theme';
+
 export const DESIGN = {
   colors: {
-    bg: '#050608',
-    bgSecondary: '#10151F',
-    surface: '#151B26',
-    text: '#F8FBFF',
-    textDim: '#9AA7B8',
-    primary: '#FF4DB8',
-    primaryLight: '#00BFFF',
-    mint: '#00FF7F',
-    yellow: '#FFD700',
-    purple: '#A64DFF',
-    border: '#2AF6FF',
-    error: '#FF5A6B',
-    success: '#63FF6A',
+    bg: RetroColors.background,
+    bgSecondary: RetroColors.surfaceAlt,
+    surface: RetroColors.surface,
+    text: RetroColors.text,
+    textDim: RetroColors.muted,
+    primary: RetroColors.neonPink,
+    primaryLight: RetroColors.neonCyan,
+    mint: RetroColors.neonGreen,
+    yellow: RetroColors.neonYellow,
+    purple: RetroColors.neonPurple,
+    border: RetroColors.neonCyan,
+    error: RetroColors.danger,
+    success: RetroColors.neonGreen,
   },
   spacing: {
     base: 8,
     padding: 24,
-    radius: 16,
-    radiusPill: 999,
+    radius: RetroBorders.radius,
+    radiusPill: RetroBorders.radiusLarge,
   },
   borders: {
-    pixel: 2,
-    heavy: 3,
+    pixel: RetroBorders.pixel,
+    heavy: RetroBorders.heavy,
   },
   typography: {
     largeTitle: {
       fontSize: 32,
       fontWeight: '900' as const,
-      letterSpacing: 1,
-      fontFamily: 'monospace',
+      letterSpacing: 1.4,
+      fontFamily: RetroFonts.title,
+      textTransform: 'uppercase' as const,
     },
     title: {
       fontSize: 22,
       fontWeight: '900' as const,
-      letterSpacing: 0.8,
-      fontFamily: 'monospace',
+      letterSpacing: 1,
+      fontFamily: RetroFonts.title,
+      textTransform: 'uppercase' as const,
     },
     body: {
       fontSize: 17,
@@ -43,7 +47,8 @@ export const DESIGN = {
     },
     footnote: {
       fontSize: 13,
-      fontWeight: '400' as const,
-    }
-  }
+      fontWeight: '700' as const,
+      fontFamily: RetroFonts.pixel,
+    },
+  },
 };

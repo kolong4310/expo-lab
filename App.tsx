@@ -52,20 +52,33 @@ function TabNavigator() {
             iconName = focused ? 'search' : 'search-outline';
           }
 
-          return <Ionicons name={iconName} size={24} color={color} />;
+          return (
+            <View
+              style={{
+                borderWidth: focused ? DESIGN.borders.pixel : 0,
+                borderColor: DESIGN.colors.mint,
+                backgroundColor: focused ? DESIGN.colors.surface : 'transparent',
+                paddingHorizontal: 6,
+                paddingVertical: 2,
+                borderRadius: 6,
+              }}
+            >
+              <Ionicons name={iconName} size={22} color={color} />
+            </View>
+          );
         },
         tabBarActiveTintColor: DESIGN.colors.mint,
         tabBarInactiveTintColor: DESIGN.colors.textDim,
         tabBarStyle: {
           backgroundColor: DESIGN.colors.bg,
-          borderTopWidth: DESIGN.borders.pixel,
+          borderTopWidth: DESIGN.borders.heavy,
           borderTopColor: DESIGN.colors.border,
           height: 64 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
           paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 10,
+          fontSize: 9,
           fontWeight: '900',
           fontFamily: 'monospace',
           letterSpacing: 0.5,
