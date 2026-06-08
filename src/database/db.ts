@@ -106,6 +106,10 @@ export const initDatabase = () => {
   try { db.execSync('ALTER TABLE logs ADD COLUMN mood TEXT;'); } catch(e) {}
   try { db.execSync('ALTER TABLE logs ADD COLUMN daily_summary TEXT;'); } catch(e) {}
   try { db.execSync('ALTER TABLE logs ADD COLUMN tags TEXT;'); } catch(e) {}
+  try { db.execSync('ALTER TABLE today_only_goals ADD COLUMN goal_date TEXT;'); } catch(e) {}
+  try { db.execSync('ALTER TABLE today_only_goals ADD COLUMN is_done INTEGER DEFAULT 0;'); } catch(e) {}
+  try { db.execSync('ALTER TABLE today_only_goals ADD COLUMN created_at TEXT;'); } catch(e) {}
+  try { db.execSync('UPDATE today_only_goals SET goal_date = date WHERE goal_date IS NULL;'); } catch(e) {}
 
   console.log('Database system initialized! ✅');
 };
