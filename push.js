@@ -1,21 +1,24 @@
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
+
+const commitMsg = process.argv.slice(2).join(' ').trim();
+
+if (!commitMsg) {
+  console.error('Usage: node push.js "Commit message"');
+  process.exit(1);
+}
 
 try {
-    console.log('--- Git 자동 푸시 시작 ---');
-    
-    // 1. 모든 변경사항 스테이징
-    execSync('git add .');
-    console.log('1. 변경사항 스테이징 완료');
+  console.log('--- Git auto-push start ---');
 
-    // 2. 커밋 메시지 생성 (현재 시간 포함)
-    const commitMsg = `Auto-push: ${new Date().toLocaleString()}`;
-    execSync(`git commit -m "${commitMsg}"`);
-    console.log(`2. 커밋 완료: ${commitMsg}`);
+  execFileSync('git', ['add', '.'], { stdio: 'inherit' });
+  console.log('1. Staged changes');
 
-    // 3. GitHub로 푸시 (개발 브랜치인 dev로 기본 설정)
-    execSync('git push origin dev');
-    console.log('3. GitHub(dev 브랜치) 푸시 성공! 🚀');
+  execFileSync('git', ['commit', '-m', commitMsg], { stdio: 'inherit' });
+  console.log(`2. Committed: ${commitMsg}`);
 
+  execFileSync('git', ['push', 'origin', 'dev'], { stdio: 'inherit' });
+  console.log('3. Pushed to origin/dev');
 } catch (error) {
-    console.error('❌ 에러 발생:', error.message);
+  console.error('Auto-push failed:', error.message);
+  process.exit(error.status || 1);
 }
