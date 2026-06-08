@@ -33,6 +33,7 @@ function TabNavigator() {
   const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
+      id="RootTabs"
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarIcon: ({ focused, color, size }) => {
@@ -77,7 +78,10 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <NavigationContainer theme={AppleTheme}>
-        <Stack.Navigator screenOptions={{ headerShown: false, cardStyle: { backgroundColor: DESIGN.colors.bg } }}>
+        <Stack.Navigator
+          id="RootStack"
+          screenOptions={{ headerShown: false, cardStyle: { backgroundColor: DESIGN.colors.bg } }}
+        >
           <Stack.Screen name="Main" component={TabNavigator} />
           <Stack.Screen name="Write" component={WriteScreen} />
           <Stack.Screen name="Detail" component={DetailScreen} />
