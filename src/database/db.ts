@@ -38,6 +38,14 @@ export interface GoalCheck {
   is_done: number; // 0 or 1
 }
 
+export interface TodayOnlyGoal {
+  id?: number;
+  title: string;
+  goal_date: string;
+  is_done: number; // 0 or 1
+  created_at: string;
+}
+
 const db = SQLite.openDatabaseSync('work_logs.db');
 
 /**
@@ -81,6 +89,16 @@ export const initDatabase = () => {
       is_done INTEGER DEFAULT 0,
       created_at TEXT,
       UNIQUE(goal_id, check_date)
+    );
+  `);
+
+  db.execSync(`
+    CREATE TABLE IF NOT EXISTS today_only_goals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      goal_date TEXT NOT NULL,
+      is_done INTEGER DEFAULT 0,
+      created_at TEXT NOT NULL
     );
   `);
 
@@ -154,6 +172,45 @@ export const toggleGoalCheck = (goalId: number, date: string, isDone: number) =>
   `);
   try {
     statement.executeSync([goalId, date, isDone, new Date().toISOString()]);
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
+export const getTodayOnlyGoals = (date: string): TodayOnlyGoal[] => {
+  const statement = db.prepareSync('SELECT * FROM today_only_goals WHERE goal_date = ? ORDER BY id DESC');
+  try {
+    const result = statement.executeSync<TodayOnlyGoal>([date]);
+    return result.getAllSync();
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
+export const addTodayOnlyGoal = (title: string, date: string) => {
+  const statement = db.prepareSync(
+    'INSERT INTO today_only_goals (title, goal_date, is_done, created_at) VALUES (?, ?, 0, ?)'
+  );
+  try {
+    statement.executeSync([title, date, new Date().toISOString()]);
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
+export const toggleTodayOnlyGoal = (id: number, isDone: number) => {
+  const statement = db.prepareSync('UPDATE today_only_goals SET is_done = ? WHERE id = ?');
+  try {
+    statement.executeSync([isDone, id]);
+  } finally {
+    statement.finalizeSync();
+  }
+};
+
+export const deleteTodayOnlyGoal = (id: number) => {
+  const statement = db.prepareSync('DELETE FROM today_only_goals WHERE id = ?');
+  try {
+    statement.executeSync([id]);
   } finally {
     statement.finalizeSync();
   }
@@ -352,10 +409,13 @@ export const getCurrentStreak = (): number => {
 };
 
 export const getGrowthStats = (date: string) => {
-  const items = getDailyGoalsWithCheck(date);
-  const total = items.length;
+  const dailyItems = getDailyGoalsWithCheck(date);
+  const todayOnlyItems = getTodayOnlyGoals(date);
+  const total = dailyItems.length + todayOnlyItems.length;
   if (total === 0) return { total: 0, completed: 0, rate: 0 };
-  const completed = items.filter(i => i.is_done === 1).length;
+  const completed =
+    dailyItems.filter(i => i.is_done === 1).length +
+    todayOnlyItems.filter(i => i.is_done === 1).length;
   return { total, completed, rate: Math.round((completed / total) * 100) };
 };
 

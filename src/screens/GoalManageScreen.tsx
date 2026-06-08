@@ -45,7 +45,7 @@ export default function GoalManageScreen() {
           <Ionicons name="chevron-back" size={24} color={DESIGN.colors.primary} />
           <Text style={styles.backText}>돌아가기</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>목표 관리</Text>
+        <Text style={styles.headerTitle}>반복 목표 관리</Text>
         <View style={{ width: 80 }} />
       </View>
 
@@ -54,14 +54,16 @@ export default function GoalManageScreen() {
           style={styles.input}
           value={newTitle}
           onChangeText={setNewTitle}
-          placeholder="새로운 성장 목표 입력..."
+          placeholder="매일 반복할 목표 입력"
           placeholderTextColor={DESIGN.colors.textDim}
           selectionColor={DESIGN.colors.primary}
+          returnKeyType="done"
+          onSubmitEditing={handleAdd}
         />
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryRow}>
           {CATEGORIES.map(cat => (
-            <TouchableOpacity 
-              key={cat} 
+            <TouchableOpacity
+              key={cat}
               style={[styles.catChip, selectedCategory === cat && styles.catChipSelected]}
               onPress={() => setSelectedCategory(cat)}
             >
@@ -70,7 +72,7 @@ export default function GoalManageScreen() {
           ))}
         </ScrollView>
         <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
-          <Text style={styles.addButtonText}>목표 추가</Text>
+          <Text style={styles.addButtonText}>매일 반복할 목표 추가</Text>
         </TouchableOpacity>
       </View>
 
@@ -87,17 +89,17 @@ export default function GoalManageScreen() {
               </Text>
             </View>
             <TouchableOpacity onPress={() => handleToggleActive(item)} style={styles.toggleBtn}>
-              <Ionicons 
-                name={item.is_active === 1 ? "checkmark-circle" : "ellipse-outline"} 
-                size={28} 
-                color={item.is_active === 1 ? DESIGN.colors.primary : DESIGN.colors.border} 
+              <Ionicons
+                name={item.is_active === 1 ? 'checkmark-circle' : 'ellipse-outline'}
+                size={28}
+                color={item.is_active === 1 ? DESIGN.colors.primary : DESIGN.colors.border}
               />
             </TouchableOpacity>
           </View>
         )}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>등록된 목표가 없습니다.</Text>
+            <Text style={styles.emptyText}>등록된 반복 목표가 없습니다.</Text>
           </View>
         }
       />
@@ -222,5 +224,5 @@ const styles = StyleSheet.create({
   emptyText: {
     color: DESIGN.colors.textDim,
     fontSize: 15,
-  }
+  },
 });
