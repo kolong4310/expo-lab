@@ -155,9 +155,10 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="dark-content" backgroundColor={DESIGN.colors.bg} />
 
       <FlatList
+        style={styles.container}
         data={logs}
         renderItem={renderInsight}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}

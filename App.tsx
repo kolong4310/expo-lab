@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
+import { View } from 'react-native';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -36,6 +37,9 @@ function TabNavigator() {
       id="RootTabs"
       screenOptions={({ route }) => ({
         headerShown: false,
+        sceneStyle: {
+          backgroundColor: DESIGN.colors.bg,
+        },
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: any;
           if (route.name === 'Home') {
@@ -77,18 +81,25 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer theme={AppleTheme}>
-        <Stack.Navigator
-          id="RootStack"
-          screenOptions={{ headerShown: false, cardStyle: { backgroundColor: DESIGN.colors.bg } }}
-        >
-          <Stack.Screen name="Main" component={TabNavigator} />
-          <Stack.Screen name="Write" component={WriteScreen} />
-          <Stack.Screen name="Detail" component={DetailScreen} />
-          <Stack.Screen name="Search" component={SearchScreen} />
-          <Stack.Screen name="GoalManage" component={GoalManageScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <View style={{ flex: 1, backgroundColor: DESIGN.colors.bg }}>
+        <NavigationContainer theme={AppleTheme}>
+          <Stack.Navigator
+            id="RootStack"
+            screenOptions={{
+              headerShown: false,
+              cardStyle: { backgroundColor: DESIGN.colors.bg },
+              cardOverlayEnabled: false,
+              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+            }}
+          >
+            <Stack.Screen name="Main" component={TabNavigator} />
+            <Stack.Screen name="Write" component={WriteScreen} />
+            <Stack.Screen name="Detail" component={DetailScreen} />
+            <Stack.Screen name="Search" component={SearchScreen} />
+            <Stack.Screen name="GoalManage" component={GoalManageScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </View>
     </SafeAreaProvider>
   );
 }

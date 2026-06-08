@@ -105,10 +105,10 @@ export default function WriteScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="dark-content" backgroundColor={DESIGN.colors.bg} />
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
+        style={styles.keyboardContainer}
       >
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.cancelBtn}>
@@ -223,6 +223,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: DESIGN.colors.bg,
   },
+  keyboardContainer: {
+    flex: 1,
+    backgroundColor: DESIGN.colors.bg,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -246,6 +250,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    backgroundColor: DESIGN.colors.bg,
     paddingHorizontal: 24,
   },
   inputGroup: {
