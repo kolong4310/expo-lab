@@ -155,7 +155,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={DESIGN.colors.bg} />
+      <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
 
       <FlatList
         style={styles.container}
@@ -297,15 +297,18 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   streakBadge: {
-    backgroundColor: DESIGN.colors.bgSecondary,
+    backgroundColor: DESIGN.colors.surface,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.mint,
     paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 999,
+    borderRadius: 10,
   },
   streakText: {
     fontSize: 12,
     fontWeight: '600',
-    color: DESIGN.colors.primary,
+    color: DESIGN.colors.mint,
+    fontFamily: 'monospace',
   },
   mantraSection: {
     marginBottom: 40,
@@ -336,9 +339,11 @@ const styles = StyleSheet.create({
   mantraButton: {
     alignSelf: 'flex-start',
     backgroundColor: DESIGN.colors.primary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.yellow,
     paddingHorizontal: 20,
     paddingVertical: 10,
-    borderRadius: 999,
+    borderRadius: 14,
   },
   mantraButtonText: {
     fontSize: 15,
@@ -347,7 +352,9 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: 'row',
-    backgroundColor: DESIGN.colors.bgSecondary,
+    backgroundColor: DESIGN.colors.surface,
+    borderWidth: DESIGN.borders.heavy,
+    borderColor: DESIGN.colors.primary,
     borderRadius: DESIGN.spacing.radius,
     padding: 24,
     marginBottom: 36,
@@ -357,14 +364,16 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontSize: 32,
-    fontWeight: '700',
-    color: DESIGN.colors.text,
+    fontWeight: '900',
+    color: DESIGN.colors.yellow,
+    fontFamily: 'monospace',
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 13,
-    color: DESIGN.colors.textDim,
-    fontWeight: '500',
+    color: DESIGN.colors.text,
+    fontWeight: '700',
+    fontFamily: 'monospace',
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -400,8 +409,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 14,
-    borderBottomWidth: 0.5,
-    borderBottomColor: DESIGN.colors.border,
+    paddingHorizontal: 12,
+    backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.border,
+    borderRadius: 12,
+    marginBottom: 10,
   },
   goalCheckArea: {
     flex: 1,
@@ -414,14 +427,15 @@ const styles = StyleSheet.create({
   },
   goalCategory: {
     fontSize: 11,
-    fontWeight: '600',
-    color: DESIGN.colors.primary,
+    fontWeight: '900',
+    color: DESIGN.colors.yellow,
+    fontFamily: 'monospace',
     marginBottom: 2,
   },
   goalTitle: {
     flexShrink: 1,
     fontSize: 17,
-    fontWeight: '500',
+    fontWeight: '700',
     color: DESIGN.colors.text,
   },
   todayOnlyTitle: {
@@ -447,6 +461,8 @@ const styles = StyleSheet.create({
     minHeight: 46,
     borderRadius: 12,
     backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.border,
     paddingHorizontal: 14,
     fontSize: 16,
     color: DESIGN.colors.text,
@@ -456,6 +472,8 @@ const styles = StyleSheet.create({
     height: 46,
     borderRadius: 23,
     backgroundColor: DESIGN.colors.primary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.yellow,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 10,
@@ -467,8 +485,7 @@ const styles = StyleSheet.create({
     padding: 24,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: DESIGN.colors.border,
-    borderStyle: 'dashed',
+    borderColor: DESIGN.colors.primaryLight,
     borderRadius: DESIGN.spacing.radius,
     marginBottom: 40,
   },
@@ -486,8 +503,12 @@ const styles = StyleSheet.create({
   },
   insightItem: {
     paddingVertical: 20,
-    borderBottomWidth: 0.5,
-    borderBottomColor: DESIGN.colors.border,
+    paddingHorizontal: 14,
+    backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.purple,
+    borderRadius: 12,
+    marginBottom: 12,
   },
   insightHeader: {
     flexDirection: 'row',
@@ -504,8 +525,9 @@ const styles = StyleSheet.create({
   },
   insightTitle: {
     fontSize: 19,
-    fontWeight: '600',
+    fontWeight: '900',
     color: DESIGN.colors.text,
+    fontFamily: 'monospace',
     marginBottom: 4,
   },
   insightSummary: {
@@ -536,13 +558,16 @@ const styles = StyleSheet.create({
     right: DESIGN.spacing.padding,
     height: 56,
     backgroundColor: DESIGN.colors.primary,
-    borderRadius: DESIGN.spacing.radiusPill,
+    borderWidth: DESIGN.borders.heavy,
+    borderColor: DESIGN.colors.yellow,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonText: {
     fontSize: 17,
-    fontWeight: '600',
+    fontWeight: '900',
     color: '#FFFFFF',
+    fontFamily: 'monospace',
   },
 });

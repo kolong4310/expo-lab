@@ -105,7 +105,7 @@ export default function WriteScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={DESIGN.colors.bg} />
+      <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardContainer}
@@ -233,7 +233,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 0.5,
+    backgroundColor: DESIGN.colors.bg,
+    borderBottomWidth: DESIGN.borders.pixel,
     borderBottomColor: DESIGN.colors.border,
   },
   cancelBtn: {
@@ -245,8 +246,9 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 17,
-    fontWeight: '600',
-    color: DESIGN.colors.text,
+    fontWeight: '900',
+    color: DESIGN.colors.yellow,
+    fontFamily: 'monospace',
   },
   content: {
     flex: 1,
@@ -261,35 +263,45 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontSize: 13,
-    fontWeight: '600',
-    color: DESIGN.colors.textDim,
+    fontWeight: '900',
+    color: DESIGN.colors.primaryLight,
+    fontFamily: 'monospace',
     marginBottom: 12,
     textTransform: 'uppercase',
   },
   mantraInput: {
     fontSize: 24,
-    fontWeight: '600',
+    fontWeight: '900',
     color: DESIGN.colors.primary,
     fontStyle: 'italic',
     lineHeight: 32,
   },
   titleInput: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: '900',
     color: DESIGN.colors.text,
+    backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.border,
+    borderRadius: 12,
+    paddingHorizontal: 14,
     paddingBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: DESIGN.colors.border,
   },
   textInput: {
     fontSize: 17,
     color: DESIGN.colors.text,
+    backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.border,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     lineHeight: 26,
     minHeight: 44,
   },
   divider: {
     height: 1,
-    backgroundColor: DESIGN.colors.border,
+    backgroundColor: DESIGN.colors.primary,
     marginTop: 32,
   },
   tagSection: {
@@ -302,18 +314,22 @@ const styles = StyleSheet.create({
   tagChip: {
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: DESIGN.colors.bgSecondary,
+    borderRadius: 12,
+    backgroundColor: DESIGN.colors.surface,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.border,
     marginRight: 8,
     marginBottom: 8,
   },
   tagChipSelected: {
     backgroundColor: DESIGN.colors.primary,
+    borderColor: DESIGN.colors.yellow,
   },
   tagText: {
     fontSize: 14,
     color: DESIGN.colors.text,
-    fontWeight: '500',
+    fontWeight: '900',
+    fontFamily: 'monospace',
   },
   tagTextSelected: {
     color: '#FFFFFF',
@@ -328,14 +344,16 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: DESIGN.colors.bgSecondary,
+    backgroundColor: DESIGN.colors.surface,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.border,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   moodBoxSelected: {
-    backgroundColor: DESIGN.colors.primary + '20', // Transparent primary
-    borderWidth: 2,
+    backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.heavy,
     borderColor: DESIGN.colors.primary,
   },
   moodEmoji: {
@@ -347,13 +365,16 @@ const styles = StyleSheet.create({
     right: 24,
     height: 56,
     backgroundColor: DESIGN.colors.primary,
-    borderRadius: 28,
+    borderWidth: DESIGN.borders.heavy,
+    borderColor: DESIGN.colors.yellow,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
   },
   saveButtonText: {
     fontSize: 17,
-    fontWeight: '600',
+    fontWeight: '900',
     color: '#FFFFFF',
+    fontFamily: 'monospace',
   },
 });

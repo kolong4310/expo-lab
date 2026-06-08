@@ -39,7 +39,7 @@ export default function GoalManageScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="chevron-back" size={24} color={DESIGN.colors.primary} />
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 0.5,
+    borderBottomWidth: DESIGN.borders.pixel,
     borderBottomColor: DESIGN.colors.border,
   },
   backButton: {
@@ -133,17 +133,22 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 17,
-    fontWeight: '600',
-    color: DESIGN.colors.text,
+    fontWeight: '900',
+    color: DESIGN.colors.yellow,
+    fontFamily: 'monospace',
   },
   addSection: {
     padding: 24,
-    backgroundColor: DESIGN.colors.bgSecondary,
+    backgroundColor: DESIGN.colors.surface,
+    borderBottomWidth: DESIGN.borders.heavy,
+    borderBottomColor: DESIGN.colors.primary,
   },
   input: {
     fontSize: 17,
     color: DESIGN.colors.text,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.border,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 12,
@@ -156,20 +161,21 @@ const styles = StyleSheet.create({
   catChip: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 0.5,
+    borderRadius: 12,
+    backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.pixel,
     borderColor: DESIGN.colors.border,
     marginRight: 8,
   },
   catChipSelected: {
     backgroundColor: DESIGN.colors.primary,
-    borderColor: DESIGN.colors.primary,
+    borderColor: DESIGN.colors.yellow,
   },
   catText: {
     fontSize: 13,
     color: DESIGN.colors.text,
-    fontWeight: '500',
+    fontWeight: '900',
+    fontFamily: 'monospace',
   },
   catTextSelected: {
     color: '#FFFFFF',
@@ -177,14 +183,17 @@ const styles = StyleSheet.create({
   addButton: {
     backgroundColor: DESIGN.colors.primary,
     height: 50,
-    borderRadius: 25,
+    borderWidth: DESIGN.borders.heavy,
+    borderColor: DESIGN.colors.yellow,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
   addButtonText: {
     fontSize: 17,
-    fontWeight: '600',
+    fontWeight: '900',
     color: '#FFFFFF',
+    fontFamily: 'monospace',
   },
   list: {
     paddingHorizontal: 20,
@@ -193,23 +202,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 18,
-    borderBottomWidth: 0.5,
-    borderBottomColor: DESIGN.colors.border,
+    padding: 16,
+    backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.border,
+    borderRadius: 12,
+    marginBottom: 12,
   },
   templateInfo: {
     flex: 1,
   },
   templateCategory: {
     fontSize: 12,
-    fontWeight: '600',
-    color: DESIGN.colors.primary,
+    fontWeight: '900',
+    color: DESIGN.colors.mint,
+    fontFamily: 'monospace',
     marginBottom: 4,
   },
   templateTitle: {
     fontSize: 17,
-    fontWeight: '500',
+    fontWeight: '900',
     color: DESIGN.colors.text,
+    fontFamily: 'monospace',
   },
   textMuted: {
     color: DESIGN.colors.textDim,

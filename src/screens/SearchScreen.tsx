@@ -58,7 +58,7 @@ export default function SearchScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
       
       <View style={styles.header}>
         <View style={styles.searchContainer}>
@@ -108,13 +108,15 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderBottomWidth: 0.5,
+    borderBottomWidth: DESIGN.borders.pixel,
     borderBottomColor: DESIGN.colors.border,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.border,
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 44,
@@ -132,8 +134,12 @@ const styles = StyleSheet.create({
   },
   resultItem: {
     paddingVertical: 20,
-    borderBottomWidth: 0.5,
-    borderBottomColor: DESIGN.colors.border,
+    paddingHorizontal: 14,
+    backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.purple,
+    borderRadius: 12,
+    marginBottom: 12,
   },
   resultHeader: {
     flexDirection: 'row',
@@ -142,21 +148,23 @@ const styles = StyleSheet.create({
   },
   resultDate: {
     fontSize: 13,
-    fontWeight: '600',
-    color: DESIGN.colors.textDim,
+    fontWeight: '900',
+    color: DESIGN.colors.yellow,
+    fontFamily: 'monospace',
   },
   resultMood: {
     fontSize: 14,
   },
   resultTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '900',
     color: DESIGN.colors.text,
+    fontFamily: 'monospace',
     marginBottom: 4,
   },
   resultSummary: {
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '900',
     color: DESIGN.colors.primary,
     fontStyle: 'italic',
     marginBottom: 10,
@@ -166,12 +174,19 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   tagChip: {
+    backgroundColor: DESIGN.colors.surface,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.mint,
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     marginRight: 8,
     marginBottom: 4,
   },
   tagText: {
     fontSize: 13,
-    color: DESIGN.colors.textDim,
+    color: DESIGN.colors.text,
+    fontFamily: 'monospace',
   },
   emptyState: {
     marginTop: 60,

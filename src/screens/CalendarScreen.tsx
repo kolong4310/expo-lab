@@ -76,7 +76,7 @@ export default function CalendarScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
       <View style={styles.header}>
         <Text style={styles.headerTitle}>성장 아카이브</Text>
       </View>
@@ -94,19 +94,19 @@ export default function CalendarScreen() {
                 markedDates={markedDates}
                 theme={{
                   backgroundColor: DESIGN.colors.bg,
-                  calendarBackground: DESIGN.colors.bg,
+                  calendarBackground: DESIGN.colors.surface,
                   textSectionTitleColor: DESIGN.colors.textDim,
                   selectedDayBackgroundColor: DESIGN.colors.primary,
                   selectedDayTextColor: '#FFFFFF',
-                  todayTextColor: DESIGN.colors.primary,
+                  todayTextColor: DESIGN.colors.yellow,
                   dayTextColor: DESIGN.colors.text,
                   textDisabledColor: DESIGN.colors.border,
                   dotColor: DESIGN.colors.primary,
-                  monthTextColor: DESIGN.colors.text,
+                  monthTextColor: DESIGN.colors.yellow,
                   indicatorColor: DESIGN.colors.primary,
-                  textDayFontWeight: '500',
-                  textMonthFontWeight: '700',
-                  textDayHeaderFontWeight: '600',
+                  textDayFontWeight: '700',
+                  textMonthFontWeight: '900',
+                  textDayHeaderFontWeight: '900',
                   textDayFontSize: 15,
                   textMonthFontSize: 17,
                   textDayHeaderFontSize: 12,
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 24,
     paddingVertical: 16,
-    borderBottomWidth: 0.5,
+    borderBottomWidth: DESIGN.borders.pixel,
     borderBottomColor: DESIGN.colors.border,
   },
   headerTitle: {
@@ -164,6 +164,11 @@ const styles = StyleSheet.create({
     color: DESIGN.colors.text,
   },
   calendarWrapper: {
+    backgroundColor: DESIGN.colors.surface,
+    borderWidth: DESIGN.borders.heavy,
+    borderColor: DESIGN.colors.border,
+    borderRadius: DESIGN.spacing.radius,
+    marginTop: 16,
     paddingTop: 10,
     paddingBottom: 20,
   },
@@ -181,18 +186,21 @@ const styles = StyleSheet.create({
   },
   archiveDateText: {
     fontSize: 22,
-    fontWeight: '700',
-    color: DESIGN.colors.text,
+    fontWeight: '900',
+    color: DESIGN.colors.yellow,
+    fontFamily: 'monospace',
   },
   archiveStatsText: {
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '900',
     color: DESIGN.colors.primary,
+    fontFamily: 'monospace',
   },
   sectionLabel: {
     fontSize: 13,
-    fontWeight: '600',
-    color: DESIGN.colors.textDim,
+    fontWeight: '900',
+    color: DESIGN.colors.primaryLight,
+    fontFamily: 'monospace',
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginTop: 24,
@@ -206,17 +214,20 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   goalPill: {
-    backgroundColor: DESIGN.colors.bgSecondary,
+    backgroundColor: DESIGN.colors.surface,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.mint,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 999,
+    borderRadius: 12,
     marginRight: 8,
     marginBottom: 8,
   },
   goalPillText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '900',
     color: DESIGN.colors.text,
+    fontFamily: 'monospace',
   },
   timelineItem: {
     flexDirection: 'row',
@@ -227,24 +238,30 @@ const styles = StyleSheet.create({
     left: 4,
     top: 10,
     bottom: 0,
-    width: 1,
-    backgroundColor: DESIGN.colors.border,
+    width: 2,
+    backgroundColor: DESIGN.colors.primary,
   },
   timelineDot: {
     width: 9,
     height: 9,
-    borderRadius: 4.5,
-    backgroundColor: DESIGN.colors.primary,
+    borderRadius: 2,
+    backgroundColor: DESIGN.colors.yellow,
     marginTop: 8,
   },
   timelineContent: {
     flex: 1,
     marginLeft: 20,
+    backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.border,
+    borderRadius: 12,
+    padding: 14,
   },
   timelineTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '900',
     color: DESIGN.colors.text,
+    fontFamily: 'monospace',
     marginBottom: 6,
   },
   timelineSummary: {

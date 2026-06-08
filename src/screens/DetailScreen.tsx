@@ -53,7 +53,7 @@ export default function DetailScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="chevron-back" size={24} color={DESIGN.colors.primary} />
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 0.5,
+    borderBottomWidth: DESIGN.borders.pixel,
     borderBottomColor: DESIGN.colors.border,
   },
   backButton: {
@@ -168,10 +168,12 @@ const styles = StyleSheet.create({
   editText: {
     fontSize: 17,
     color: DESIGN.colors.primary,
-    fontWeight: '500',
+    fontWeight: '900',
+    fontFamily: 'monospace',
   },
   content: {
     flex: 1,
+    backgroundColor: DESIGN.colors.bg,
   },
   heroArea: {
     paddingHorizontal: 24,
@@ -190,14 +192,16 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   mantraContainer: {
-    backgroundColor: DESIGN.colors.bgSecondary,
+    backgroundColor: DESIGN.colors.surface,
+    borderWidth: DESIGN.borders.heavy,
+    borderColor: DESIGN.colors.primary,
     padding: 20,
     borderRadius: 16,
     marginBottom: 20,
   },
   mantraText: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '900',
     color: DESIGN.colors.primary,
     fontStyle: 'italic',
     lineHeight: 26,
@@ -205,6 +209,13 @@ const styles = StyleSheet.create({
   moodBadge: {
     flexDirection: 'row',
     alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.yellow,
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     marginBottom: 16,
   },
   moodEmoji: {
@@ -214,7 +225,8 @@ const styles = StyleSheet.create({
   moodLabel: {
     fontSize: 15,
     color: DESIGN.colors.text,
-    fontWeight: '500',
+    fontWeight: '900',
+    fontFamily: 'monospace',
   },
   tagList: {
     flexDirection: 'row',
@@ -222,12 +234,13 @@ const styles = StyleSheet.create({
   },
   tagText: {
     fontSize: 15,
-    color: DESIGN.colors.textDim,
+    color: DESIGN.colors.mint,
+    fontFamily: 'monospace',
     marginRight: 12,
   },
   divider: {
     height: 1,
-    backgroundColor: DESIGN.colors.border,
+    backgroundColor: DESIGN.colors.primary,
     marginHorizontal: 24,
     marginBottom: 32,
   },
@@ -237,8 +250,9 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     fontSize: 13,
-    fontWeight: '600',
-    color: DESIGN.colors.textDim,
+    fontWeight: '900',
+    color: DESIGN.colors.primaryLight,
+    fontFamily: 'monospace',
     textTransform: 'uppercase',
     marginBottom: 12,
   },
@@ -246,6 +260,11 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: DESIGN.colors.text,
     lineHeight: 26,
+    backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.border,
+    borderRadius: 12,
+    padding: 14,
   },
   goalList: {
     marginTop: 8,
@@ -253,6 +272,11 @@ const styles = StyleSheet.create({
   goalRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: DESIGN.colors.bgSecondary,
+    borderWidth: DESIGN.borders.pixel,
+    borderColor: DESIGN.colors.border,
+    borderRadius: 12,
+    padding: 12,
     marginBottom: 12,
   },
   goalText: {
