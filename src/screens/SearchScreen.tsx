@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, StatusBar } from 'react-native';
+import { Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { searchLogs, WorkLog } from '../database/db';
 import { DESIGN } from '../theme/design';
 import RetroCard from '../components/RetroCard';
+import RetroInput from '../components/RetroInput';
+import PixelSectionTitle from '../components/PixelSectionTitle';
 
 const QUICK_TAGS = ['ReactNative', 'SQLite', 'UI', '공부', '운동', '개발'];
 
@@ -27,7 +29,7 @@ export default function SearchScreen() {
       <Text style={styles.resultDate}>{item.date.replace(/-/g, '.')}</Text>
       <Text style={styles.resultTitle} numberOfLines={1}>{item.title}</Text>
       {item.daily_summary && <Text style={styles.resultSummary} numberOfLines={2}>{item.daily_summary}</Text>}
-      <Text style={styles.openMark}>▶</Text>
+      <Text style={styles.openMark}>{'>'}</Text>
     </TouchableOpacity>
   );
 
@@ -44,18 +46,16 @@ export default function SearchScreen() {
         ListHeaderComponent={
           <>
             <Text style={styles.screenTitle}>SEARCH</Text>
-            <Text style={styles.screenSub}>기록과 태그 탐색</Text>
+            <Text style={styles.screenSub}>성장 기록 탐색</Text>
 
             <RetroCard accent="purple" style={styles.searchCard}>
-              <View style={styles.searchBox}>
+              <View style={styles.searchRow}>
                 <Text style={styles.searchIcon}>⌕</Text>
-                <TextInput
+                <RetroInput
                   style={styles.searchInput}
                   value={keyword}
                   onChangeText={setKeyword}
-                  placeholder="기록 및 태그 검색"
-                  placeholderTextColor={DESIGN.colors.textDim}
-                  selectionColor={DESIGN.colors.primary}
+                  placeholder="검색어를 입력해 성장 기록을 찾아보세요."
                   autoFocus
                 />
                 {keyword.length > 0 && (
@@ -66,7 +66,7 @@ export default function SearchScreen() {
               </View>
             </RetroCard>
 
-            <Text style={styles.sectionTitle}>RECENT TAG</Text>
+            <PixelSectionTitle>추천 태그</PixelSectionTitle>
             <View style={styles.tagGrid}>
               {QUICK_TAGS.map(tag => (
                 <TouchableOpacity key={tag} style={styles.tagChip} onPress={() => setKeyword(tag)}>
@@ -75,15 +75,15 @@ export default function SearchScreen() {
               ))}
             </View>
 
-            <Text style={styles.sectionTitle}>SEARCH RESULT</Text>
+            <PixelSectionTitle>검색 결과</PixelSectionTitle>
             {keyword.length === 0 && (
               <RetroCard accent="cyan" style={styles.emptyCard}>
-                <Text style={styles.emptyText}>검색어를 입력하면 기록 목록이 표시됩니다.</Text>
+                <Text style={styles.emptyText}>검색어를 입력해 성장 기록을 찾아보세요.</Text>
               </RetroCard>
             )}
             {keyword.length > 0 && results.length === 0 && (
               <RetroCard accent="pink" style={styles.emptyCard}>
-                <Text style={styles.emptyText}>검색 결과가 없습니다.</Text>
+                <Text style={styles.emptyText}>해당하는 성장 기록이 없습니다.</Text>
               </RetroCard>
             )}
           </>
@@ -117,14 +117,9 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 24,
   },
-  searchBox: {
+  searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 48,
-    backgroundColor: DESIGN.colors.bg,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.primaryLight,
-    paddingHorizontal: 12,
   },
   searchIcon: {
     color: DESIGN.colors.text,
@@ -135,20 +130,12 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
-    color: DESIGN.colors.text,
   },
   clearText: {
     color: DESIGN.colors.error,
     fontFamily: 'monospace',
     fontWeight: '900',
-  },
-  sectionTitle: {
-    fontFamily: 'monospace',
-    color: DESIGN.colors.yellow,
-    fontWeight: '900',
-    letterSpacing: 1,
-    marginBottom: 12,
+    marginLeft: 10,
   },
   tagGrid: {
     flexDirection: 'row',

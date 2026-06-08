@@ -1,15 +1,15 @@
 export const RetroColors = {
   background: '#050505',
   surface: '#151922',
-  surfaceAlt: '#0D1018',
-  neonPink: '#ff4db8',
-  neonCyan: '#69f2ff',
-  neonYellow: '#ffe45c',
-  neonGreen: '#6dff8f',
-  neonPurple: '#a64dff',
-  text: '#f8f8f8',
-  muted: '#9aa3b2',
-  danger: '#ff5a6b',
+  surfaceAlt: '#0B0E14',
+  neonPink: '#FF4DB8',
+  neonCyan: '#00E5FF',
+  neonYellow: '#FFE45C',
+  neonGreen: '#6DFF8F',
+  neonPurple: '#A855F7',
+  text: '#FFFFFF',
+  muted: '#9AA3B2',
+  danger: '#FF5A6B',
 };
 
 export const RetroFonts = {

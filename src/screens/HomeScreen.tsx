@@ -1,8 +1,7 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
 import {
   getLogsByDate,
   getDailyGoalsWithStats,
@@ -19,6 +18,9 @@ import {
 import { DESIGN } from '../theme/design';
 import RetroCard from '../components/RetroCard';
 import RetroButton from '../components/RetroButton';
+import RetroInput from '../components/RetroInput';
+import PixelProgressBar from '../components/PixelProgressBar';
+import PixelSectionTitle from '../components/PixelSectionTitle';
 
 const PixelCheck = ({ checked }: { checked: boolean }) => (
   <View style={[styles.pixelCheck, checked && styles.pixelCheckDone]}>
@@ -37,7 +39,6 @@ export default function HomeScreen() {
   const [todayOnlyTitle, setTodayOnlyTitle] = useState('');
 
   const today = new Date().toISOString().split('T')[0];
-  const missionBlocks = Array.from({ length: 10 }, (_, index) => index < Math.round(stats.rate / 10));
 
   useFocusEffect(
     useCallback(() => {
@@ -135,19 +136,15 @@ export default function HomeScreen() {
         </View>
 
         <RetroCard accent="pink" style={styles.missionStatus}>
-          <Text style={styles.cardTitle}>MISSION STATUS</Text>
-          <View style={styles.rpgBar}>
-            {missionBlocks.map((filled, index) => (
-              <View key={index} style={[styles.rpgBlock, filled && styles.rpgBlockFilled]} />
-            ))}
-          </View>
+          <PixelSectionTitle>MISSION STATUS</PixelSectionTitle>
+          <PixelProgressBar value={stats.rate} />
           <Text style={styles.percentText}>{stats.rate}%</Text>
           <Text style={styles.completeText}>{stats.completed} / {stats.total} COMPLETE</Text>
         </RetroCard>
 
         <RetroCard accent="cyan" style={styles.missionList}>
           <View style={styles.missionHeader}>
-            <Text style={styles.cardTitle}>TODAY MISSION</Text>
+            <PixelSectionTitle>TODAY MISSION</PixelSectionTitle>
             <Text style={styles.completeText}>{stats.completed} / {stats.total}</Text>
           </View>
 
@@ -157,20 +154,18 @@ export default function HomeScreen() {
           {stats.total === 0 && (
             <View style={styles.emptyMission}>
               <Text style={styles.emptyTitle}>NO MISSION</Text>
-              <Text style={styles.emptyText}>SYSTEM 탭에서 반복 목표를 만들거나 오늘만 목표를 추가하세요.</Text>
+              <Text style={styles.emptyText}>반복 목표를 만들거나 오늘만 할 목표를 추가하세요.</Text>
             </View>
           )}
 
           <View style={styles.addMissionRow}>
-            <TextInput
+            <RetroInput
               style={styles.todayOnlyInput}
               value={todayOnlyTitle}
               onChangeText={setTodayOnlyTitle}
               placeholder="오늘만 할 목표 추가"
-              placeholderTextColor={DESIGN.colors.textDim}
               returnKeyType="done"
               onSubmitEditing={handleAddTodayOnlyGoal}
-              selectionColor={DESIGN.colors.primary}
             />
             <TouchableOpacity style={styles.addMissionButton} onPress={handleAddTodayOnlyGoal}>
               <Text style={styles.addMissionText}>+</Text>
@@ -238,36 +233,13 @@ const styles = StyleSheet.create({
     padding: 22,
     marginBottom: 18,
   },
-  cardTitle: {
-    fontFamily: 'monospace',
-    color: DESIGN.colors.yellow,
-    fontWeight: '900',
-    fontSize: 16,
-    letterSpacing: 1,
-    marginBottom: 12,
-  },
-  rpgBar: {
-    flexDirection: 'row',
-    marginBottom: 12,
-  },
-  rpgBlock: {
-    flex: 1,
-    height: 18,
-    backgroundColor: DESIGN.colors.bg,
-    borderWidth: 2,
-    borderColor: '#252A35',
-    marginRight: 5,
-  },
-  rpgBlockFilled: {
-    backgroundColor: DESIGN.colors.primary,
-    borderColor: DESIGN.colors.yellow,
-  },
   percentText: {
     fontFamily: 'monospace',
     color: DESIGN.colors.yellow,
     fontWeight: '900',
     fontSize: 34,
     textAlign: 'center',
+    marginTop: 12,
   },
   completeText: {
     fontFamily: 'monospace',
@@ -281,7 +253,7 @@ const styles = StyleSheet.create({
   },
   missionHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
   },
   missionRow: {
@@ -367,12 +339,6 @@ const styles = StyleSheet.create({
   },
   todayOnlyInput: {
     flex: 1,
-    minHeight: 46,
-    color: DESIGN.colors.text,
-    backgroundColor: DESIGN.colors.bg,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.primaryLight,
-    paddingHorizontal: 12,
   },
   addMissionButton: {
     width: 46,

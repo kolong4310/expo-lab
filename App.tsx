@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from './src/screens/HomeScreen';
 import WriteScreen from './src/screens/WriteScreen';
 import DetailScreen from './src/screens/DetailScreen';
@@ -31,11 +32,11 @@ const AppTheme = {
 
 function TabNavigator() {
   const insets = useSafeAreaInsets();
-  const getTabIcon = (name: string) => {
-    if (name === 'Home') return '★';
-    if (name === 'Archive') return '▣';
-    if (name === 'Search') return '⌕';
-    return '⚙';
+
+  const getTabIcon = (routeName: string, focused: boolean) => {
+    if (routeName === 'Today') return focused ? 'star' : 'star-outline';
+    if (routeName === 'Archive') return focused ? 'calendar' : 'calendar-outline';
+    return focused ? 'search' : 'search-outline';
   };
 
   return (
@@ -46,50 +47,29 @@ function TabNavigator() {
         sceneStyle: {
           backgroundColor: DESIGN.colors.bg,
         },
-        tabBarIcon: ({ focused, color }) => {
-          return (
-            <View
-              style={{
-                borderWidth: focused ? DESIGN.borders.pixel : 0,
-                borderColor: DESIGN.colors.mint,
-                backgroundColor: focused ? DESIGN.colors.surface : 'transparent',
-                paddingHorizontal: 6,
-                paddingVertical: 2,
-                borderRadius: 6,
-              }}
-            >
-              <View
-                style={{
-                  width: 22,
-                  height: 22,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <View>
-                  <Text
-                    style={{
-                      color,
-                      fontFamily: 'monospace',
-                      fontWeight: '900',
-                      fontSize: 17,
-                      lineHeight: 20,
-                    }}
-                  >
-                    {getTabIcon(route.name)}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          );
-        },
+        tabBarIcon: ({ focused, color }) => (
+          <View
+            style={{
+              borderWidth: DESIGN.borders.pixel,
+              borderColor: focused ? DESIGN.colors.mint : '#252B36',
+              backgroundColor: focused ? DESIGN.colors.surface : DESIGN.colors.bg,
+              paddingHorizontal: 7,
+              paddingVertical: 3,
+              borderRadius: 4,
+              borderRightColor: focused ? DESIGN.colors.pink : '#252B36',
+              borderBottomColor: focused ? DESIGN.colors.yellow : '#252B36',
+            }}
+          >
+            <Ionicons name={getTabIcon(route.name, focused) as any} size={19} color={color} />
+          </View>
+        ),
         tabBarActiveTintColor: DESIGN.colors.mint,
         tabBarInactiveTintColor: DESIGN.colors.textDim,
         tabBarStyle: {
           backgroundColor: DESIGN.colors.bg,
           borderTopWidth: DESIGN.borders.heavy,
-          borderTopColor: DESIGN.colors.border,
-          height: 64 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
+          borderTopColor: DESIGN.colors.cyan,
+          height: 68 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
           paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
           paddingTop: 8,
         },
@@ -101,10 +81,9 @@ function TabNavigator() {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: 'TODAY' }} />
+      <Tab.Screen name="Today" component={HomeScreen} options={{ tabBarLabel: 'TODAY' }} />
       <Tab.Screen name="Archive" component={CalendarScreen} options={{ tabBarLabel: 'ARCHIVE' }} />
       <Tab.Screen name="Search" component={SearchScreen} options={{ tabBarLabel: 'SEARCH' }} />
-      <Tab.Screen name="System" component={GoalManageScreen} options={{ tabBarLabel: 'SYSTEM' }} />
     </Tab.Navigator>
   );
 }
@@ -130,7 +109,6 @@ export default function App() {
             <Stack.Screen name="Main" component={TabNavigator} />
             <Stack.Screen name="Write" component={WriteScreen} />
             <Stack.Screen name="Detail" component={DetailScreen} />
-            <Stack.Screen name="Search" component={SearchScreen} />
             <Stack.Screen name="GoalManage" component={GoalManageScreen} />
           </Stack.Navigator>
         </NavigationContainer>

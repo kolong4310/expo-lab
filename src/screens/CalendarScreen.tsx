@@ -7,6 +7,7 @@ import { getLogsByDate, getLoggedDates, getDailyGoalsWithCheck, WorkLog } from '
 import { DESIGN } from '../theme/design';
 import RetroCard from '../components/RetroCard';
 import RetroButton from '../components/RetroButton';
+import PixelSectionTitle from '../components/PixelSectionTitle';
 
 LocaleConfig.locales['en'] = {
   monthNames: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
@@ -65,7 +66,7 @@ export default function CalendarScreen() {
       <Text style={styles.logDate}>{item.date}</Text>
       <Text style={styles.logTitle}>{item.title}</Text>
       {item.daily_summary && <Text style={styles.logSummary} numberOfLines={2}>{item.daily_summary}</Text>}
-      <Text style={styles.openMark}>▶</Text>
+      <Text style={styles.openMark}>{'>'}</Text>
     </TouchableOpacity>
   );
 
@@ -82,7 +83,7 @@ export default function CalendarScreen() {
         ListHeaderComponent={
           <>
             <Text style={styles.screenTitle}>ARCHIVE</Text>
-            <Text style={styles.screenSub}>기록 열람</Text>
+            <Text style={styles.screenSub}>성장 기록 보관소</Text>
 
             <RetroCard accent="cyan" style={styles.calendarCard}>
               <Calendar
@@ -112,7 +113,7 @@ export default function CalendarScreen() {
             </RetroCard>
 
             <RetroCard accent="green" style={styles.datePanel}>
-              <Text style={styles.panelTitle}>{selectedDate.replace(/-/g, '.')} LOG</Text>
+              <PixelSectionTitle>{selectedDate.replace(/-/g, '.')} 기록</PixelSectionTitle>
               <View style={styles.goalGrid}>
                 {completedGoals.length > 0 ? completedGoals.map(goal => (
                   <Text key={goal.goal_id} style={styles.goalGem}>■ {goal.title}</Text>
@@ -121,7 +122,7 @@ export default function CalendarScreen() {
                 )}
               </View>
               <RetroButton
-                label="오늘 기록 보기"
+                label="선택 날짜 기록 보기"
                 variant="secondary"
                 onPress={() => {
                   if (logs[0]) navigation.navigate('Detail', { log: logs[0] });
@@ -131,10 +132,10 @@ export default function CalendarScreen() {
               />
             </RetroCard>
 
-            <Text style={styles.sectionTitle}>SELECTED RECORDS</Text>
+            <PixelSectionTitle>기록 목록</PixelSectionTitle>
             {logs.length === 0 && (
               <RetroCard accent="purple" style={styles.emptyCard}>
-                <Text style={styles.emptyText}>선택한 날짜의 기록이 없습니다.</Text>
+                <Text style={styles.emptyText}>선택한 날짜의 성장 기록이 없습니다.</Text>
               </RetroCard>
             )}
           </>
@@ -180,13 +181,6 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 24,
   },
-  panelTitle: {
-    fontFamily: 'monospace',
-    color: DESIGN.colors.yellow,
-    fontWeight: '900',
-    fontSize: 15,
-    marginBottom: 12,
-  },
   goalGrid: {
     marginBottom: 16,
   },
@@ -195,11 +189,6 @@ const styles = StyleSheet.create({
     color: DESIGN.colors.mint,
     fontWeight: '900',
     marginBottom: 8,
-  },
-  sectionTitle: {
-    ...DESIGN.typography.title,
-    color: DESIGN.colors.text,
-    marginBottom: 12,
   },
   archiveLog: {
     backgroundColor: DESIGN.colors.surface,
