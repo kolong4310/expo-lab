@@ -1,5 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import {
   SafeAreaView,
@@ -37,10 +37,17 @@ export default function ReportScreen({
 }: BottomTabScreenProps<"Report">) {
   const insets = useSafeAreaInsets();
   const [report, setReport] = useState<ReportStats>(EMPTY_REPORT);
+  const reportSnapshotRef = useRef(JSON.stringify(EMPTY_REPORT));
 
   useFocusEffect(
     useCallback(() => {
-      setReport(getReportStats());
+      const nextReport = getReportStats();
+      const nextSnapshot = JSON.stringify(nextReport);
+
+      if (reportSnapshotRef.current !== nextSnapshot) {
+        reportSnapshotRef.current = nextSnapshot;
+        setReport(nextReport);
+      }
     }, []),
   );
 
