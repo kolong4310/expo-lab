@@ -1,5 +1,5 @@
-import { ViewStyle, TextStyle } from 'react-native';
-import { DESIGN } from './design';
+import { ViewStyle, TextStyle } from "react-native";
+import { DESIGN } from "./design";
 
 const pixelOffset = {
   borderRightWidth: DESIGN.borders.heavy,
@@ -47,13 +47,13 @@ export const retroStyles = {
     borderBottomColor: DESIGN.colors.yellow,
   } satisfies ViewStyle,
   pixelText: {
-    fontFamily: 'monospace',
-    fontWeight: '900',
+    fontFamily: "monospace",
+    fontWeight: "900",
     letterSpacing: 0.8,
   } satisfies TextStyle,
   dotLine: {
     borderBottomWidth: DESIGN.borders.pixel,
-    borderStyle: 'dashed',
+    borderStyle: "dashed",
     borderBottomColor: DESIGN.colors.border,
   } satisfies ViewStyle,
 };

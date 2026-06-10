@@ -1,1 +1,1 @@
-export { default } from './ui/PixelSectionTitle';
+export { default } from "./ui/PixelSectionTitle";

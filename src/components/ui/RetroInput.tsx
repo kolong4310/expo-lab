@@ -1,12 +1,23 @@
-import React from 'react';
-import { StyleProp, StyleSheet, TextInput, TextInputProps, ViewStyle } from 'react-native';
-import { DESIGN } from '../../theme/design';
+import React from "react";
+import {
+  StyleProp,
+  StyleSheet,
+  TextInput,
+  TextInputProps,
+  ViewStyle,
+} from "react-native";
+import { DESIGN } from "../../theme/design";
 
 type RetroInputProps = TextInputProps & {
   containerStyle?: StyleProp<ViewStyle>;
 };
 
-export default function RetroInput({ style, containerStyle, placeholderTextColor, ...props }: RetroInputProps) {
+export default function RetroInput({
+  style,
+  containerStyle,
+  placeholderTextColor,
+  ...props
+}: RetroInputProps) {
   return (
     <TextInput
       {...props}

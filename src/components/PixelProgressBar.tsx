@@ -1,1 +1,1 @@
-export { default } from './ui/PixelProgressBar';
+export { default } from "./ui/PixelProgressBar";

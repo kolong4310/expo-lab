@@ -1,16 +1,30 @@
-import React from 'react';
-import { Pressable, PressableProps, StyleProp, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
-import { DESIGN } from '../../theme/design';
+import React from "react";
+import {
+  Pressable,
+  PressableProps,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  ViewStyle,
+} from "react-native";
+import { DESIGN } from "../../theme/design";
 
 type RetroButtonProps = PressableProps & {
   label: string;
-  variant?: 'primary' | 'secondary';
+  variant?: "primary" | "secondary";
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
 };
 
-export default function RetroButton({ label, variant = 'primary', style, textStyle, ...props }: RetroButtonProps) {
-  const isSecondary = variant === 'secondary';
+export default function RetroButton({
+  label,
+  variant = "primary",
+  style,
+  textStyle,
+  ...props
+}: RetroButtonProps) {
+  const isSecondary = variant === "secondary";
 
   return (
     <Pressable
@@ -22,7 +36,11 @@ export default function RetroButton({ label, variant = 'primary', style, textSty
         style,
       ]}
     >
-      <Text style={[styles.text, isSecondary && styles.secondaryText, textStyle]}>{label}</Text>
+      <Text
+        style={[styles.text, isSecondary && styles.secondaryText, textStyle]}
+      >
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -36,8 +54,8 @@ const styles = StyleSheet.create({
     borderRightColor: DESIGN.colors.cyan,
     borderBottomColor: DESIGN.colors.yellow,
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: 18,
     paddingVertical: 13,
   },
@@ -53,7 +71,7 @@ const styles = StyleSheet.create({
   text: {
     color: DESIGN.colors.text,
     fontFamily: DESIGN.fonts.title,
-    fontWeight: '900',
+    fontWeight: "900",
     letterSpacing: 1,
     fontSize: 16,
   },

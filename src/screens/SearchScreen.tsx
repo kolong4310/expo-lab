@@ -1,19 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import { searchLogs, WorkLog } from '../database/db';
-import { DESIGN } from '../theme/design';
-import RetroCard from '../components/ui/RetroCard';
-import RetroInput from '../components/ui/RetroInput';
-import PixelSectionTitle from '../components/ui/PixelSectionTitle';
+import { useNavigation } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
+import {
+  FlatList,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import AppHeader from "../components/AppHeader";
+import LogCard from "../components/LogCard";
+import PixelSectionTitle from "../components/ui/PixelSectionTitle";
+import RetroCard from "../components/ui/RetroCard";
+import RetroInput from "../components/ui/RetroInput";
+import { searchLogs, WorkLog } from "../database/db";
+import { DESIGN } from "../theme/design";
 
-const QUICK_TAGS = ['ReactNative', 'SQLite', 'UI', '공부', '운동', '개발'];
+const QUICK_TAGS = ["ReactNative", "SQLite", "UI", "공부", "운동", "개발"];
 
 export default function SearchScreen() {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const [keyword, setKeyword] = useState('');
+  const [keyword, setKeyword] = useState("");
   const [results, setResults] = useState<WorkLog[]>([]);
 
   useEffect(() => {
@@ -25,12 +37,10 @@ export default function SearchScreen() {
   }, [keyword]);
 
   const renderResultItem = ({ item }: { item: WorkLog }) => (
-    <TouchableOpacity style={styles.resultItem} onPress={() => navigation.navigate('Detail', { log: item })}>
-      <Text style={styles.resultDate}>{item.date.replace(/-/g, '.')}</Text>
-      <Text style={styles.resultTitle} numberOfLines={1}>{item.title}</Text>
-      {item.daily_summary && <Text style={styles.resultSummary} numberOfLines={2}>{item.daily_summary}</Text>}
-      <Text style={styles.openMark}>{'>'}</Text>
-    </TouchableOpacity>
+    <LogCard
+      log={item}
+      onPress={() => navigation.navigate("Detail", { log: item })}
+    />
   );
 
   return (
@@ -40,13 +50,21 @@ export default function SearchScreen() {
       <FlatList
         data={results}
         renderItem={renderResultItem}
-        keyExtractor={item => item.id?.toString() || Math.random().toString()}
-        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 120 }]}
+        keyExtractor={(item, index) =>
+          item.id?.toString() ?? `${item.date}-${index}`
+        }
+        contentContainerStyle={[
+          styles.list,
+          { paddingBottom: insets.bottom + 120 },
+        ]}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
-            <Text style={styles.screenTitle}>SEARCH</Text>
-            <Text style={styles.screenSub}>성장 기록 탐색</Text>
+            <AppHeader
+              title="기록 검색"
+              subtitle="업무 내용과 태그로 기록 찾기"
+              accent={DESIGN.colors.purple}
+            />
 
             <RetroCard accent="purple" style={styles.searchCard}>
               <View style={styles.searchRow}>
@@ -59,7 +77,7 @@ export default function SearchScreen() {
                   autoFocus
                 />
                 {keyword.length > 0 && (
-                  <TouchableOpacity onPress={() => setKeyword('')}>
+                  <TouchableOpacity onPress={() => setKeyword("")}>
                     <Text style={styles.clearText}>X</Text>
                   </TouchableOpacity>
                 )}
@@ -68,8 +86,12 @@ export default function SearchScreen() {
 
             <PixelSectionTitle>추천 태그</PixelSectionTitle>
             <View style={styles.tagGrid}>
-              {QUICK_TAGS.map(tag => (
-                <TouchableOpacity key={tag} style={styles.tagChip} onPress={() => setKeyword(tag)}>
+              {QUICK_TAGS.map((tag) => (
+                <TouchableOpacity
+                  key={tag}
+                  style={styles.tagChip}
+                  onPress={() => setKeyword(tag)}
+                >
                   <Text style={styles.tagText}>#{tag}</Text>
                 </TouchableOpacity>
               ))}
@@ -78,12 +100,16 @@ export default function SearchScreen() {
             <PixelSectionTitle>검색 결과</PixelSectionTitle>
             {keyword.length === 0 && (
               <RetroCard accent="cyan" style={styles.emptyCard}>
-                <Text style={styles.emptyText}>검색어를 입력해 성장 기록을 찾아보세요.</Text>
+                <Text style={styles.emptyText}>
+                  검색어를 입력해 성장 기록을 찾아보세요.
+                </Text>
               </RetroCard>
             )}
             {keyword.length > 0 && results.length === 0 && (
               <RetroCard accent="pink" style={styles.emptyCard}>
-                <Text style={styles.emptyText}>해당하는 성장 기록이 없습니다.</Text>
+                <Text style={styles.emptyText}>
+                  해당하는 성장 기록이 없습니다.
+                </Text>
               </RetroCard>
             )}
           </>
@@ -102,29 +128,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 22,
   },
-  screenTitle: {
-    ...DESIGN.typography.largeTitle,
-    color: DESIGN.colors.purple,
-  },
-  screenSub: {
-    fontFamily: DESIGN.fonts.pixelKo,
-    color: DESIGN.colors.textDim,
-    fontWeight: '800',
-    marginTop: 6,
-    marginBottom: 24,
-  },
   searchCard: {
     padding: 14,
     marginBottom: 28,
   },
   searchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   searchIcon: {
     color: DESIGN.colors.text,
     fontFamily: DESIGN.fonts.title,
-    fontWeight: '900',
+    fontWeight: "900",
     fontSize: 18,
     marginRight: 10,
   },
@@ -134,12 +149,12 @@ const styles = StyleSheet.create({
   clearText: {
     color: DESIGN.colors.error,
     fontFamily: DESIGN.fonts.title,
-    fontWeight: '900',
+    fontWeight: "900",
     marginLeft: 10,
   },
   tagGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginBottom: 28,
   },
   tagChip: {
@@ -154,41 +169,8 @@ const styles = StyleSheet.create({
   tagText: {
     fontFamily: DESIGN.fonts.pixelKo,
     color: DESIGN.colors.text,
-    fontWeight: '900',
+    fontWeight: "900",
     fontSize: 13,
-  },
-  resultItem: {
-    backgroundColor: DESIGN.colors.surface,
-    borderWidth: DESIGN.borders.heavy,
-    borderColor: DESIGN.colors.cyan,
-    borderRightColor: DESIGN.colors.pink,
-    borderBottomColor: DESIGN.colors.yellow,
-    padding: 14,
-    marginBottom: 12,
-  },
-  resultDate: {
-    fontFamily: DESIGN.fonts.title,
-    color: DESIGN.colors.purple,
-    fontWeight: '900',
-    marginBottom: 4,
-  },
-  resultTitle: {
-    color: DESIGN.colors.text,
-    fontSize: 17,
-    fontWeight: '900',
-    marginBottom: 6,
-  },
-  resultSummary: {
-    color: DESIGN.colors.textDim,
-    lineHeight: 20,
-  },
-  openMark: {
-    position: 'absolute',
-    right: 12,
-    top: 16,
-    color: DESIGN.colors.primary,
-    fontFamily: DESIGN.fonts.title,
-    fontWeight: '900',
   },
   emptyCard: {
     padding: 20,

@@ -1,4 +1,4 @@
-import { RetroBorders, RetroColors, RetroFonts } from './theme';
+import { RetroBorders, RetroColors, RetroFonts } from "./theme";
 
 export const DESIGN = {
   colors: {
@@ -38,17 +38,17 @@ export const DESIGN = {
   typography: {
     largeTitle: {
       fontSize: 32,
-      fontWeight: '900' as const,
+      fontWeight: "900" as const,
       letterSpacing: 1.4,
       fontFamily: RetroFonts.title,
-      textTransform: 'uppercase' as const,
+      textTransform: "uppercase" as const,
     },
     title: {
       fontSize: 22,
-      fontWeight: '900' as const,
+      fontWeight: "900" as const,
       letterSpacing: 1,
       fontFamily: RetroFonts.title,
-      textTransform: 'uppercase' as const,
+      textTransform: "uppercase" as const,
     },
     body: {
       fontSize: 17,
@@ -56,7 +56,7 @@ export const DESIGN = {
     },
     footnote: {
       fontSize: 13,
-      fontWeight: '700' as const,
+      fontWeight: "700" as const,
       fontFamily: RetroFonts.pixel,
     },
   },

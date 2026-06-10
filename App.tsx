@@ -1,18 +1,24 @@
-import React, { useEffect } from 'react';
-import { View } from 'react-native';
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import HomeScreen from './src/screens/HomeScreen';
-import WriteScreen from './src/screens/WriteScreen';
-import DetailScreen from './src/screens/DetailScreen';
-import CalendarScreen from './src/screens/CalendarScreen';
-import SearchScreen from './src/screens/SearchScreen';
-import GoalManageScreen from './src/screens/GoalManageScreen';
-import { initDatabase } from './src/database/db';
-import { DESIGN } from './src/theme/design';
-import PixelTabIcon from './src/components/ui/PixelTabIcon';
+import React, { useEffect } from "react";
+import { View } from "react-native";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import {
+  CardStyleInterpolators,
+  createStackNavigator,
+} from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import HomeScreen from "./src/screens/HomeScreen";
+import WriteScreen from "./src/screens/WriteScreen";
+import DetailScreen from "./src/screens/DetailScreen";
+import CalendarScreen from "./src/screens/CalendarScreen";
+import SearchScreen from "./src/screens/SearchScreen";
+import GoalManageScreen from "./src/screens/GoalManageScreen";
+import { initDatabase } from "./src/database/db";
+import { DESIGN } from "./src/theme/design";
+import PixelTabIcon from "./src/components/ui/PixelTabIcon";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -34,14 +40,15 @@ function TabNavigator() {
   const insets = useSafeAreaInsets();
 
   const getTabIcon = (routeName: string, focused: boolean) => {
-    if (routeName === 'Today') return focused ? 'star' : 'star-outline';
-    if (routeName === 'Archive') return focused ? 'calendar' : 'calendar-outline';
-    return focused ? 'search' : 'search-outline';
+    if (routeName === "Today") return focused ? "star" : "star-outline";
+    if (routeName === "Archive")
+      return focused ? "calendar" : "calendar-outline";
+    return focused ? "search" : "search-outline";
   };
 
   const getTabAccent = (routeName: string) => {
-    if (routeName === 'Today') return DESIGN.colors.pink;
-    if (routeName === 'Archive') return DESIGN.colors.green;
+    if (routeName === "Today") return DESIGN.colors.pink;
+    if (routeName === "Archive") return DESIGN.colors.green;
     return DESIGN.colors.purple;
   };
 
@@ -73,16 +80,28 @@ function TabNavigator() {
         },
         tabBarLabelStyle: {
           fontSize: 10,
-          fontWeight: '900',
+          fontWeight: "900",
           fontFamily: DESIGN.fonts.title,
           letterSpacing: 0.8,
           marginTop: 4,
         },
       })}
     >
-      <Tab.Screen name="Today" component={HomeScreen} options={{ tabBarLabel: 'TODAY' }} />
-      <Tab.Screen name="Archive" component={CalendarScreen} options={{ tabBarLabel: 'ARCHIVE' }} />
-      <Tab.Screen name="Search" component={SearchScreen} options={{ tabBarLabel: 'SEARCH' }} />
+      <Tab.Screen
+        name="Today"
+        component={HomeScreen}
+        options={{ tabBarLabel: "오늘" }}
+      />
+      <Tab.Screen
+        name="Archive"
+        component={CalendarScreen}
+        options={{ tabBarLabel: "기록" }}
+      />
+      <Tab.Screen
+        name="Search"
+        component={SearchScreen}
+        options={{ tabBarLabel: "검색" }}
+      />
     </Tab.Navigator>
   );
 }

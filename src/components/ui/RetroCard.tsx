@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, ViewProps, StyleSheet } from 'react-native';
-import { DESIGN } from '../../theme/design';
+import React from "react";
+import { View, ViewProps, StyleSheet } from "react-native";
+import { DESIGN } from "../../theme/design";
 
-type Accent = 'cyan' | 'pink' | 'green' | 'yellow' | 'purple';
+type Accent = "cyan" | "pink" | "green" | "yellow" | "purple";
 
 type RetroCardProps = ViewProps & {
   accent?: Accent;
@@ -16,7 +16,12 @@ const accentColor: Record<Accent, string> = {
   purple: DESIGN.colors.purple,
 };
 
-export default function RetroCard({ accent = 'cyan', style, children, ...props }: RetroCardProps) {
+export default function RetroCard({
+  accent = "cyan",
+  style,
+  children,
+  ...props
+}: RetroCardProps) {
   const color = accentColor[accent];
 
   return (
@@ -33,7 +38,9 @@ export default function RetroCard({ accent = 'cyan', style, children, ...props }
       ]}
     >
       <View style={[styles.corner, { backgroundColor: color }]} />
-      <View style={[styles.cornerSmall, { backgroundColor: DESIGN.colors.yellow }]} />
+      <View
+        style={[styles.cornerSmall, { backgroundColor: DESIGN.colors.yellow }]}
+      />
       {children}
     </View>
   );
@@ -48,14 +55,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: DESIGN.borders.heavy,
   },
   corner: {
-    position: 'absolute',
+    position: "absolute",
     right: 8,
     top: 8,
     width: 8,
     height: 8,
   },
   cornerSmall: {
-    position: 'absolute',
+    position: "absolute",
     right: 20,
     top: 8,
     width: 4,

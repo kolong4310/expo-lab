@@ -1,27 +1,72 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { getLogsByDate, getLoggedDates, getDailyGoalsWithCheck, WorkLog } from '../database/db';
-import { DESIGN } from '../theme/design';
-import RetroCard from '../components/ui/RetroCard';
-import RetroButton from '../components/ui/RetroButton';
-import PixelSectionTitle from '../components/ui/PixelSectionTitle';
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useCallback, useState } from "react";
+import { FlatList, StatusBar, StyleSheet, Text, View } from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { Calendar, LocaleConfig } from "react-native-calendars";
+import AppHeader from "../components/AppHeader";
+import LogCard from "../components/LogCard";
+import PrimaryButton from "../components/PrimaryButton";
+import PixelSectionTitle from "../components/ui/PixelSectionTitle";
+import RetroCard from "../components/ui/RetroCard";
+import {
+  getDailyGoalsWithCheck,
+  getLoggedDates,
+  getLogsByDate,
+  WorkLog,
+} from "../database/db";
+import { DESIGN } from "../theme/design";
+import { formatLocalDate } from "../utils/date";
 
-LocaleConfig.locales['en'] = {
-  monthNames: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
-  monthNamesShort: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
-  dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-  dayNamesShort: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-  today: 'TODAY',
+LocaleConfig.locales["en"] = {
+  monthNames: [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+  ],
+  monthNamesShort: [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+  ],
+  dayNames: [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ],
+  dayNamesShort: ["S", "M", "T", "W", "T", "F", "S"],
+  today: "TODAY",
 };
-LocaleConfig.defaultLocale = 'en';
+LocaleConfig.defaultLocale = "en";
 
 export default function CalendarScreen() {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(formatLocalDate());
   const [markedDates, setMarkedDates] = useState<any>({});
   const [logs, setLogs] = useState<WorkLog[]>([]);
   const [dailyGoals, setDailyGoals] = useState<any[]>([]);
@@ -29,14 +74,14 @@ export default function CalendarScreen() {
   useFocusEffect(
     useCallback(() => {
       loadData();
-    }, [selectedDate])
+    }, [selectedDate]),
   );
 
   const loadData = () => {
     const dates = getLoggedDates();
     const marks: any = {};
 
-    dates.forEach(date => {
+    dates.forEach((date) => {
       marks[date] = {
         marked: true,
         dotColor: DESIGN.colors.yellow,
@@ -59,15 +104,13 @@ export default function CalendarScreen() {
     setDailyGoals(getDailyGoalsWithCheck(selectedDate));
   };
 
-  const completedGoals = dailyGoals.filter(goal => goal.is_done === 1);
+  const completedGoals = dailyGoals.filter((goal) => goal.is_done === 1);
 
   const renderArchiveLog = ({ item }: { item: WorkLog }) => (
-    <TouchableOpacity style={styles.archiveLog} onPress={() => navigation.navigate('Detail', { log: item })}>
-      <Text style={styles.logDate}>{item.date}</Text>
-      <Text style={styles.logTitle}>{item.title}</Text>
-      {item.daily_summary && <Text style={styles.logSummary} numberOfLines={2}>{item.daily_summary}</Text>}
-      <Text style={styles.openMark}>{'>'}</Text>
-    </TouchableOpacity>
+    <LogCard
+      log={item}
+      onPress={() => navigation.navigate("Detail", { log: item })}
+    />
   );
 
   return (
@@ -77,13 +120,21 @@ export default function CalendarScreen() {
       <FlatList
         data={logs}
         renderItem={renderArchiveLog}
-        keyExtractor={item => item.id?.toString() || Math.random().toString()}
-        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 120 }]}
+        keyExtractor={(item, index) =>
+          item.id?.toString() ?? `${item.date}-${index}`
+        }
+        contentContainerStyle={[
+          styles.list,
+          { paddingBottom: insets.bottom + 120 },
+        ]}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
-            <Text style={styles.screenTitle}>ARCHIVE</Text>
-            <Text style={styles.screenSub}>성장 기록 보관소</Text>
+            <AppHeader
+              title="기록 보관함"
+              subtitle="날짜별 업무 로그와 완료한 목표"
+              accent={DESIGN.colors.cyan}
+            />
 
             <RetroCard accent="cyan" style={styles.calendarCard}>
               <Calendar
@@ -98,13 +149,13 @@ export default function CalendarScreen() {
                   selectedDayTextColor: DESIGN.colors.text,
                   todayTextColor: DESIGN.colors.yellow,
                   dayTextColor: DESIGN.colors.text,
-                  textDisabledColor: '#3E4654',
+                  textDisabledColor: "#3E4654",
                   dotColor: DESIGN.colors.yellow,
                   monthTextColor: DESIGN.colors.yellow,
                   arrowColor: DESIGN.colors.yellow,
-                  textDayFontWeight: '900',
-                  textMonthFontWeight: '900',
-                  textDayHeaderFontWeight: '900',
+                  textDayFontWeight: "900",
+                  textMonthFontWeight: "900",
+                  textDayHeaderFontWeight: "900",
                   textDayFontSize: 15,
                   textMonthFontSize: 18,
                   textDayHeaderFontSize: 12,
@@ -113,19 +164,26 @@ export default function CalendarScreen() {
             </RetroCard>
 
             <RetroCard accent="green" style={styles.datePanel}>
-              <PixelSectionTitle>{selectedDate.replace(/-/g, '.')} 기록</PixelSectionTitle>
+              <PixelSectionTitle>
+                {selectedDate.replace(/-/g, ".")} 기록
+              </PixelSectionTitle>
               <View style={styles.goalGrid}>
-                {completedGoals.length > 0 ? completedGoals.map(goal => (
-                  <Text key={goal.goal_id} style={styles.goalGem}>■ {goal.title}</Text>
-                )) : (
-                  <Text style={styles.emptyText}>완료된 미션 기록이 없습니다.</Text>
+                {completedGoals.length > 0 ? (
+                  completedGoals.map((goal) => (
+                    <Text key={goal.goal_id} style={styles.goalGem}>
+                      ■ {goal.title}
+                    </Text>
+                  ))
+                ) : (
+                  <Text style={styles.emptyText}>
+                    완료된 미션 기록이 없습니다.
+                  </Text>
                 )}
               </View>
-              <RetroButton
+              <PrimaryButton
                 label="선택 날짜 기록 보기"
-                variant="secondary"
                 onPress={() => {
-                  if (logs[0]) navigation.navigate('Detail', { log: logs[0] });
+                  if (logs[0]) navigation.navigate("Detail", { log: logs[0] });
                 }}
                 disabled={!logs[0]}
                 style={!logs[0] ? styles.disabledButton : undefined}
@@ -135,7 +193,9 @@ export default function CalendarScreen() {
             <PixelSectionTitle>기록 목록</PixelSectionTitle>
             {logs.length === 0 && (
               <RetroCard accent="purple" style={styles.emptyCard}>
-                <Text style={styles.emptyText}>선택한 날짜의 성장 기록이 없습니다.</Text>
+                <Text style={styles.emptyText}>
+                  선택한 날짜의 성장 기록이 없습니다.
+                </Text>
               </RetroCard>
             )}
           </>
@@ -153,17 +213,6 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 24,
     paddingTop: 22,
-  },
-  screenTitle: {
-    ...DESIGN.typography.largeTitle,
-    color: DESIGN.colors.cyan,
-  },
-  screenSub: {
-    fontFamily: DESIGN.fonts.pixelKo,
-    color: DESIGN.colors.textDim,
-    fontWeight: '800',
-    marginTop: 6,
-    marginBottom: 24,
   },
   calendarCard: {
     padding: 10,
@@ -187,41 +236,8 @@ const styles = StyleSheet.create({
   goalGem: {
     fontFamily: DESIGN.fonts.pixelKo,
     color: DESIGN.colors.green,
-    fontWeight: '900',
+    fontWeight: "900",
     marginBottom: 8,
-  },
-  archiveLog: {
-    backgroundColor: DESIGN.colors.surface,
-    borderWidth: DESIGN.borders.heavy,
-    borderColor: DESIGN.colors.cyan,
-    borderBottomColor: DESIGN.colors.yellow,
-    borderRightColor: DESIGN.colors.primary,
-    padding: 14,
-    marginBottom: 12,
-  },
-  logDate: {
-    fontFamily: DESIGN.fonts.title,
-    color: DESIGN.colors.purple,
-    fontWeight: '900',
-    marginBottom: 4,
-  },
-  logTitle: {
-    color: DESIGN.colors.text,
-    fontWeight: '900',
-    fontSize: 17,
-    marginBottom: 6,
-  },
-  logSummary: {
-    color: DESIGN.colors.textDim,
-    lineHeight: 20,
-  },
-  openMark: {
-    position: 'absolute',
-    right: 12,
-    top: 16,
-    color: DESIGN.colors.primary,
-    fontFamily: DESIGN.fonts.title,
-    fontWeight: '900',
   },
   emptyCard: {
     padding: 20,

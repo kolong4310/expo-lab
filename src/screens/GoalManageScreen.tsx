@@ -1,26 +1,38 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
-import { getAllGoals, addGoal, updateGoal, Goal } from '../database/db';
-import { DESIGN } from '../theme/design';
-import RetroCard from '../components/RetroCard';
-import RetroButton from '../components/RetroButton';
-import RetroInput from '../components/RetroInput';
-import PixelSectionTitle from '../components/PixelSectionTitle';
+import React, { useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  ScrollView,
+  StatusBar,
+} from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
+import AppHeader from "../components/AppHeader";
+import PrimaryButton from "../components/PrimaryButton";
+import PixelSectionTitle from "../components/ui/PixelSectionTitle";
+import RetroCard from "../components/ui/RetroCard";
+import RetroInput from "../components/ui/RetroInput";
+import { addGoal, getAllGoals, Goal, updateGoal } from "../database/db";
+import { DESIGN } from "../theme/design";
 
-const CATEGORIES = ['건강', '공부', '일', '생활', '성장', '기타'];
+const CATEGORIES = ["건강", "공부", "일", "생활", "성장", "기타"];
 
 export default function GoalManageScreen() {
   const insets = useSafeAreaInsets();
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [newTitle, setNewTitle] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('성장');
+  const [newTitle, setNewTitle] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("성장");
 
   useFocusEffect(
     useCallback(() => {
       loadGoals();
-    }, [])
+    }, []),
   );
 
   const loadGoals = () => {
@@ -30,12 +42,17 @@ export default function GoalManageScreen() {
   const handleAdd = () => {
     if (!newTitle.trim()) return;
     addGoal(newTitle.trim(), selectedCategory);
-    setNewTitle('');
+    setNewTitle("");
     loadGoals();
   };
 
   const handleToggleActive = (item: Goal) => {
-    updateGoal(item.id!, item.title, item.category, item.is_active === 1 ? 0 : 1);
+    updateGoal(
+      item.id!,
+      item.title,
+      item.category,
+      item.is_active === 1 ? 0 : 1,
+    );
     loadGoals();
   };
 
@@ -43,10 +60,22 @@ export default function GoalManageScreen() {
     <View style={styles.goalRow}>
       <View style={styles.goalInfo}>
         <Text style={styles.goalCategory}>{item.category}</Text>
-        <Text style={[styles.goalTitle, item.is_active === 0 && styles.disabledText]}>{item.title}</Text>
+        <Text
+          style={[
+            styles.goalTitle,
+            item.is_active === 0 && styles.disabledText,
+          ]}
+        >
+          {item.title}
+        </Text>
       </View>
-      <TouchableOpacity onPress={() => handleToggleActive(item)} style={[styles.switchBox, item.is_active === 1 && styles.switchOn]}>
-        <Text style={styles.switchText}>{item.is_active === 1 ? 'ON' : 'OFF'}</Text>
+      <TouchableOpacity
+        onPress={() => handleToggleActive(item)}
+        style={[styles.switchBox, item.is_active === 1 && styles.switchOn]}
+      >
+        <Text style={styles.switchText}>
+          {item.is_active === 1 ? "ON" : "OFF"}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -57,13 +86,19 @@ export default function GoalManageScreen() {
       <FlatList
         data={goals}
         renderItem={renderGoal}
-        keyExtractor={item => item.id?.toString() || ''}
-        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 30 }]}
+        keyExtractor={(item) => item.id?.toString() || ""}
+        contentContainerStyle={[
+          styles.list,
+          { paddingBottom: insets.bottom + 30 },
+        ]}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
-            <Text style={styles.screenTitle}>ROUTINE SETUP</Text>
-            <Text style={styles.screenSub}>반복 미션 관리</Text>
+            <AppHeader
+              title="반복 목표 관리"
+              subtitle="매일 확인할 기본 목표 설정"
+              accent={DESIGN.colors.mint}
+            />
 
             <RetroCard accent="pink" style={styles.addPanel}>
               <PixelSectionTitle>새 반복 미션</PixelSectionTitle>
@@ -75,21 +110,35 @@ export default function GoalManageScreen() {
                 onSubmitEditing={handleAdd}
                 style={styles.input}
               />
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryRow}>
-                {CATEGORIES.map(cat => (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.categoryRow}
+              >
+                {CATEGORIES.map((cat) => (
                   <TouchableOpacity
                     key={cat}
-                    style={[styles.catChip, selectedCategory === cat && styles.catChipSelected]}
+                    style={[
+                      styles.catChip,
+                      selectedCategory === cat && styles.catChipSelected,
+                    ]}
                     onPress={() => setSelectedCategory(cat)}
                   >
-                    <Text style={[styles.catText, selectedCategory === cat && styles.catTextSelected]}>{cat}</Text>
+                    <Text
+                      style={[
+                        styles.catText,
+                        selectedCategory === cat && styles.catTextSelected,
+                      ]}
+                    >
+                      {cat}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </ScrollView>
-              <RetroButton label="매일 반복할 미션 추가" onPress={handleAdd} />
+              <PrimaryButton label="반복 목표 추가" onPress={handleAdd} />
             </RetroCard>
 
-            <PixelSectionTitle>반복 미션 목록</PixelSectionTitle>
+            <PixelSectionTitle>반복 목표 목록</PixelSectionTitle>
           </>
         }
         ListEmptyComponent={
@@ -110,17 +159,6 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: DESIGN.spacing.padding,
     paddingTop: 22,
-  },
-  screenTitle: {
-    ...DESIGN.typography.largeTitle,
-    color: DESIGN.colors.mint,
-  },
-  screenSub: {
-    fontFamily: 'monospace',
-    color: DESIGN.colors.textDim,
-    fontWeight: '900',
-    marginTop: 4,
-    marginBottom: 18,
   },
   addPanel: {
     padding: 16,
@@ -145,9 +183,9 @@ const styles = StyleSheet.create({
     backgroundColor: DESIGN.colors.primary,
   },
   catText: {
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
     color: DESIGN.colors.text,
-    fontWeight: '900',
+    fontWeight: "900",
     fontSize: 13,
   },
   catTextSelected: {
@@ -161,22 +199,22 @@ const styles = StyleSheet.create({
     borderBottomColor: DESIGN.colors.yellow,
     padding: 14,
     marginBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   goalInfo: {
     flex: 1,
   },
   goalCategory: {
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
     color: DESIGN.colors.mint,
-    fontWeight: '900',
+    fontWeight: "900",
     fontSize: 11,
     marginBottom: 4,
   },
   goalTitle: {
     color: DESIGN.colors.text,
-    fontWeight: '900',
+    fontWeight: "900",
     fontSize: 16,
   },
   disabledText: {
@@ -184,20 +222,20 @@ const styles = StyleSheet.create({
   },
   switchBox: {
     minWidth: 58,
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 6,
     borderWidth: DESIGN.borders.pixel,
-    borderColor: '#3B4352',
+    borderColor: "#3B4352",
     backgroundColor: DESIGN.colors.bg,
   },
   switchOn: {
     borderColor: DESIGN.colors.mint,
-    backgroundColor: '#12351F',
+    backgroundColor: "#12351F",
   },
   switchText: {
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
     color: DESIGN.colors.text,
-    fontWeight: '900',
+    fontWeight: "900",
     fontSize: 12,
   },
   emptyCard: {

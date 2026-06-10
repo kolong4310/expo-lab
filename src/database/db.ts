@@ -1,20 +1,21 @@
-import * as SQLite from 'expo-sqlite';
+import * as SQLite from "expo-sqlite";
+import { formatLocalDate } from "../utils/date";
 
 /**
  * 로그 데이터 타입 정의 (Insight)
  */
 export interface WorkLog {
   id?: number;
-  title: string;      // 오늘 한 일 요약
+  title: string; // 오늘 한 일 요약
   daily_summary?: string; // 오늘을 한 문장으로
-  tags?: string;      // 태그 (콤마 구분)
-  content: string;    // 상세 내용
-  learned: string;    // 배운 것
-  issue: string;      // 이슈
-  solution: string;   // 해결 방법
-  memo: string;       // 메모
-  mood?: string;      // 오늘의 기분 (emoji)
-  date: string;       // 작성 날짜 (YYYY-MM-DD)
+  tags?: string; // 태그 (콤마 구분)
+  content: string; // 상세 내용
+  learned: string; // 배운 것
+  issue: string; // 이슈
+  solution: string; // 해결 방법
+  memo: string; // 메모
+  mood?: string; // 오늘의 기분 (emoji)
+  date: string; // 작성 날짜 (YYYY-MM-DD)
 }
 
 /**
@@ -46,7 +47,7 @@ export interface TodayOnlyGoal {
   created_at: string;
 }
 
-const db = SQLite.openDatabaseSync('work_logs.db');
+const db = SQLite.openDatabaseSync("work_logs.db");
 
 /**
  * 데이터베이스 초기화
@@ -103,31 +104,53 @@ export const initDatabase = () => {
   `);
 
   // Legacy 지원 (필요시)
-  try { db.execSync('ALTER TABLE logs ADD COLUMN mood TEXT;'); } catch(e) {}
-  try { db.execSync('ALTER TABLE logs ADD COLUMN daily_summary TEXT;'); } catch(e) {}
-  try { db.execSync('ALTER TABLE logs ADD COLUMN tags TEXT;'); } catch(e) {}
-  try { db.execSync('ALTER TABLE today_only_goals ADD COLUMN goal_date TEXT;'); } catch(e) {}
-  try { db.execSync('ALTER TABLE today_only_goals ADD COLUMN is_done INTEGER DEFAULT 0;'); } catch(e) {}
-  try { db.execSync('ALTER TABLE today_only_goals ADD COLUMN created_at TEXT;'); } catch(e) {}
-  try { db.execSync('UPDATE today_only_goals SET goal_date = date WHERE goal_date IS NULL;'); } catch(e) {}
+  try {
+    db.execSync("ALTER TABLE logs ADD COLUMN mood TEXT;");
+  } catch (e) {}
+  try {
+    db.execSync("ALTER TABLE logs ADD COLUMN daily_summary TEXT;");
+  } catch (e) {}
+  try {
+    db.execSync("ALTER TABLE logs ADD COLUMN tags TEXT;");
+  } catch (e) {}
+  try {
+    db.execSync("ALTER TABLE today_only_goals ADD COLUMN goal_date TEXT;");
+  } catch (e) {}
+  try {
+    db.execSync(
+      "ALTER TABLE today_only_goals ADD COLUMN is_done INTEGER DEFAULT 0;",
+    );
+  } catch (e) {}
+  try {
+    db.execSync("ALTER TABLE today_only_goals ADD COLUMN created_at TEXT;");
+  } catch (e) {}
+  try {
+    db.execSync(
+      "UPDATE today_only_goals SET goal_date = date WHERE goal_date IS NULL;",
+    );
+  } catch (e) {}
 
-  console.log('Database system initialized! ✅');
+  console.log("Database system initialized! ✅");
 };
 
 /**
  * Goal CRUD
  */
 export const getActiveGoals = (): Goal[] => {
-  return db.getAllSync<Goal>('SELECT * FROM goals WHERE is_active = 1 ORDER BY id DESC');
+  return db.getAllSync<Goal>(
+    "SELECT * FROM goals WHERE is_active = 1 ORDER BY id DESC",
+  );
 };
 
 export const getAllGoals = (): Goal[] => {
-  return db.getAllSync<Goal>('SELECT * FROM goals ORDER BY id DESC');
+  return db.getAllSync<Goal>("SELECT * FROM goals ORDER BY id DESC");
 };
 
 export const addGoal = (title: string, category: string) => {
   const now = new Date().toISOString();
-  const statement = db.prepareSync('INSERT INTO goals (title, category, is_active, created_at) VALUES (?, ?, 1, ?)');
+  const statement = db.prepareSync(
+    "INSERT INTO goals (title, category, is_active, created_at) VALUES (?, ?, 1, ?)",
+  );
   try {
     statement.executeSync([title, category, now]);
   } finally {
@@ -135,8 +158,15 @@ export const addGoal = (title: string, category: string) => {
   }
 };
 
-export const updateGoal = (id: number, title: string, category: string, isActive: number) => {
-  const statement = db.prepareSync('UPDATE goals SET title = ?, category = ?, is_active = ? WHERE id = ?');
+export const updateGoal = (
+  id: number,
+  title: string,
+  category: string,
+  isActive: number,
+) => {
+  const statement = db.prepareSync(
+    "UPDATE goals SET title = ?, category = ?, is_active = ? WHERE id = ?",
+  );
   try {
     statement.executeSync([title, category, isActive, id]);
   } finally {
@@ -149,10 +179,10 @@ export const updateGoal = (id: number, title: string, category: string, isActive
  */
 export const getDailyGoalsWithCheck = (date: string) => {
   const query = `
-    SELECT 
-      g.id as goal_id, 
-      g.title, 
-      g.category, 
+    SELECT
+      g.id as goal_id,
+      g.title,
+      g.category,
       COALESCE(c.is_done, 0) as is_done
     FROM goals g
     LEFT JOIN goal_checks c ON g.id = c.goal_id AND c.check_date = ?
@@ -168,9 +198,13 @@ export const getDailyGoalsWithCheck = (date: string) => {
   }
 };
 
-export const toggleGoalCheck = (goalId: number, date: string, isDone: number) => {
+export const toggleGoalCheck = (
+  goalId: number,
+  date: string,
+  isDone: number,
+) => {
   const statement = db.prepareSync(`
-    INSERT INTO goal_checks (goal_id, check_date, is_done, created_at) 
+    INSERT INTO goal_checks (goal_id, check_date, is_done, created_at)
     VALUES (?, ?, ?, ?)
     ON CONFLICT(goal_id, check_date) DO UPDATE SET is_done = excluded.is_done
   `);
@@ -182,7 +216,9 @@ export const toggleGoalCheck = (goalId: number, date: string, isDone: number) =>
 };
 
 export const getTodayOnlyGoals = (date: string): TodayOnlyGoal[] => {
-  const statement = db.prepareSync('SELECT * FROM today_only_goals WHERE goal_date = ? ORDER BY id DESC');
+  const statement = db.prepareSync(
+    "SELECT * FROM today_only_goals WHERE goal_date = ? ORDER BY id DESC",
+  );
   try {
     const result = statement.executeSync<TodayOnlyGoal>([date]);
     return result.getAllSync();
@@ -193,7 +229,7 @@ export const getTodayOnlyGoals = (date: string): TodayOnlyGoal[] => {
 
 export const addTodayOnlyGoal = (title: string, date: string) => {
   const statement = db.prepareSync(
-    'INSERT INTO today_only_goals (title, goal_date, is_done, created_at) VALUES (?, ?, 0, ?)'
+    "INSERT INTO today_only_goals (title, goal_date, is_done, created_at) VALUES (?, ?, 0, ?)",
   );
   try {
     statement.executeSync([title, date, new Date().toISOString()]);
@@ -203,7 +239,9 @@ export const addTodayOnlyGoal = (title: string, date: string) => {
 };
 
 export const toggleTodayOnlyGoal = (id: number, isDone: number) => {
-  const statement = db.prepareSync('UPDATE today_only_goals SET is_done = ? WHERE id = ?');
+  const statement = db.prepareSync(
+    "UPDATE today_only_goals SET is_done = ? WHERE id = ?",
+  );
   try {
     statement.executeSync([isDone, id]);
   } finally {
@@ -212,7 +250,7 @@ export const toggleTodayOnlyGoal = (id: number, isDone: number) => {
 };
 
 export const deleteTodayOnlyGoal = (id: number) => {
-  const statement = db.prepareSync('DELETE FROM today_only_goals WHERE id = ?');
+  const statement = db.prepareSync("DELETE FROM today_only_goals WHERE id = ?");
   try {
     statement.executeSync([id]);
   } finally {
@@ -225,8 +263,8 @@ export const deleteTodayOnlyGoal = (id: number) => {
  */
 export const getGoalStreak = (goalId: number): number => {
   const query = `
-    SELECT check_date FROM goal_checks 
-    WHERE goal_id = ? AND is_done = 1 
+    SELECT check_date FROM goal_checks
+    WHERE goal_id = ? AND is_done = 1
     ORDER BY check_date DESC
   `;
   const statement = db.prepareSync(query);
@@ -235,15 +273,15 @@ export const getGoalStreak = (goalId: number): number => {
     const rows = result.getAllSync();
     if (rows.length === 0) return 0;
 
-    const dates = rows.map(r => r.check_date);
+    const dates = rows.map((r) => r.check_date);
     let streak = 0;
     let currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
 
-    const todayStr = currentDate.toISOString().split('T')[0];
+    const todayStr = formatLocalDate(currentDate);
     const yesterday = new Date(currentDate);
     yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    const yesterdayStr = formatLocalDate(yesterday);
 
     if (dates[0] !== todayStr && dates[0] !== yesterdayStr) return 0;
 
@@ -273,9 +311,9 @@ export const getGoalStreak = (goalId: number): number => {
  */
 export const getDailyGoalsWithStats = (date: string) => {
   const goals = getDailyGoalsWithCheck(date);
-  return goals.map(g => ({
+  return goals.map((g) => ({
     ...g,
-    streak: getGoalStreak(g.goal_id)
+    streak: getGoalStreak(g.goal_id),
   }));
 };
 
@@ -283,11 +321,13 @@ export const getDailyGoalsWithStats = (date: string) => {
  * Insight Log CRUD
  */
 export const getAllLogs = (): WorkLog[] => {
-  return db.getAllSync<WorkLog>('SELECT * FROM logs ORDER BY date DESC');
+  return db.getAllSync<WorkLog>("SELECT * FROM logs ORDER BY date DESC");
 };
 
 export const getLogsByDate = (date: string): WorkLog[] => {
-  const statement = db.prepareSync('SELECT * FROM logs WHERE date = ? ORDER BY id DESC');
+  const statement = db.prepareSync(
+    "SELECT * FROM logs WHERE date = ? ORDER BY id DESC",
+  );
   try {
     const result = statement.executeSync<WorkLog>([date]);
     return result.getAllSync();
@@ -298,7 +338,7 @@ export const getLogsByDate = (date: string): WorkLog[] => {
 
 export const addLog = (log: WorkLog) => {
   const statement = db.prepareSync(
-    'INSERT INTO logs (title, daily_summary, tags, content, learned, issue, solution, memo, mood, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    "INSERT INTO logs (title, daily_summary, tags, content, learned, issue, solution, memo, mood, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
   );
   try {
     statement.executeSync([
@@ -311,7 +351,7 @@ export const addLog = (log: WorkLog) => {
       log.solution,
       log.memo,
       log.mood || null,
-      log.date
+      log.date,
     ]);
   } finally {
     statement.finalizeSync();
@@ -320,7 +360,7 @@ export const addLog = (log: WorkLog) => {
 
 export const updateLog = (log: WorkLog) => {
   const statement = db.prepareSync(
-    'UPDATE logs SET title = ?, daily_summary = ?, tags = ?, content = ?, learned = ?, issue = ?, solution = ?, memo = ?, mood = ? WHERE id = ?'
+    "UPDATE logs SET title = ?, daily_summary = ?, tags = ?, content = ?, learned = ?, issue = ?, solution = ?, memo = ?, mood = ? WHERE id = ?",
   );
   try {
     statement.executeSync([
@@ -333,7 +373,7 @@ export const updateLog = (log: WorkLog) => {
       log.solution,
       log.memo,
       log.mood || null,
-      log.id!
+      log.id!,
     ]);
   } finally {
     statement.finalizeSync();
@@ -341,34 +381,50 @@ export const updateLog = (log: WorkLog) => {
 };
 
 export const deleteLog = (id: number) => {
-  db.execSync(`DELETE FROM logs WHERE id = ${id}`);
+  const statement = db.prepareSync("DELETE FROM logs WHERE id = ?");
+  try {
+    statement.executeSync([id]);
+  } finally {
+    statement.finalizeSync();
+  }
 };
 
 /**
  * Search and Metadata
  */
 export const getLoggedDates = (): string[] => {
-  const rows = db.getAllSync<{ date: string }>('SELECT DISTINCT date FROM logs ORDER BY date DESC');
-  return rows.map(row => row.date);
+  const rows = db.getAllSync<{ date: string }>(
+    "SELECT DISTINCT date FROM logs ORDER BY date DESC",
+  );
+  return rows.map((row) => row.date);
 };
 
 export const searchLogs = (keyword: string): WorkLog[] => {
   const query = `
-    SELECT * FROM logs 
-    WHERE title LIKE ? 
+    SELECT * FROM logs
+    WHERE title LIKE ?
     OR daily_summary LIKE ?
     OR tags LIKE ?
-    OR content LIKE ? 
-    OR learned LIKE ? 
-    OR issue LIKE ? 
-    OR solution LIKE ? 
-    OR memo LIKE ? 
+    OR content LIKE ?
+    OR learned LIKE ?
+    OR issue LIKE ?
+    OR solution LIKE ?
+    OR memo LIKE ?
     ORDER BY date DESC
   `;
   const pattern = `%${keyword}%`;
   const statement = db.prepareSync(query);
   try {
-    const result = statement.executeSync<WorkLog>([pattern, pattern, pattern, pattern, pattern, pattern, pattern, pattern]);
+    const result = statement.executeSync<WorkLog>([
+      pattern,
+      pattern,
+      pattern,
+      pattern,
+      pattern,
+      pattern,
+      pattern,
+      pattern,
+    ]);
     return result.getAllSync();
   } finally {
     statement.finalizeSync();
@@ -379,20 +435,20 @@ export const searchLogs = (keyword: string): WorkLog[] => {
  * Statistics (Streak & Rate)
  */
 export const getCurrentStreak = (): number => {
-  const rows = db.getAllSync<{check_date: string}>(
-    'SELECT DISTINCT check_date FROM goal_checks WHERE is_done = 1 ORDER BY check_date DESC'
+  const rows = db.getAllSync<{ check_date: string }>(
+    "SELECT DISTINCT check_date FROM goal_checks WHERE is_done = 1 ORDER BY check_date DESC",
   );
   if (rows.length === 0) return 0;
 
-  const dates = rows.map(r => r.check_date);
+  const dates = rows.map((r) => r.check_date);
   let streak = 0;
   let currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
 
-  const todayStr = currentDate.toISOString().split('T')[0];
+  const todayStr = formatLocalDate(currentDate);
   const yesterday = new Date(currentDate);
   yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  const yesterdayStr = formatLocalDate(yesterday);
 
   if (dates[0] !== todayStr && dates[0] !== yesterdayStr) return 0;
 
@@ -401,7 +457,10 @@ export const getCurrentStreak = (): number => {
 
   for (let i = 1; i < dates.length; i++) {
     const nextDate = new Date(dates[i]);
-    const diffDays = Math.ceil(Math.abs(checkDate.getTime() - nextDate.getTime()) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.ceil(
+      Math.abs(checkDate.getTime() - nextDate.getTime()) /
+        (1000 * 60 * 60 * 24),
+    );
     if (diffDays === 1) {
       streak++;
       checkDate = nextDate;
@@ -418,8 +477,8 @@ export const getGrowthStats = (date: string) => {
   const total = dailyItems.length + todayOnlyItems.length;
   if (total === 0) return { total: 0, completed: 0, rate: 0 };
   const completed =
-    dailyItems.filter(i => i.is_done === 1).length +
-    todayOnlyItems.filter(i => i.is_done === 1).length;
+    dailyItems.filter((i) => i.is_done === 1).length +
+    todayOnlyItems.filter((i) => i.is_done === 1).length;
   return { total, completed, rate: Math.round((completed / total) * 100) };
 };
 
