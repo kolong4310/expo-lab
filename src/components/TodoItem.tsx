@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { DESIGN } from "../theme/design";
@@ -22,10 +23,12 @@ export default function TodoItem({
       <TouchableOpacity
         style={styles.toggleArea}
         onPress={onToggle}
-        activeOpacity={0.75}
+        activeOpacity={0.7}
       >
         <View style={[styles.check, completed && styles.checkDone]}>
-          {completed && <View style={styles.checkInner} />}
+          {completed && (
+            <Ionicons name="checkmark" size={15} color={DESIGN.colors.text} />
+          )}
         </View>
         <View style={styles.textWrap}>
           <Text style={[styles.title, completed && styles.titleDone]}>
@@ -36,7 +39,7 @@ export default function TodoItem({
       </TouchableOpacity>
       {onDelete && (
         <TouchableOpacity onPress={onDelete} hitSlop={10}>
-          <Text style={styles.delete}>삭제</Text>
+          <Ionicons name="close" size={19} color={DESIGN.colors.textDim} />
         </TouchableOpacity>
       )}
     </View>
@@ -45,63 +48,48 @@ export default function TodoItem({
 
 const styles = StyleSheet.create({
   row: {
-    minHeight: 52,
+    minHeight: 62,
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: "#343B49",
-    backgroundColor: "#090B10",
-    paddingHorizontal: 12,
-    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: DESIGN.colors.border,
   },
   toggleArea: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 8,
+    paddingVertical: 10,
   },
   check: {
-    width: 24,
-    height: 24,
+    width: 22,
+    height: 22,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.textDim,
-    backgroundColor: DESIGN.colors.bg,
+    borderWidth: 1.5,
+    borderColor: DESIGN.colors.borderStrong,
+    borderRadius: 11,
   },
   checkDone: {
-    borderColor: DESIGN.colors.green,
-  },
-  checkInner: {
-    width: 12,
-    height: 12,
-    backgroundColor: DESIGN.colors.green,
+    borderColor: DESIGN.colors.secondary,
+    backgroundColor: DESIGN.colors.secondary,
   },
   textWrap: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: 13,
   },
   title: {
     color: DESIGN.colors.text,
-    fontSize: 16,
-    fontWeight: "700",
-    lineHeight: 23,
+    fontSize: 15,
+    fontWeight: "600",
+    lineHeight: 22,
   },
   titleDone: {
-    color: DESIGN.colors.green,
+    color: DESIGN.colors.textDim,
     textDecorationLine: "line-through",
   },
   meta: {
     marginTop: 2,
     color: DESIGN.colors.textDim,
-    fontFamily: DESIGN.fonts.pixelKo,
-    fontSize: 11,
-  },
-  delete: {
-    paddingLeft: 10,
-    color: DESIGN.colors.error,
-    fontFamily: DESIGN.fonts.pixelKo,
     fontSize: 12,
-    fontWeight: "900",
   },
 });

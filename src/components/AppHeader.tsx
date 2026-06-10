@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import React, { ReactNode } from "react";
 import {
   StyleProp,
@@ -22,7 +23,6 @@ interface AppHeaderProps {
 export default function AppHeader({
   title,
   subtitle,
-  accent = DESIGN.colors.primary,
   compact = false,
   onBack,
   right,
@@ -33,14 +33,20 @@ export default function AppHeader({
       <View style={styles.navigationHeader}>
         <View style={styles.side}>
           {onBack && (
-            <TouchableOpacity onPress={onBack} hitSlop={10}>
-              <Text style={styles.backText}>뒤로</Text>
+            <TouchableOpacity
+              onPress={onBack}
+              hitSlop={10}
+              style={styles.iconButton}
+            >
+              <Ionicons
+                name="chevron-back"
+                size={24}
+                color={DESIGN.colors.text}
+              />
             </TouchableOpacity>
           )}
         </View>
-        <Text style={[styles.navigationTitle, { color: accent }, titleStyle]}>
-          {title}
-        </Text>
+        <Text style={[styles.navigationTitle, titleStyle]}>{title}</Text>
         <View style={[styles.side, styles.right]}>{right}</View>
       </View>
     );
@@ -48,9 +54,7 @@ export default function AppHeader({
 
   return (
     <View style={[styles.screenHeader, compact && styles.screenHeaderCompact]}>
-      <Text style={[styles.screenTitle, { color: accent }, titleStyle]}>
-        {title}
-      </Text>
+      <Text style={[styles.screenTitle, titleStyle]}>{title}</Text>
       {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
     </View>
   );
@@ -61,44 +65,40 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   screenHeaderCompact: {
-    marginBottom: 14,
+    marginBottom: 18,
   },
   screenTitle: {
     ...DESIGN.typography.largeTitle,
+    color: DESIGN.colors.text,
   },
   subtitle: {
-    marginTop: 6,
+    marginTop: 5,
     color: DESIGN.colors.textDim,
-    fontFamily: DESIGN.fonts.pixelKo,
-    fontSize: 15,
-    fontWeight: "800",
-    lineHeight: 22,
+    fontSize: 14,
+    fontWeight: "500",
   },
   navigationHeader: {
-    minHeight: 52,
+    minHeight: 56,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderBottomWidth: DESIGN.borders.heavy,
-    borderBottomColor: DESIGN.colors.cyan,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 12,
   },
   side: {
-    width: 76,
+    width: 84,
   },
   right: {
     alignItems: "flex-end",
   },
-  backText: {
-    color: DESIGN.colors.cyan,
-    fontFamily: DESIGN.fonts.title,
-    fontWeight: "900",
+  iconButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
   navigationTitle: {
-    fontFamily: DESIGN.fonts.title,
+    color: DESIGN.colors.text,
     fontSize: 17,
-    fontWeight: "900",
-    letterSpacing: 1,
+    fontWeight: "700",
   },
 });

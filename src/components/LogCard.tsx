@@ -1,5 +1,6 @@
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { WorkLog } from "../database/db";
 import { DESIGN } from "../theme/design";
 
@@ -9,13 +10,22 @@ interface LogCardProps {
 }
 
 export default function LogCard({ log, onPress }: LogCardProps) {
+  const firstTag = log.tags?.split(",").filter(Boolean)[0];
+
   return (
     <TouchableOpacity
       style={styles.card}
       onPress={onPress}
-      activeOpacity={0.75}
+      activeOpacity={0.72}
     >
-      <Text style={styles.date}>{log.date.replace(/-/g, ".")}</Text>
+      <View style={styles.topRow}>
+        <Text style={styles.date}>{log.date.replace(/-/g, ".")}</Text>
+        <Ionicons
+          name="chevron-forward"
+          size={18}
+          color={DESIGN.colors.textDim}
+        />
+      </View>
       <Text style={styles.title} numberOfLines={1}>
         {log.title}
       </Text>
@@ -24,7 +34,7 @@ export default function LogCard({ log, onPress }: LogCardProps) {
           {log.daily_summary}
         </Text>
       )}
-      <Text style={styles.openMark}>{">"}</Text>
+      {firstTag && <Text style={styles.tag}>#{firstTag}</Text>}
     </TouchableOpacity>
   );
 }
@@ -32,35 +42,43 @@ export default function LogCard({ log, onPress }: LogCardProps) {
 const styles = StyleSheet.create({
   card: {
     marginBottom: 12,
-    borderWidth: DESIGN.borders.heavy,
-    borderColor: DESIGN.colors.cyan,
-    borderRightColor: DESIGN.colors.pink,
-    borderBottomColor: DESIGN.colors.yellow,
+    borderWidth: 1,
+    borderColor: DESIGN.colors.border,
+    borderRadius: DESIGN.radius.card,
     backgroundColor: DESIGN.colors.surface,
-    padding: 14,
+    padding: 18,
+  },
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   date: {
-    marginBottom: 4,
-    color: DESIGN.colors.purple,
-    fontFamily: DESIGN.fonts.title,
-    fontWeight: "900",
+    color: DESIGN.colors.textDim,
+    fontSize: 12,
+    fontWeight: "500",
   },
   title: {
-    marginBottom: 6,
+    marginTop: 10,
     color: DESIGN.colors.text,
-    fontSize: 17,
-    fontWeight: "900",
+    fontSize: 16,
+    fontWeight: "700",
   },
   summary: {
+    marginTop: 7,
     color: DESIGN.colors.textDim,
-    lineHeight: 20,
+    fontSize: 13,
+    lineHeight: 19,
   },
-  openMark: {
-    position: "absolute",
-    right: 12,
-    top: 16,
+  tag: {
+    alignSelf: "flex-start",
+    marginTop: 12,
+    borderRadius: DESIGN.radius.pill,
+    backgroundColor: "rgba(108,99,255,0.14)",
     color: DESIGN.colors.primary,
-    fontFamily: DESIGN.fonts.title,
-    fontWeight: "900",
+    fontSize: 11,
+    fontWeight: "600",
+    paddingHorizontal: 9,
+    paddingVertical: 5,
   },
 });

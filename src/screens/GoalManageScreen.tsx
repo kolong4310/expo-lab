@@ -97,11 +97,10 @@ export default function GoalManageScreen() {
             <AppHeader
               title="반복 목표 관리"
               subtitle="매일 확인할 기본 목표 설정"
-              accent={DESIGN.colors.mint}
             />
 
-            <RetroCard accent="pink" style={styles.addPanel}>
-              <PixelSectionTitle>새 반복 미션</PixelSectionTitle>
+            <RetroCard style={styles.addPanel}>
+              <PixelSectionTitle>새 반복 목표</PixelSectionTitle>
               <RetroInput
                 value={newTitle}
                 onChangeText={setNewTitle}
@@ -142,8 +141,8 @@ export default function GoalManageScreen() {
           </>
         }
         ListEmptyComponent={
-          <RetroCard accent="purple" style={styles.emptyCard}>
-            <Text style={styles.emptyText}>등록된 반복 미션이 없습니다.</Text>
+          <RetroCard style={styles.emptyCard}>
+            <Text style={styles.emptyText}>등록된 반복 목표가 없습니다.</Text>
           </RetroCard>
         }
       />
@@ -157,12 +156,12 @@ const styles = StyleSheet.create({
     backgroundColor: DESIGN.colors.bg,
   },
   list: {
-    paddingHorizontal: DESIGN.spacing.padding,
-    paddingTop: 22,
+    paddingHorizontal: 20,
+    paddingTop: 12,
   },
   addPanel: {
-    padding: 16,
-    marginBottom: 22,
+    padding: 20,
+    marginBottom: 28,
   },
   input: {
     marginBottom: 14,
@@ -171,21 +170,21 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   catChip: {
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.cyan,
-    backgroundColor: DESIGN.colors.bg,
-    paddingHorizontal: 13,
-    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: DESIGN.colors.border,
+    borderRadius: DESIGN.radius.pill,
+    backgroundColor: DESIGN.colors.bgSecondary,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
     marginRight: 8,
   },
   catChipSelected: {
-    borderColor: DESIGN.colors.yellow,
+    borderColor: DESIGN.colors.primary,
     backgroundColor: DESIGN.colors.primary,
   },
   catText: {
-    fontFamily: "monospace",
     color: DESIGN.colors.text,
-    fontWeight: "900",
+    fontWeight: "600",
     fontSize: 13,
   },
   catTextSelected: {
@@ -193,11 +192,10 @@ const styles = StyleSheet.create({
   },
   goalRow: {
     backgroundColor: DESIGN.colors.surface,
-    borderWidth: DESIGN.borders.heavy,
-    borderColor: DESIGN.colors.cyan,
-    borderRightColor: DESIGN.colors.pink,
-    borderBottomColor: DESIGN.colors.yellow,
-    padding: 14,
+    borderWidth: 1,
+    borderColor: DESIGN.colors.border,
+    borderRadius: DESIGN.radius.card,
+    padding: 18,
     marginBottom: 12,
     flexDirection: "row",
     alignItems: "center",
@@ -206,15 +204,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   goalCategory: {
-    fontFamily: "monospace",
-    color: DESIGN.colors.mint,
-    fontWeight: "900",
-    fontSize: 11,
+    color: DESIGN.colors.textDim,
+    fontWeight: "600",
+    fontSize: 12,
     marginBottom: 4,
   },
   goalTitle: {
     color: DESIGN.colors.text,
-    fontWeight: "900",
+    fontWeight: "600",
     fontSize: 16,
   },
   disabledText: {
@@ -223,19 +220,16 @@ const styles = StyleSheet.create({
   switchBox: {
     minWidth: 58,
     alignItems: "center",
-    paddingVertical: 6,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: "#3B4352",
-    backgroundColor: DESIGN.colors.bg,
+    paddingVertical: 8,
+    borderRadius: DESIGN.radius.pill,
+    backgroundColor: DESIGN.colors.bgSecondary,
   },
   switchOn: {
-    borderColor: DESIGN.colors.mint,
-    backgroundColor: "#12351F",
+    backgroundColor: "rgba(34,197,94,0.18)",
   },
   switchText: {
-    fontFamily: "monospace",
-    color: DESIGN.colors.text,
-    fontWeight: "900",
+    color: DESIGN.colors.success,
+    fontWeight: "700",
     fontSize: 12,
   },
   emptyCard: {

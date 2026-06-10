@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
@@ -14,103 +15,138 @@ import {
 } from "react-native-safe-area-context";
 import AppHeader from "../components/AppHeader";
 import LogCard from "../components/LogCard";
-import PixelSectionTitle from "../components/ui/PixelSectionTitle";
-import RetroCard from "../components/ui/RetroCard";
 import RetroInput from "../components/ui/RetroInput";
 import { searchLogs, WorkLog } from "../database/db";
 import { DESIGN } from "../theme/design";
 
-const QUICK_TAGS = ["ReactNative", "SQLite", "UI", "공부", "운동", "개발"];
+const POPULAR_TAGS = ["ReactNative", "SQLite", "UI", "공부", "운동", "개발"];
 
 export default function SearchScreen() {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const [keyword, setKeyword] = useState("");
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [results, setResults] = useState<WorkLog[]>([]);
 
   useEffect(() => {
-    if (keyword.trim().length > 0) {
-      setResults(searchLogs(keyword.trim()));
-    } else {
-      setResults([]);
-    }
+    const query = keyword.trim();
+    setResults(query ? searchLogs(query) : []);
   }, [keyword]);
 
-  const renderResultItem = ({ item }: { item: WorkLog }) => (
-    <LogCard
-      log={item}
-      onPress={() => navigation.navigate("Detail", { log: item })}
-    />
-  );
+  const submitSearch = () => {
+    const query = keyword.trim();
+    if (!query) return;
+    setRecentSearches((current) =>
+      [query, ...current.filter((item) => item !== query)].slice(0, 5),
+    );
+  };
+
+  const selectKeyword = (value: string) => {
+    setKeyword(value);
+    setRecentSearches((current) =>
+      [value, ...current.filter((item) => item !== value)].slice(0, 5),
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
-
       <FlatList
         data={results}
-        renderItem={renderResultItem}
+        renderItem={({ item }) => (
+          <LogCard
+            log={item}
+            onPress={() => navigation.navigate("Detail", { log: item })}
+          />
+        )}
         keyExtractor={(item, index) =>
           item.id?.toString() ?? `${item.date}-${index}`
         }
         contentContainerStyle={[
           styles.list,
-          { paddingBottom: insets.bottom + 120 },
+          { paddingBottom: insets.bottom + 110 },
         ]}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
             <AppHeader
-              title="기록 검색"
-              subtitle="업무 내용과 태그로 기록 찾기"
-              accent={DESIGN.colors.purple}
+              title="검색"
+              subtitle="업무 기록과 태그를 빠르게 찾으세요"
             />
+            <View style={styles.searchWrap}>
+              <Ionicons name="search" size={19} color={DESIGN.colors.textDim} />
+              <RetroInput
+                style={styles.searchInput}
+                value={keyword}
+                onChangeText={setKeyword}
+                placeholder="기록 또는 태그 검색"
+                returnKeyType="search"
+                onSubmitEditing={submitSearch}
+              />
+              {keyword.length > 0 && (
+                <TouchableOpacity onPress={() => setKeyword("")} hitSlop={10}>
+                  <Ionicons
+                    name="close-circle"
+                    size={19}
+                    color={DESIGN.colors.textDim}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
 
-            <RetroCard accent="purple" style={styles.searchCard}>
-              <View style={styles.searchRow}>
-                <Text style={styles.searchIcon}>⌕</Text>
-                <RetroInput
-                  style={styles.searchInput}
-                  value={keyword}
-                  onChangeText={setKeyword}
-                  placeholder="검색어를 입력해 성장 기록을 찾아보세요."
-                  autoFocus
-                />
-                {keyword.length > 0 && (
-                  <TouchableOpacity onPress={() => setKeyword("")}>
-                    <Text style={styles.clearText}>X</Text>
+            {recentSearches.length > 0 && (
+              <>
+                <View style={styles.sectionHeading}>
+                  <Text style={styles.sectionTitle}>최근 검색</Text>
+                  <TouchableOpacity onPress={() => setRecentSearches([])}>
+                    <Text style={styles.clearText}>지우기</Text>
                   </TouchableOpacity>
-                )}
-              </View>
-            </RetroCard>
+                </View>
+                <View style={styles.chipGrid}>
+                  {recentSearches.map((item) => (
+                    <TouchableOpacity
+                      key={item}
+                      style={styles.recentChip}
+                      onPress={() => selectKeyword(item)}
+                    >
+                      <Ionicons
+                        name="time-outline"
+                        size={14}
+                        color={DESIGN.colors.textDim}
+                      />
+                      <Text style={styles.recentText}>{item}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </>
+            )}
 
-            <PixelSectionTitle>추천 태그</PixelSectionTitle>
-            <View style={styles.tagGrid}>
-              {QUICK_TAGS.map((tag) => (
+            <Text style={styles.sectionTitle}>인기 태그</Text>
+            <View style={styles.chipGrid}>
+              {POPULAR_TAGS.map((tag) => (
                 <TouchableOpacity
                   key={tag}
                   style={styles.tagChip}
-                  onPress={() => setKeyword(tag)}
+                  onPress={() => selectKeyword(tag)}
                 >
                   <Text style={styles.tagText}>#{tag}</Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            <PixelSectionTitle>검색 결과</PixelSectionTitle>
+            <View style={styles.resultHeading}>
+              <Text style={styles.sectionTitle}>검색 결과</Text>
+              {keyword.length > 0 && (
+                <Text style={styles.count}>{results.length}개</Text>
+              )}
+            </View>
             {keyword.length === 0 && (
-              <RetroCard accent="cyan" style={styles.emptyCard}>
-                <Text style={styles.emptyText}>
-                  검색어를 입력해 성장 기록을 찾아보세요.
-                </Text>
-              </RetroCard>
+              <Text style={styles.emptyText}>
+                검색어를 입력하면 관련 기록이 표시됩니다.
+              </Text>
             )}
             {keyword.length > 0 && results.length === 0 && (
-              <RetroCard accent="pink" style={styles.emptyCard}>
-                <Text style={styles.emptyText}>
-                  해당하는 성장 기록이 없습니다.
-                </Text>
-              </RetroCard>
+              <Text style={styles.emptyText}>일치하는 기록이 없습니다.</Text>
             )}
           </>
         }
@@ -120,63 +156,76 @@ export default function SearchScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: DESIGN.colors.bg,
-  },
-  list: {
-    paddingHorizontal: 24,
-    paddingTop: 22,
-  },
-  searchCard: {
-    padding: 14,
-    marginBottom: 28,
-  },
-  searchRow: {
+  container: { flex: 1, backgroundColor: DESIGN.colors.bg },
+  list: { paddingHorizontal: 20, paddingTop: 12 },
+  searchWrap: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  searchIcon: {
-    color: DESIGN.colors.text,
-    fontFamily: DESIGN.fonts.title,
-    fontWeight: "900",
-    fontSize: 18,
-    marginRight: 10,
+    marginBottom: 28,
+    borderWidth: 1,
+    borderColor: DESIGN.colors.border,
+    borderRadius: 18,
+    backgroundColor: DESIGN.colors.surface,
+    paddingHorizontal: 14,
   },
   searchInput: {
     flex: 1,
+    borderWidth: 0,
+    backgroundColor: "transparent",
+    paddingHorizontal: 10,
   },
-  clearText: {
-    color: DESIGN.colors.error,
-    fontFamily: DESIGN.fonts.title,
-    fontWeight: "900",
-    marginLeft: 10,
+  sectionHeading: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-  tagGrid: {
+  sectionTitle: { color: DESIGN.colors.text, fontSize: 17, fontWeight: "700" },
+  clearText: { color: DESIGN.colors.textDim, fontSize: 12, fontWeight: "600" },
+  chipGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
+    gap: 8,
+    marginTop: 12,
     marginBottom: 28,
   },
-  tagChip: {
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.purple,
+  recentChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: DESIGN.colors.border,
+    borderRadius: DESIGN.radius.pill,
     backgroundColor: DESIGN.colors.surface,
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginRight: 8,
-    marginBottom: 8,
+    paddingVertical: 9,
+  },
+  recentText: {
+    marginLeft: 6,
+    color: DESIGN.colors.text,
+    fontSize: 13,
+    fontWeight: "500",
+  },
+  tagChip: {
+    borderRadius: DESIGN.radius.pill,
+    backgroundColor: "rgba(108,99,255,0.14)",
+    paddingHorizontal: 13,
+    paddingVertical: 9,
   },
   tagText: {
-    fontFamily: DESIGN.fonts.pixelKo,
-    color: DESIGN.colors.text,
-    fontWeight: "900",
+    color: DESIGN.colors.primaryLight,
     fontSize: 13,
+    fontWeight: "600",
   },
-  emptyCard: {
-    padding: 20,
+  resultHeading: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 14,
   },
+  count: { color: DESIGN.colors.textDim, fontSize: 12, fontWeight: "600" },
   emptyText: {
+    marginBottom: 20,
     color: DESIGN.colors.textDim,
-    lineHeight: 21,
+    fontSize: 13,
+    lineHeight: 20,
   },
 });

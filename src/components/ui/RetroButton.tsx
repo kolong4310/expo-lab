@@ -33,6 +33,7 @@ export default function RetroButton({
         styles.button,
         isSecondary && styles.secondary,
         pressed && styles.pressed,
+        props.disabled && styles.disabled,
         style,
       ]}
     >
@@ -47,35 +48,31 @@ export default function RetroButton({
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: 58,
-    backgroundColor: DESIGN.colors.pink,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.cyan,
-    borderRightColor: DESIGN.colors.cyan,
-    borderBottomColor: DESIGN.colors.yellow,
-    borderRadius: 6,
+    minHeight: 56,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 18,
-    paddingVertical: 13,
+    borderRadius: DESIGN.radius.button,
+    backgroundColor: DESIGN.colors.primary,
+    paddingHorizontal: 20,
   },
   secondary: {
-    backgroundColor: DESIGN.colors.cyan,
-    borderBottomColor: DESIGN.colors.green,
+    borderWidth: 1,
+    borderColor: DESIGN.colors.borderStrong,
+    backgroundColor: DESIGN.colors.surfaceAlt,
   },
   pressed: {
-    transform: [{ translateX: 3 }, { translateY: 3 }],
-    borderRightWidth: DESIGN.borders.pixel,
-    borderBottomWidth: DESIGN.borders.pixel,
+    opacity: 0.82,
+    transform: [{ scale: 0.99 }],
+  },
+  disabled: {
+    opacity: 0.4,
   },
   text: {
     color: DESIGN.colors.text,
-    fontFamily: DESIGN.fonts.title,
-    fontWeight: "900",
-    letterSpacing: 1,
     fontSize: 16,
+    fontWeight: "700",
   },
   secondaryText: {
-    color: DESIGN.colors.bg,
+    color: DESIGN.colors.text,
   },
 });

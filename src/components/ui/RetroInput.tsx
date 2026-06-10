@@ -22,7 +22,7 @@ export default function RetroInput({
     <TextInput
       {...props}
       placeholderTextColor={placeholderTextColor || DESIGN.colors.textDim}
-      selectionColor={DESIGN.colors.pink}
+      selectionColor={DESIGN.colors.primary}
       style={[styles.input, containerStyle, style]}
     />
   );
@@ -30,18 +30,14 @@ export default function RetroInput({
 
 const styles = StyleSheet.create({
   input: {
-    minHeight: 48,
+    minHeight: 50,
+    borderWidth: 1,
+    borderColor: DESIGN.colors.border,
+    borderRadius: DESIGN.radius.input,
+    backgroundColor: DESIGN.colors.bgSecondary,
     color: DESIGN.colors.text,
-    backgroundColor: DESIGN.colors.bg,
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.cyan,
-    borderRightWidth: DESIGN.borders.heavy,
-    borderBottomWidth: DESIGN.borders.heavy,
-    borderRightColor: DESIGN.colors.pink,
-    borderBottomColor: DESIGN.colors.yellow,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontFamily: DESIGN.fonts.body,
     fontSize: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
   },
 });

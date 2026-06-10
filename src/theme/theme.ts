@@ -1,59 +1,38 @@
-export const RetroColors = {
-  background: "#050505",
-  surface: "#151922",
-  surfaceAlt: "#0B0E14",
-  neonPink: "#FF4DB8",
-  neonCyan: "#00E5FF",
-  neonYellow: "#FFE45C",
-  neonGreen: "#6DFF8F",
-  neonPurple: "#A855F7",
+export const AppColors = {
+  background: "#0B0F14",
+  surface: "#151B23",
+  surfaceAlt: "#1F2630",
+  primary: "#6C63FF",
+  secondary: "#4CC9F0",
+  success: "#22C55E",
+  warning: "#F59E0B",
+  danger: "#F87171",
   text: "#FFFFFF",
-  muted: "#9AA3B2",
-  danger: "#FF5A6B",
+  muted: "#8B93A7",
+  border: "rgba(255,255,255,0.06)",
+  borderStrong: "rgba(255,255,255,0.12)",
 };
 
-export const RetroFonts = {
-  pixel: "monospace",
-  title: "monospace",
+export const AppFonts = {
+  title: undefined,
   body: undefined,
 };
 
-export const RetroSpacing = {
+export const AppSpacing = {
   xs: 4,
   sm: 8,
   md: 16,
-  lg: 24,
-  xl: 32,
+  lg: 20,
+  xl: 24,
+  xxl: 32,
 };
 
-export const RetroBorders = {
-  thin: 2,
-  pixel: 3,
-  heavy: 4,
-  radius: 10,
-  radiusLarge: 14,
+export const AppRadius = {
+  input: 14,
+  button: 18,
+  card: 24,
+  pill: 999,
 };
 
-export const RetroTypography = {
-  title: {
-    fontFamily: RetroFonts.title,
-    fontWeight: "900" as const,
-    letterSpacing: 1.2,
-    color: RetroColors.text,
-  },
-  label: {
-    fontFamily: RetroFonts.pixel,
-    fontWeight: "900" as const,
-    letterSpacing: 0.8,
-    color: RetroColors.neonCyan,
-  },
-  number: {
-    fontFamily: RetroFonts.pixel,
-    fontWeight: "900" as const,
-    color: RetroColors.neonYellow,
-  },
-};
-
-export const Colors = RetroColors;
-export const Spacing = RetroSpacing;
-export const Typography = RetroTypography;
+export const Colors = AppColors;
+export const Spacing = AppSpacing;

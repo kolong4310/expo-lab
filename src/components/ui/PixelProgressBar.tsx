@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { DESIGN } from "../../theme/design";
 
 type PixelProgressBarProps = {
@@ -7,41 +7,26 @@ type PixelProgressBarProps = {
   blocks?: number;
 };
 
-export default function PixelProgressBar({
-  value,
-  blocks = 10,
-}: PixelProgressBarProps) {
-  const filledCount = Math.max(
-    0,
-    Math.min(blocks, Math.round((value / 100) * blocks)),
-  );
+export default function PixelProgressBar({ value }: PixelProgressBarProps) {
+  const width = `${Math.max(0, Math.min(100, value))}%` as `${number}%`;
 
   return (
-    <View style={styles.row}>
-      {Array.from({ length: blocks }, (_, index) => (
-        <View
-          key={index}
-          style={[styles.block, index < filledCount && styles.filled]}
-        />
-      ))}
+    <View style={styles.track}>
+      <View style={[styles.fill, { width }]} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    gap: 7,
+  track: {
+    height: 8,
+    overflow: "hidden",
+    borderRadius: 999,
+    backgroundColor: DESIGN.colors.bgSecondary,
   },
-  block: {
-    flex: 1,
-    height: 20,
-    backgroundColor: DESIGN.colors.bg,
-    borderWidth: 2,
-    borderColor: "#2A2F3A",
-  },
-  filled: {
-    backgroundColor: DESIGN.colors.pink,
-    borderColor: DESIGN.colors.yellow,
+  fill: {
+    height: "100%",
+    borderRadius: 999,
+    backgroundColor: DESIGN.colors.primary,
   },
 });

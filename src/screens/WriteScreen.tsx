@@ -183,7 +183,6 @@ export default function WriteScreen() {
         <AppHeader
           title={editingLog ? "기록 수정" : "오늘 기록"}
           onBack={() => navigation.goBack()}
-          accent={DESIGN.colors.yellow}
         />
 
         <ScrollView
@@ -338,16 +337,15 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 18,
+    paddingHorizontal: 20,
     backgroundColor: DESIGN.colors.bg,
   },
   inputCard: {
-    padding: 12,
-    marginTop: 14,
-    borderWidth: DESIGN.borders.pixel,
+    padding: 20,
+    marginTop: 16,
   },
   titleInput: {
-    fontWeight: "900",
+    fontWeight: "600",
     fontSize: 18,
   },
   textInput: {
@@ -356,9 +354,8 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   supportCard: {
-    marginTop: 14,
-    padding: 12,
-    borderWidth: DESIGN.borders.pixel,
+    marginTop: 16,
+    padding: 20,
   },
   supportHeader: {
     flexDirection: "row",
@@ -366,10 +363,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   supportTitle: {
-    color: DESIGN.colors.yellow,
-    fontFamily: DESIGN.fonts.pixelKo,
+    color: DESIGN.colors.text,
     fontSize: 15,
-    fontWeight: "900",
+    fontWeight: "700",
   },
   supportDescription: {
     marginTop: 4,
@@ -377,30 +373,29 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   supportToggle: {
-    color: DESIGN.colors.cyan,
-    fontFamily: DESIGN.fonts.pixelKo,
+    color: DESIGN.colors.primaryLight,
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "600",
   },
   supportBody: {
     marginTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "#343B49",
+    borderTopColor: DESIGN.colors.border,
   },
   supplementalField: {
     paddingTop: 12,
   },
   supplementalLabel: {
     marginBottom: 6,
-    color: DESIGN.colors.cyan,
-    fontFamily: DESIGN.fonts.pixelKo,
+    color: DESIGN.colors.textDim,
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "600",
   },
   supplementalInput: {
     minHeight: 76,
     borderWidth: 1,
-    borderColor: "#343B49",
+    borderColor: DESIGN.colors.border,
+    borderRadius: DESIGN.radius.input,
     backgroundColor: DESIGN.colors.bgSecondary,
     color: DESIGN.colors.text,
     fontSize: 15,
@@ -412,22 +407,22 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   moodChip: {
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.cyan,
+    borderWidth: 1,
+    borderColor: DESIGN.colors.border,
+    borderRadius: DESIGN.radius.pill,
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginRight: 8,
     marginBottom: 8,
-    backgroundColor: DESIGN.colors.bg,
+    backgroundColor: DESIGN.colors.bgSecondary,
   },
   moodChipSelected: {
     backgroundColor: DESIGN.colors.primary,
-    borderColor: DESIGN.colors.yellow,
+    borderColor: DESIGN.colors.primary,
   },
   moodText: {
-    fontFamily: DESIGN.fonts.title,
     color: DESIGN.colors.text,
-    fontWeight: "900",
+    fontWeight: "600",
     fontSize: 12,
   },
   moodTextSelected: {
@@ -438,37 +433,36 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   tagChip: {
-    borderWidth: DESIGN.borders.pixel,
-    borderColor: DESIGN.colors.purple,
+    borderWidth: 1,
+    borderColor: DESIGN.colors.border,
+    borderRadius: DESIGN.radius.pill,
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginRight: 8,
     marginBottom: 8,
-    backgroundColor: DESIGN.colors.bg,
+    backgroundColor: DESIGN.colors.bgSecondary,
   },
   tagChipSelected: {
-    backgroundColor: DESIGN.colors.purple,
-    borderColor: DESIGN.colors.yellow,
+    backgroundColor: "rgba(108,99,255,0.18)",
+    borderColor: DESIGN.colors.primary,
   },
   tagText: {
-    fontFamily: DESIGN.fonts.pixelKo,
     fontSize: 13,
     color: DESIGN.colors.text,
-    fontWeight: "900",
+    fontWeight: "600",
   },
   ctaDock: {
     position: "absolute",
     right: 0,
     bottom: 0,
     left: 0,
-    borderTopWidth: 2,
-    borderTopColor: DESIGN.colors.cyan,
-    backgroundColor: "rgba(5, 5, 5, 0.96)",
-    paddingHorizontal: 18,
+    borderTopWidth: 1,
+    borderTopColor: DESIGN.colors.border,
+    backgroundColor: "rgba(11,15,20,0.96)",
+    paddingHorizontal: 20,
     paddingTop: 10,
   },
   ctaButton: {
-    minHeight: 60,
-    borderWidth: DESIGN.borders.pixel,
+    minHeight: 56,
   },
 });

@@ -68,21 +68,20 @@ function TabNavigator() {
             accent={getTabAccent(route.name)}
           />
         ),
-        tabBarActiveTintColor: DESIGN.colors.mint,
+        tabBarActiveTintColor: DESIGN.colors.primary,
         tabBarInactiveTintColor: DESIGN.colors.textDim,
         tabBarStyle: {
-          backgroundColor: DESIGN.colors.bg,
-          borderTopWidth: DESIGN.borders.pixel,
-          borderTopColor: DESIGN.colors.cyan,
+          backgroundColor: DESIGN.colors.surface,
+          borderTopWidth: 1,
+          borderTopColor: DESIGN.colors.border,
           height: 76 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
           paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
           fontSize: 10,
-          fontWeight: "900",
+          fontWeight: "600",
           fontFamily: DESIGN.fonts.title,
-          letterSpacing: 0.8,
           marginTop: 2,
         },
       })}

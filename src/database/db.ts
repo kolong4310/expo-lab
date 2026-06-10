@@ -482,4 +482,16 @@ export const getGrowthStats = (date: string) => {
   return { total, completed, rate: Math.round((completed / total) * 100) };
 };
 
+export const getRecentGrowthRates = (days = 7) => {
+  return Array.from({ length: days }, (_, index) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (days - index - 1));
+    const dateString = formatLocalDate(date);
+    return {
+      date: dateString,
+      rate: getGrowthStats(dateString).rate,
+    };
+  });
+};
+
 export default db;

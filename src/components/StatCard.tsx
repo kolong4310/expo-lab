@@ -10,14 +10,9 @@ interface StatCardProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export default function StatCard({
-  label,
-  value,
-  accent = "cyan",
-  style,
-}: StatCardProps) {
+export default function StatCard({ label, value, style }: StatCardProps) {
   return (
-    <RetroCard accent={accent} style={[styles.card, style]}>
+    <RetroCard style={[styles.card, style]}>
       <Text style={styles.label}>{label}</Text>
       <Text style={styles.value}>{value}</Text>
     </RetroCard>
@@ -26,24 +21,20 @@ export default function StatCard({
 
 const styles = StyleSheet.create({
   card: {
-    minHeight: 78,
+    minHeight: 112,
     flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderWidth: DESIGN.borders.pixel,
+    justifyContent: "space-between",
+    padding: 20,
   },
   label: {
-    marginBottom: 4,
-    color: DESIGN.colors.cyan,
-    fontFamily: DESIGN.fonts.title,
-    fontSize: 11,
-    fontWeight: "900",
+    color: DESIGN.colors.textDim,
+    fontSize: 13,
+    fontWeight: "600",
   },
   value: {
-    color: DESIGN.colors.yellow,
-    fontFamily: DESIGN.fonts.score,
-    fontSize: 17,
-    fontWeight: "900",
+    color: DESIGN.colors.text,
+    fontSize: 28,
+    fontWeight: "700",
+    letterSpacing: -0.8,
   },
 });
