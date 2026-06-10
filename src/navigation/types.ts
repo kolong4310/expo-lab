@@ -9,6 +9,7 @@ export type DetailOrigin = "Today" | "Archive" | "Search";
 export type BottomTabParamList = {
   Today: undefined;
   Archive: undefined;
+  Report: undefined;
   Search: undefined;
 };
 

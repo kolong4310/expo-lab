@@ -63,3 +63,24 @@ export interface TagStat {
   tag: string;
   count: number;
 }
+
+export interface MonthlyLogStat {
+  month: string;
+  count: number;
+}
+
+export interface MoodStat {
+  mood: string;
+  count: number;
+}
+
+export interface ReportStats {
+  totalLogCount: number;
+  currentMonthLogCount: number;
+  currentWeekLogCount: number;
+  logStreak: number;
+  recentAverageGrowthRate: number;
+  topTags: TagStat[];
+  recentMonthlyLogs: MonthlyLogStat[];
+  moodStats: MoodStat[];
+}

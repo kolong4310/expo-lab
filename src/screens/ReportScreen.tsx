@@ -1,0 +1,301 @@
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useState } from "react";
+import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import AppHeader from "../components/AppHeader";
+import PrimaryButton from "../components/PrimaryButton";
+import StatCard from "../components/StatCard";
+import RetroCard from "../components/ui/RetroCard";
+import { getReportStats } from "../database/repositories/statsRepository";
+import { ReportStats } from "../database/types";
+import { BottomTabScreenProps } from "../navigation/types";
+import { DESIGN } from "../theme/design";
+
+const EMPTY_REPORT: ReportStats = {
+  totalLogCount: 0,
+  currentMonthLogCount: 0,
+  currentWeekLogCount: 0,
+  logStreak: 0,
+  recentAverageGrowthRate: 0,
+  topTags: [],
+  recentMonthlyLogs: [],
+  moodStats: [],
+};
+
+const MOOD_LABELS: Record<string, string> = {
+  best: "최고",
+  good: "좋음",
+  normal: "보통",
+  hard: "힘듦",
+};
+
+export default function ReportScreen({
+  navigation,
+}: BottomTabScreenProps<"Report">) {
+  const insets = useSafeAreaInsets();
+  const [report, setReport] = useState<ReportStats>(EMPTY_REPORT);
+
+  useFocusEffect(
+    useCallback(() => {
+      setReport(getReportStats());
+    }, []),
+  );
+
+  const maxMonthlyCount = Math.max(
+    1,
+    ...report.recentMonthlyLogs.map((item) => item.count),
+  );
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
+      <ScrollView
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: insets.bottom + 110 },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        <AppHeader
+          title="성장 리포트"
+          subtitle={`이번 달 ${report.currentMonthLogCount}개의 기록을 남겼어요.`}
+          compact
+        />
+
+        {report.totalLogCount === 0 ? (
+          <RetroCard style={styles.emptyCard}>
+            <Text style={styles.emptyTitle}>
+              아직 리포트를 만들 기록이 부족해요.
+            </Text>
+            <Text style={styles.emptyText}>오늘 첫 기록을 남겨보세요.</Text>
+            <PrimaryButton
+              label="오늘 기록하기"
+              style={styles.emptyButton}
+              onPress={() => navigation.navigate("Write")}
+            />
+          </RetroCard>
+        ) : (
+          <>
+            <View style={styles.summaryRow}>
+              <StatCard
+                label="이번 달 기록"
+                value={`${report.currentMonthLogCount}개`}
+              />
+              <StatCard
+                label="이번 주 기록"
+                value={`${report.currentWeekLogCount}개`}
+              />
+            </View>
+            <View style={styles.summaryRow}>
+              <StatCard label="연속 기록" value={`${report.logStreak}일`} />
+              <StatCard
+                label="7일 평균 완료율"
+                value={`${report.recentAverageGrowthRate}%`}
+              />
+            </View>
+
+            <SectionTitle title="자주 쓴 태그 TOP 5" />
+            <RetroCard style={styles.listCard}>
+              {report.topTags.length > 0 ? (
+                report.topTags.map((item, index) => (
+                  <View
+                    key={item.tag}
+                    style={[
+                      styles.listRow,
+                      index < report.topTags.length - 1 && styles.rowBorder,
+                    ]}
+                  >
+                    <Text style={styles.tagName}>#{item.tag}</Text>
+                    <Text style={styles.countText}>{item.count}회</Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.sectionEmpty}>
+                  아직 사용한 태그가 없어요.
+                </Text>
+              )}
+            </RetroCard>
+
+            <SectionTitle title="최근 6개월 기록" />
+            <RetroCard style={styles.chartCard}>
+              <View style={styles.chart}>
+                {report.recentMonthlyLogs.map((item) => (
+                  <View key={item.month} style={styles.chartColumn}>
+                    <Text style={styles.chartCount}>{item.count}</Text>
+                    <View style={styles.chartTrack}>
+                      <View
+                        style={[
+                          styles.chartBar,
+                          {
+                            height:
+                              item.count === 0
+                                ? 4
+                                : Math.max(
+                                    12,
+                                    (item.count / maxMonthlyCount) * 100,
+                                  ),
+                          },
+                        ]}
+                      />
+                    </View>
+                    <Text style={styles.chartLabel}>
+                      {Number(item.month.slice(5))}월
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </RetroCard>
+
+            <SectionTitle title="기분별 기록" />
+            <RetroCard style={styles.listCard}>
+              {report.moodStats.length > 0 ? (
+                report.moodStats.map((item, index) => (
+                  <View
+                    key={item.mood}
+                    style={[
+                      styles.listRow,
+                      index < report.moodStats.length - 1 && styles.rowBorder,
+                    ]}
+                  >
+                    <Text style={styles.moodName}>
+                      {MOOD_LABELS[item.mood] ?? item.mood}
+                    </Text>
+                    <Text style={styles.countText}>{item.count}개</Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.sectionEmpty}>
+                  아직 기록된 오늘 상태가 없어요.
+                </Text>
+              )}
+            </RetroCard>
+          </>
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+function SectionTitle({ title }: { title: string }) {
+  return <Text style={styles.sectionTitle}>{title}</Text>;
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: DESIGN.colors.bg,
+  },
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+  },
+  summaryRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    marginTop: 20,
+    marginBottom: 12,
+    color: DESIGN.colors.text,
+    fontSize: 17,
+    fontWeight: "700",
+  },
+  listCard: {
+    paddingHorizontal: 20,
+    paddingVertical: 6,
+  },
+  listRow: {
+    minHeight: 52,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  rowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: DESIGN.colors.border,
+  },
+  tagName: {
+    color: DESIGN.colors.primaryLight,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  moodName: {
+    color: DESIGN.colors.text,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  countText: {
+    color: DESIGN.colors.textDim,
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  sectionEmpty: {
+    paddingVertical: 20,
+    color: DESIGN.colors.textDim,
+    fontSize: 13,
+    lineHeight: 20,
+  },
+  chartCard: {
+    paddingHorizontal: 18,
+    paddingTop: 22,
+    paddingBottom: 18,
+  },
+  chart: {
+    height: 166,
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 8,
+  },
+  chartColumn: {
+    flex: 1,
+    alignItems: "center",
+  },
+  chartCount: {
+    marginBottom: 7,
+    color: DESIGN.colors.textDim,
+    fontSize: 11,
+    fontWeight: "600",
+  },
+  chartTrack: {
+    width: "100%",
+    height: 112,
+    justifyContent: "flex-end",
+    overflow: "hidden",
+    borderRadius: 10,
+    backgroundColor: DESIGN.colors.bgSecondary,
+  },
+  chartBar: {
+    width: "100%",
+    borderRadius: 10,
+    backgroundColor: DESIGN.colors.secondary,
+  },
+  chartLabel: {
+    marginTop: 8,
+    color: DESIGN.colors.textDim,
+    fontSize: 11,
+  },
+  emptyCard: {
+    alignItems: "center",
+    padding: 24,
+  },
+  emptyTitle: {
+    color: DESIGN.colors.text,
+    fontSize: 17,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  emptyText: {
+    marginTop: 8,
+    color: DESIGN.colors.textDim,
+    fontSize: 14,
+    textAlign: "center",
+  },
+  emptyButton: {
+    alignSelf: "stretch",
+    marginTop: 24,
+  },
+});

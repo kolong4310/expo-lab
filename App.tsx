@@ -15,6 +15,7 @@ import HomeScreen from "./src/screens/HomeScreen";
 import WriteScreen from "./src/screens/WriteScreen";
 import DetailScreen from "./src/screens/DetailScreen";
 import CalendarScreen from "./src/screens/CalendarScreen";
+import ReportScreen from "./src/screens/ReportScreen";
 import SearchScreen from "./src/screens/SearchScreen";
 import GoalManageScreen from "./src/screens/GoalManageScreen";
 import { initDatabase } from "./src/database/db";
@@ -52,12 +53,15 @@ function TabNavigator() {
     if (routeName === "Today") return focused ? "star" : "star-outline";
     if (routeName === "Archive")
       return focused ? "calendar" : "calendar-outline";
+    if (routeName === "Report")
+      return focused ? "bar-chart" : "bar-chart-outline";
     return focused ? "search" : "search-outline";
   };
 
   const getTabAccent = (routeName: MainTabName) => {
     if (routeName === "Today") return DESIGN.colors.pink;
     if (routeName === "Archive") return DESIGN.colors.green;
+    if (routeName === "Report") return DESIGN.colors.secondary;
     return DESIGN.colors.purple;
   };
 
@@ -104,6 +108,11 @@ function TabNavigator() {
         name="Archive"
         component={CalendarScreen}
         options={{ tabBarLabel: "기록" }}
+      />
+      <Tab.Screen
+        name="Report"
+        component={ReportScreen}
+        options={{ tabBarLabel: "리포트" }}
       />
       <Tab.Screen
         name="Search"
