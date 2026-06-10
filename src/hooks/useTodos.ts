@@ -4,10 +4,10 @@ import {
   deleteTodayOnlyGoal,
   getDailyGoalsWithStats,
   getTodayOnlyGoals,
-  TodayOnlyGoal,
   toggleGoalCheck,
   toggleTodayOnlyGoal,
-} from "../database/db";
+} from "../database/repositories/goalsRepository";
+import { TodayOnlyGoal } from "../database/types";
 
 export interface DailyTodo {
   goal_id: number;

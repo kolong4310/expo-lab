@@ -18,7 +18,12 @@ import PrimaryButton from "../components/PrimaryButton";
 import PixelSectionTitle from "../components/ui/PixelSectionTitle";
 import RetroCard from "../components/ui/RetroCard";
 import RetroInput from "../components/ui/RetroInput";
-import { addGoal, getAllGoals, Goal, updateGoal } from "../database/db";
+import {
+  addGoal,
+  getAllGoals,
+  updateGoal,
+} from "../database/repositories/goalsRepository";
+import { Goal } from "../database/types";
 import { goHome } from "../navigation/homeNavigation";
 import { DESIGN } from "../theme/design";
 

@@ -17,11 +17,11 @@ import {
 import AppHeader from "../components/AppHeader";
 import RetroCard from "../components/ui/RetroCard";
 import {
-  deleteLog,
   getDailyGoalsWithCheck,
   getTodayOnlyGoals,
-  WorkLog,
-} from "../database/db";
+} from "../database/repositories/goalsRepository";
+import { deleteLog } from "../database/repositories/logsRepository";
+import { WorkLog } from "../database/types";
 import { goHome, goToMainTab, MainTabName } from "../navigation/homeNavigation";
 import { DESIGN } from "../theme/design";
 

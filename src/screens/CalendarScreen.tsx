@@ -16,7 +16,11 @@ import { Calendar, LocaleConfig } from "react-native-calendars";
 import AppHeader from "../components/AppHeader";
 import LogCard from "../components/LogCard";
 import RetroCard from "../components/ui/RetroCard";
-import { getLoggedDates, getLogsByDate, WorkLog } from "../database/db";
+import {
+  getLoggedDates,
+  getLogsByDate,
+} from "../database/repositories/logsRepository";
+import { WorkLog } from "../database/types";
 import { goHome } from "../navigation/homeNavigation";
 import { DESIGN } from "../theme/design";
 import { formatLocalDate } from "../utils/date";

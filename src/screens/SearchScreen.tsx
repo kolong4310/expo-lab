@@ -16,7 +16,8 @@ import {
 import AppHeader from "../components/AppHeader";
 import LogCard from "../components/LogCard";
 import RetroInput from "../components/ui/RetroInput";
-import { searchLogs, WorkLog } from "../database/db";
+import { searchLogs } from "../database/repositories/logsRepository";
+import { WorkLog } from "../database/types";
 import { goHome } from "../navigation/homeNavigation";
 import { DESIGN } from "../theme/design";
 

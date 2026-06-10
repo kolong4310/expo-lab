@@ -1,9 +1,10 @@
 import { useCallback, useState } from "react";
 import {
   getGrowthStats,
-  getLogStreak,
+  getRecentAverageGrowthRate,
   getRecentGrowthRates,
-} from "../database/db";
+} from "../database/repositories/statsRepository";
+import { getLogStreak } from "../database/repositories/logsRepository";
 
 export interface GrowthStats {
   total: number;
@@ -28,11 +29,7 @@ export const useStats = (date: string) => {
     setStats(getGrowthStats(date));
     const rates = getRecentGrowthRates().map((item) => item.rate);
     setRecentRates(rates);
-    setWeeklyRate(
-      rates.length > 0
-        ? Math.round(rates.reduce((sum, rate) => sum + rate, 0) / rates.length)
-        : 0,
-    );
+    setWeeklyRate(getRecentAverageGrowthRate());
   }, [date]);
 
   return {

@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
-import { getLogsByDate, WorkLog } from "../database/db";
+import { getLogsByDate } from "../database/repositories/logsRepository";
+import { WorkLog } from "../database/types";
 
 export const useLogs = (date: string) => {
   const [logs, setLogs] = useState<WorkLog[]>([]);

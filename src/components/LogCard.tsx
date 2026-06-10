@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { WorkLog } from "../database/db";
+import { WorkLog } from "../database/types";
 import { DESIGN } from "../theme/design";
 
 interface LogCardProps {
