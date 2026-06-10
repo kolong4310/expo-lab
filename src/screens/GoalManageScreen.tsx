@@ -12,7 +12,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import AppHeader from "../components/AppHeader";
 import PrimaryButton from "../components/PrimaryButton";
 import PixelSectionTitle from "../components/ui/PixelSectionTitle";
@@ -25,12 +25,14 @@ import {
 } from "../database/repositories/goalsRepository";
 import { Goal } from "../database/types";
 import { goHome } from "../navigation/homeNavigation";
+import { RootStackScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
 
 const CATEGORIES = ["건강", "공부", "일", "생활", "성장", "기타"];
 
-export default function GoalManageScreen() {
-  const navigation = useNavigation<any>();
+export default function GoalManageScreen({
+  navigation,
+}: RootStackScreenProps<"GoalManage">) {
   const insets = useSafeAreaInsets();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [newTitle, setNewTitle] = useState("");

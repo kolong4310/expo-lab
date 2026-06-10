@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
@@ -19,12 +18,14 @@ import RetroInput from "../components/ui/RetroInput";
 import { searchLogs } from "../database/repositories/logsRepository";
 import { WorkLog } from "../database/types";
 import { goHome } from "../navigation/homeNavigation";
+import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
 
 const POPULAR_TAGS = ["ReactNative", "SQLite", "UI", "공부", "운동", "개발"];
 
-export default function SearchScreen() {
-  const navigation = useNavigation<any>();
+export default function SearchScreen({
+  navigation,
+}: BottomTabScreenProps<"Search">) {
   const insets = useSafeAreaInsets();
   const [keyword, setKeyword] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
@@ -58,9 +59,14 @@ export default function SearchScreen() {
         renderItem={({ item }) => (
           <LogCard
             log={item}
-            onPress={() =>
-              navigation.navigate("Detail", { log: item, returnTo: "Search" })
-            }
+            onPress={() => {
+              if (item.id !== undefined) {
+                navigation.navigate("Detail", {
+                  logId: item.id,
+                  returnTo: "Search",
+                });
+              }
+            }}
           />
         )}
         keyExtractor={(item, index) =>

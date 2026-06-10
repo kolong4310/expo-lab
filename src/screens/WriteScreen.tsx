@@ -1,4 +1,3 @@
-import { useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -22,9 +21,14 @@ import PrimaryButton from "../components/PrimaryButton";
 import PixelSectionTitle from "../components/ui/PixelSectionTitle";
 import RetroCard from "../components/ui/RetroCard";
 import RetroInput from "../components/ui/RetroInput";
-import { addLog, updateLog } from "../database/repositories/logsRepository";
+import {
+  addLog,
+  getLogById,
+  updateLog,
+} from "../database/repositories/logsRepository";
 import { WorkLog } from "../database/types";
 import { goHome } from "../navigation/homeNavigation";
+import { RootStackScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
 import { formatLocalDate } from "../utils/date";
 
@@ -99,12 +103,13 @@ const SupplementalInput = ({
   </View>
 );
 
-export default function WriteScreen() {
-  const navigation = useNavigation<any>();
+export default function WriteScreen({
+  navigation,
+  route,
+}: RootStackScreenProps<"Write">) {
   const insets = useSafeAreaInsets();
-  const route = useRoute();
-  const params = route.params as { log?: WorkLog } | undefined;
-  const editingLog = params?.log;
+  const editingLog =
+    route.params?.logId !== undefined ? getLogById(route.params.logId) : null;
 
   const [title, setTitle] = useState("");
   const [dailySummary, setDailySummary] = useState("");
@@ -161,7 +166,9 @@ export default function WriteScreen() {
         solution,
         memo,
         mood,
-        date: editingLog ? editingLog.date : formatLocalDate(),
+        date: editingLog
+          ? editingLog.date
+          : route.params?.date || formatLocalDate(),
       };
 
       if (editingLog) {

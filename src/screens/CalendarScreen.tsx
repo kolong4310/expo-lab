@@ -1,4 +1,4 @@
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useRef, useState } from "react";
 import {
   Animated,
@@ -12,7 +12,12 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Calendar, LocaleConfig } from "react-native-calendars";
+import {
+  Calendar,
+  CalendarProps,
+  DateData,
+  LocaleConfig,
+} from "react-native-calendars";
 import AppHeader from "../components/AppHeader";
 import LogCard from "../components/LogCard";
 import RetroCard from "../components/ui/RetroCard";
@@ -22,6 +27,7 @@ import {
 } from "../database/repositories/logsRepository";
 import { WorkLog } from "../database/types";
 import { goHome } from "../navigation/homeNavigation";
+import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
 import { formatLocalDate } from "../utils/date";
 
@@ -68,16 +74,19 @@ LocaleConfig.locales.ko = {
 };
 LocaleConfig.defaultLocale = "ko";
 
-export default function CalendarScreen() {
-  const navigation = useNavigation<any>();
+export default function CalendarScreen({
+  navigation,
+}: BottomTabScreenProps<"Archive">) {
   const insets = useSafeAreaInsets();
   const fade = useRef(new Animated.Value(1)).current;
   const [selectedDate, setSelectedDate] = useState(formatLocalDate());
-  const [markedDates, setMarkedDates] = useState<any>({});
+  const [markedDates, setMarkedDates] = useState<
+    NonNullable<CalendarProps["markedDates"]>
+  >({});
   const [logs, setLogs] = useState<WorkLog[]>([]);
 
   const loadData = useCallback(() => {
-    const marks: any = {};
+    const marks: NonNullable<CalendarProps["markedDates"]> = {};
     getLoggedDates().forEach((date) => {
       marks[date] = { marked: true, dotColor: DESIGN.colors.secondary };
     });
@@ -110,9 +119,14 @@ export default function CalendarScreen() {
         renderItem={({ item }) => (
           <LogCard
             log={item}
-            onPress={() =>
-              navigation.navigate("Detail", { log: item, returnTo: "Archive" })
-            }
+            onPress={() => {
+              if (item.id !== undefined) {
+                navigation.navigate("Detail", {
+                  logId: item.id,
+                  returnTo: "Archive",
+                });
+              }
+            }}
           />
         )}
         keyExtractor={(item, index) =>
@@ -129,7 +143,9 @@ export default function CalendarScreen() {
             <Animated.View style={{ opacity: fade }}>
               <RetroCard style={styles.calendarCard}>
                 <Calendar
-                  onDayPress={(day: any) => setSelectedDate(day.dateString)}
+                  onDayPress={(day: DateData) =>
+                    setSelectedDate(day.dateString)
+                  }
                   onMonthChange={animateMonth}
                   markedDates={markedDates}
                   theme={{

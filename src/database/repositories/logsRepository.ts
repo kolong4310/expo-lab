@@ -1,4 +1,4 @@
-import { execute, queryAll } from "../db";
+import { execute, queryAll, queryFirst } from "../db";
 import { WorkLog } from "../types";
 import { formatLocalDate } from "../../utils/date";
 
@@ -9,6 +9,9 @@ export const getLogsByDate = (date: string): WorkLog[] =>
   queryAll<WorkLog>("SELECT * FROM logs WHERE date = ? ORDER BY id DESC", [
     date,
   ]);
+
+export const getLogById = (id: number): WorkLog | null =>
+  queryFirst<WorkLog>("SELECT * FROM logs WHERE id = ?", [id]);
 
 export const addLog = (log: WorkLog) => {
   execute(

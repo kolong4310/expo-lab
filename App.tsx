@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import {
   CardStyleInterpolators,
@@ -19,9 +20,14 @@ import GoalManageScreen from "./src/screens/GoalManageScreen";
 import { initDatabase } from "./src/database/db";
 import { DESIGN } from "./src/theme/design";
 import PixelTabIcon from "./src/components/ui/PixelTabIcon";
+import {
+  BottomTabParamList,
+  MainTabName,
+  RootStackParamList,
+} from "./src/navigation/types";
 
-const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 const AppTheme = {
   ...DefaultTheme,
@@ -39,14 +45,17 @@ const AppTheme = {
 function TabNavigator() {
   const insets = useSafeAreaInsets();
 
-  const getTabIcon = (routeName: string, focused: boolean) => {
+  const getTabIcon = (
+    routeName: MainTabName,
+    focused: boolean,
+  ): keyof typeof Ionicons.glyphMap => {
     if (routeName === "Today") return focused ? "star" : "star-outline";
     if (routeName === "Archive")
       return focused ? "calendar" : "calendar-outline";
     return focused ? "search" : "search-outline";
   };
 
-  const getTabAccent = (routeName: string) => {
+  const getTabAccent = (routeName: MainTabName) => {
     if (routeName === "Today") return DESIGN.colors.pink;
     if (routeName === "Archive") return DESIGN.colors.green;
     return DESIGN.colors.purple;
@@ -62,7 +71,7 @@ function TabNavigator() {
         },
         tabBarIcon: ({ focused, color }) => (
           <PixelTabIcon
-            name={getTabIcon(route.name, focused) as any}
+            name={getTabIcon(route.name, focused)}
             color={color}
             focused={focused}
             accent={getTabAccent(route.name)}

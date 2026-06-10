@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation, useRoute } from "@react-navigation/native";
 import React from "react";
 import {
   Alert,
@@ -20,9 +19,9 @@ import {
   getDailyGoalsWithCheck,
   getTodayOnlyGoals,
 } from "../database/repositories/goalsRepository";
-import { deleteLog } from "../database/repositories/logsRepository";
-import { WorkLog } from "../database/types";
-import { goHome, goToMainTab, MainTabName } from "../navigation/homeNavigation";
+import { deleteLog, getLogById } from "../database/repositories/logsRepository";
+import { goHome, goToMainTab } from "../navigation/homeNavigation";
+import { RootStackScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
 
 const MOOD_MAP: Record<string, string> = {
@@ -48,13 +47,15 @@ function ContentSection({
   );
 }
 
-export default function DetailScreen() {
-  const navigation = useNavigation<any>();
+export default function DetailScreen({
+  navigation,
+  route,
+}: RootStackScreenProps<"Detail">) {
   const insets = useSafeAreaInsets();
-  const { log, returnTo } = useRoute().params as {
-    log: WorkLog;
-    returnTo?: MainTabName;
-  };
+  const { logId, returnTo } = route.params;
+  const log = getLogById(logId);
+
+  if (!log) return null;
   const goals = [
     ...getDailyGoalsWithCheck(log.date).map((goal) => ({
       id: `daily-${goal.goal_id}`,
@@ -102,7 +103,7 @@ export default function DetailScreen() {
         right={
           <View style={styles.headerActions}>
             <TouchableOpacity
-              onPress={() => navigation.navigate("Write", { log })}
+              onPress={() => navigation.navigate("Write", { logId })}
               style={styles.iconButton}
             >
               <Ionicons

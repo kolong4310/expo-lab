@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
 import {
   ScrollView,
@@ -22,6 +22,7 @@ import RetroInput from "../components/ui/RetroInput";
 import { useLogs } from "../hooks/useLogs";
 import { useStats } from "../hooks/useStats";
 import { useTodos } from "../hooks/useTodos";
+import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
 import { formatLocalDate } from "../utils/date";
 
@@ -54,8 +55,9 @@ function TrendChart({ values }: { values: number[] }) {
   );
 }
 
-export default function HomeScreen() {
-  const navigation = useNavigation<any>();
+export default function HomeScreen({
+  navigation,
+}: BottomTabScreenProps<"Today">) {
   const insets = useSafeAreaInsets();
   const today = formatLocalDate();
   const todayDate = new Date();
@@ -223,11 +225,13 @@ export default function HomeScreen() {
       >
         <PrimaryButton
           label={todayLog ? "오늘 기록 수정하기" : "오늘 기록하기"}
-          onPress={() =>
-            todayLog
-              ? navigation.navigate("Write", { log: todayLog })
-              : navigation.navigate("Write")
-          }
+          onPress={() => {
+            if (todayLog?.id !== undefined) {
+              navigation.navigate("Write", { logId: todayLog.id });
+              return;
+            }
+            navigation.navigate("Write");
+          }}
         />
       </View>
     </SafeAreaView>

@@ -1,16 +1,12 @@
-export interface HomeNavigation {
-  navigate: (name: string, params?: object) => void;
-}
+import { NavigationProp } from "@react-navigation/native";
+import { MainTabName, RootStackParamList } from "./types";
 
-export type MainTabName = "Today" | "Archive" | "Search";
+type RootNavigate = Pick<NavigationProp<RootStackParamList>, "navigate">;
 
-export const goToMainTab = (
-  navigation: HomeNavigation,
-  screen: MainTabName,
-) => {
+export const goToMainTab = (navigation: RootNavigate, screen: MainTabName) => {
   navigation.navigate("Main", { screen });
 };
 
-export const goHome = (navigation: HomeNavigation) => {
+export const goHome = (navigation: RootNavigate) => {
   goToMainTab(navigation, "Today");
 };
