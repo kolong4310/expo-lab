@@ -17,6 +17,7 @@ import AppHeader from "../components/AppHeader";
 import LogCard from "../components/LogCard";
 import RetroCard from "../components/ui/RetroCard";
 import { getLoggedDates, getLogsByDate, WorkLog } from "../database/db";
+import { goHome } from "../navigation/homeNavigation";
 import { DESIGN } from "../theme/design";
 import { formatLocalDate } from "../utils/date";
 
@@ -105,7 +106,9 @@ export default function CalendarScreen() {
         renderItem={({ item }) => (
           <LogCard
             log={item}
-            onPress={() => navigation.navigate("Detail", { log: item })}
+            onPress={() =>
+              navigation.navigate("Detail", { log: item, returnTo: "Archive" })
+            }
           />
         )}
         keyExtractor={(item, index) =>
@@ -118,7 +121,7 @@ export default function CalendarScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
-            <AppHeader title="기록 캘린더" subtitle="날짜별 업무 로그" />
+            <AppHeader title="기록 캘린더" onHome={() => goHome(navigation)} />
             <Animated.View style={{ opacity: fade }}>
               <RetroCard style={styles.calendarCard}>
                 <Calendar

@@ -16,6 +16,7 @@ interface AppHeaderProps {
   accent?: string;
   compact?: boolean;
   onBack?: () => void;
+  onHome?: () => void;
   right?: ReactNode;
   titleStyle?: StyleProp<TextStyle>;
 }
@@ -25,10 +26,11 @@ export default function AppHeader({
   subtitle,
   compact = false,
   onBack,
+  onHome,
   right,
   titleStyle,
 }: AppHeaderProps) {
-  if (onBack || right) {
+  if (onBack || right || onHome) {
     return (
       <View style={styles.navigationHeader}>
         <View style={styles.side}>
@@ -47,7 +49,25 @@ export default function AppHeader({
           )}
         </View>
         <Text style={[styles.navigationTitle, titleStyle]}>{title}</Text>
-        <View style={[styles.side, styles.right]}>{right}</View>
+        <View style={[styles.side, styles.right]}>
+          <View style={styles.rightActions}>
+            {right}
+            {onHome && (
+              <TouchableOpacity
+                onPress={onHome}
+                hitSlop={10}
+                style={styles.iconButton}
+                accessibilityLabel="홈으로 이동"
+              >
+                <Ionicons
+                  name="home-outline"
+                  size={21}
+                  color={DESIGN.colors.textDim}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
       </View>
     );
   }
@@ -85,10 +105,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   side: {
-    width: 84,
+    width: 116,
   },
   right: {
     alignItems: "flex-end",
+  },
+  rightActions: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   iconButton: {
     width: 40,

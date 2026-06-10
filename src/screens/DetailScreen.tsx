@@ -16,7 +16,13 @@ import {
 } from "react-native-safe-area-context";
 import AppHeader from "../components/AppHeader";
 import RetroCard from "../components/ui/RetroCard";
-import { deleteLog, getDailyGoalsWithCheck, WorkLog } from "../database/db";
+import {
+  deleteLog,
+  getDailyGoalsWithCheck,
+  getTodayOnlyGoals,
+  WorkLog,
+} from "../database/db";
+import { goHome, goToMainTab, MainTabName } from "../navigation/homeNavigation";
 import { DESIGN } from "../theme/design";
 
 const MOOD_MAP: Record<string, string> = {
@@ -45,8 +51,26 @@ function ContentSection({
 export default function DetailScreen() {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const { log } = useRoute().params as { log: WorkLog };
-  const dailyGoals = getDailyGoalsWithCheck(log.date);
+  const { log, returnTo } = useRoute().params as {
+    log: WorkLog;
+    returnTo?: MainTabName;
+  };
+  const goals = [
+    ...getDailyGoalsWithCheck(log.date).map((goal) => ({
+      id: `daily-${goal.goal_id}`,
+      title: goal.title,
+      isDone: goal.is_done === 1,
+      type: "반복 목표",
+    })),
+    ...getTodayOnlyGoals(log.date).map((goal) => ({
+      id: `once-${goal.id}`,
+      title: goal.title,
+      isDone: goal.is_done === 1,
+      type: "오늘만 목표",
+    })),
+  ];
+  const completedGoals = goals.filter((goal) => goal.isDone);
+  const pendingGoals = goals.filter((goal) => !goal.isDone);
 
   const handleDelete = () => {
     Alert.alert("기록 삭제", "이 기록을 삭제하시겠습니까?", [
@@ -57,7 +81,11 @@ export default function DetailScreen() {
         onPress: () => {
           if (log.id) {
             deleteLog(log.id);
-            navigation.goBack();
+            if (returnTo === "Archive" || returnTo === "Search") {
+              goToMainTab(navigation, returnTo);
+            } else {
+              goHome(navigation);
+            }
           }
         },
       },
@@ -70,6 +98,7 @@ export default function DetailScreen() {
       <AppHeader
         title="기록 상세"
         onBack={() => navigation.goBack()}
+        onHome={() => goHome(navigation)}
         right={
           <View style={styles.headerActions}>
             <TouchableOpacity
@@ -118,25 +147,52 @@ export default function DetailScreen() {
           </View>
         </View>
 
-        {dailyGoals.length > 0 && (
+        {goals.length > 0 && (
           <RetroCard style={styles.goalsCard}>
-            <Text style={styles.cardTitle}>오늘 목표</Text>
-            {dailyGoals.map((goal) => (
-              <View key={goal.goal_id} style={styles.goalRow}>
-                <Ionicons
-                  name={
-                    goal.is_done === 1 ? "checkmark-circle" : "ellipse-outline"
-                  }
-                  size={19}
-                  color={
-                    goal.is_done === 1
-                      ? DESIGN.colors.success
-                      : DESIGN.colors.textDim
-                  }
-                />
-                <Text style={styles.goalText}>{goal.title}</Text>
+            <View style={styles.goalSummaryRow}>
+              <Text style={styles.cardTitle}>그날 목표</Text>
+              <Text style={styles.goalSummary}>
+                {completedGoals.length} / {goals.length} 완료
+              </Text>
+            </View>
+            {completedGoals.length > 0 && (
+              <View style={styles.goalGroup}>
+                <Text style={styles.goalGroupTitle}>완료</Text>
+                {completedGoals.map((goal) => (
+                  <View key={goal.id} style={styles.goalRow}>
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={19}
+                      color={DESIGN.colors.success}
+                    />
+                    <View style={styles.goalTextWrap}>
+                      <Text style={styles.goalText}>{goal.title}</Text>
+                      <Text style={styles.goalType}>{goal.type}</Text>
+                    </View>
+                  </View>
+                ))}
               </View>
-            ))}
+            )}
+            {pendingGoals.length > 0 && (
+              <View style={styles.goalGroup}>
+                <Text style={styles.goalGroupTitle}>미완료</Text>
+                {pendingGoals.map((goal) => (
+                  <View key={goal.id} style={styles.goalRow}>
+                    <Ionicons
+                      name="ellipse-outline"
+                      size={19}
+                      color={DESIGN.colors.textDim}
+                    />
+                    <View style={styles.goalTextWrap}>
+                      <Text style={[styles.goalText, styles.goalTextPending]}>
+                        {goal.title}
+                      </Text>
+                      <Text style={styles.goalType}>{goal.type}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
           </RetroCard>
         )}
 
@@ -196,17 +252,46 @@ const styles = StyleSheet.create({
   },
   goalsCard: { marginBottom: 16, padding: 20 },
   cardTitle: {
-    marginBottom: 14,
     color: DESIGN.colors.text,
     fontSize: 16,
     fontWeight: "700",
   },
+  goalSummaryRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  goalSummary: {
+    color: DESIGN.colors.success,
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  goalGroup: {
+    marginTop: 18,
+  },
+  goalGroupTitle: {
+    marginBottom: 4,
+    color: DESIGN.colors.textDim,
+    fontSize: 12,
+    fontWeight: "600",
+  },
   goalRow: { flexDirection: "row", alignItems: "center", marginTop: 10 },
-  goalText: {
+  goalTextWrap: {
+    flex: 1,
     marginLeft: 10,
+  },
+  goalText: {
     color: DESIGN.colors.text,
     fontSize: 14,
     fontWeight: "500",
+  },
+  goalTextPending: {
+    color: DESIGN.colors.textDim,
+  },
+  goalType: {
+    marginTop: 2,
+    color: DESIGN.colors.textDim,
+    fontSize: 11,
   },
   section: {
     marginBottom: 16,

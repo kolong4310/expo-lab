@@ -471,6 +471,39 @@ export const getCurrentStreak = (): number => {
   return streak;
 };
 
+export const getLogStreak = (): number => {
+  const dates = getLoggedDates();
+  if (dates.length === 0) return 0;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  if (
+    dates[0] !== formatLocalDate(today) &&
+    dates[0] !== formatLocalDate(yesterday)
+  ) {
+    return 0;
+  }
+
+  let streak = 1;
+  let previousDate = new Date(`${dates[0]}T00:00:00`);
+
+  for (let index = 1; index < dates.length; index++) {
+    const currentDate = new Date(`${dates[index]}T00:00:00`);
+    const diffDays = Math.round(
+      (previousDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    if (diffDays !== 1) break;
+    streak++;
+    previousDate = currentDate;
+  }
+
+  return streak;
+};
+
 export const getGrowthStats = (date: string) => {
   const dailyItems = getDailyGoalsWithCheck(date);
   const todayOnlyItems = getTodayOnlyGoals(date);

@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -22,6 +23,7 @@ import PixelSectionTitle from "../components/ui/PixelSectionTitle";
 import RetroCard from "../components/ui/RetroCard";
 import RetroInput from "../components/ui/RetroInput";
 import { addLog, updateLog, WorkLog } from "../database/db";
+import { goHome } from "../navigation/homeNavigation";
 import { DESIGN } from "../theme/design";
 import { formatLocalDate } from "../utils/date";
 
@@ -140,7 +142,8 @@ export default function WriteScreen() {
   };
 
   const handleSave = () => {
-    if (!title.trim()) {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
       Alert.alert("알림", "제목을 입력해주세요.");
       return;
     }
@@ -148,7 +151,7 @@ export default function WriteScreen() {
     try {
       const logData: WorkLog = {
         id: editingLog?.id,
-        title,
+        title: trimmedTitle,
         daily_summary: dailySummary,
         tags: selectedTags.join(","),
         content,
@@ -162,13 +165,28 @@ export default function WriteScreen() {
 
       if (editingLog) {
         updateLog(logData);
-        navigation.navigate("Detail", { log: logData });
       } else {
         addLog(logData);
-        navigation.goBack();
+      }
+
+      const message = editingLog
+        ? "오늘 기록을 수정했습니다."
+        : "오늘 기록을 저장했습니다.";
+
+      if (Platform.OS === "android") {
+        ToastAndroid.show(message, ToastAndroid.SHORT);
+        goHome(navigation);
+      } else {
+        Alert.alert("저장 완료", message, [
+          { text: "확인", onPress: () => goHome(navigation) },
+        ]);
       }
     } catch (error) {
       console.error(error);
+      Alert.alert(
+        "저장 실패",
+        "기록을 저장하지 못했습니다. 다시 시도해주세요.",
+      );
     }
   };
 
@@ -183,6 +201,7 @@ export default function WriteScreen() {
         <AppHeader
           title={editingLog ? "기록 수정" : "오늘 기록"}
           onBack={() => navigation.goBack()}
+          onHome={() => goHome(navigation)}
         />
 
         <ScrollView
@@ -201,7 +220,7 @@ export default function WriteScreen() {
           </RetroCard>
 
           <InsightInput
-            label="오늘의 한 줄"
+            label="오늘의 한 줄 · 권장"
             value={dailySummary}
             onChangeText={setDailySummary}
             placeholder="오늘 업무를 한 문장으로 요약하세요."

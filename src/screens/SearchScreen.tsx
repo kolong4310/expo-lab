@@ -17,6 +17,7 @@ import AppHeader from "../components/AppHeader";
 import LogCard from "../components/LogCard";
 import RetroInput from "../components/ui/RetroInput";
 import { searchLogs, WorkLog } from "../database/db";
+import { goHome } from "../navigation/homeNavigation";
 import { DESIGN } from "../theme/design";
 
 const POPULAR_TAGS = ["ReactNative", "SQLite", "UI", "공부", "운동", "개발"];
@@ -56,7 +57,9 @@ export default function SearchScreen() {
         renderItem={({ item }) => (
           <LogCard
             log={item}
-            onPress={() => navigation.navigate("Detail", { log: item })}
+            onPress={() =>
+              navigation.navigate("Detail", { log: item, returnTo: "Search" })
+            }
           />
         )}
         keyExtractor={(item, index) =>
@@ -69,10 +72,7 @@ export default function SearchScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
-            <AppHeader
-              title="검색"
-              subtitle="업무 기록과 태그를 빠르게 찾으세요"
-            />
+            <AppHeader title="검색" onHome={() => goHome(navigation)} />
             <View style={styles.searchWrap}>
               <Ionicons name="search" size={19} color={DESIGN.colors.textDim} />
               <RetroInput

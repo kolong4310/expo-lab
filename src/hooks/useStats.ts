@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import {
-  getCurrentStreak,
   getGrowthStats,
+  getLogStreak,
   getRecentGrowthRates,
 } from "../database/db";
 
@@ -24,7 +24,7 @@ export const useStats = (date: string) => {
   const [weeklyRate, setWeeklyRate] = useState(0);
 
   const refreshStats = useCallback(() => {
-    setStreak(getCurrentStreak());
+    setStreak(getLogStreak());
     setStats(getGrowthStats(date));
     const rates = getRecentGrowthRates().map((item) => item.rate);
     setRecentRates(rates);

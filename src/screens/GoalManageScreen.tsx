@@ -12,18 +12,20 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AppHeader from "../components/AppHeader";
 import PrimaryButton from "../components/PrimaryButton";
 import PixelSectionTitle from "../components/ui/PixelSectionTitle";
 import RetroCard from "../components/ui/RetroCard";
 import RetroInput from "../components/ui/RetroInput";
 import { addGoal, getAllGoals, Goal, updateGoal } from "../database/db";
+import { goHome } from "../navigation/homeNavigation";
 import { DESIGN } from "../theme/design";
 
 const CATEGORIES = ["건강", "공부", "일", "생활", "성장", "기타"];
 
 export default function GoalManageScreen() {
+  const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [newTitle, setNewTitle] = useState("");
@@ -96,7 +98,8 @@ export default function GoalManageScreen() {
           <>
             <AppHeader
               title="반복 목표 관리"
-              subtitle="매일 확인할 기본 목표 설정"
+              onBack={() => navigation.goBack()}
+              onHome={() => goHome(navigation)}
             />
 
             <RetroCard style={styles.addPanel}>

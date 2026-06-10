@@ -186,17 +186,28 @@ export default function HomeScreen() {
           )}
 
           <View style={styles.addRow}>
-            <RetroInput
-              style={styles.todoInput}
-              value={newTodoTitle}
-              onChangeText={setNewTodoTitle}
-              placeholder="오늘 목표 추가"
-              returnKeyType="done"
-              onSubmitEditing={handleAddTodo}
-            />
-            <TouchableOpacity style={styles.addButton} onPress={handleAddTodo}>
-              <Ionicons name="add" size={22} color={DESIGN.colors.text} />
-            </TouchableOpacity>
+            <View style={styles.todayOnlyLabelWrap}>
+              <Text style={styles.todayOnlyLabel}>오늘만 목표 추가</Text>
+              <Text style={styles.todayOnlyDescription}>
+                이 목표는 오늘 하루에만 적용됩니다.
+              </Text>
+            </View>
+            <View style={styles.todoInputRow}>
+              <RetroInput
+                style={styles.todoInput}
+                value={newTodoTitle}
+                onChangeText={setNewTodoTitle}
+                placeholder="오늘만 할 목표 입력"
+                returnKeyType="done"
+                onSubmitEditing={handleAddTodo}
+              />
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={handleAddTodo}
+              >
+                <Ionicons name="add" size={22} color={DESIGN.colors.text} />
+              </TouchableOpacity>
+            </View>
           </View>
         </RetroCard>
 
@@ -211,10 +222,10 @@ export default function HomeScreen() {
         style={[styles.ctaDock, { paddingBottom: Math.max(insets.bottom, 10) }]}
       >
         <PrimaryButton
-          label={todayLog ? "오늘 기록 확인하기" : "오늘 기록하기"}
+          label={todayLog ? "오늘 기록 수정하기" : "오늘 기록하기"}
           onPress={() =>
             todayLog
-              ? navigation.navigate("Detail", { log: todayLog })
+              ? navigation.navigate("Write", { log: todayLog })
               : navigation.navigate("Write")
           }
         />
@@ -358,6 +369,22 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   addRow: {
+    marginTop: 16,
+  },
+  todayOnlyLabelWrap: {
+    marginBottom: 10,
+  },
+  todayOnlyLabel: {
+    color: DESIGN.colors.text,
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  todayOnlyDescription: {
+    marginTop: 3,
+    color: DESIGN.colors.textDim,
+    fontSize: 11,
+  },
+  todoInputRow: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 14,
