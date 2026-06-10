@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -108,8 +108,11 @@ export default function WriteScreen({
   route,
 }: RootStackScreenProps<"Write">) {
   const insets = useSafeAreaInsets();
-  const editingLog =
-    route.params?.logId !== undefined ? getLogById(route.params.logId) : null;
+  const logId = route.params?.logId;
+  const editingLog = useMemo(
+    () => (logId !== undefined ? getLogById(logId) : null),
+    [logId],
+  );
 
   const [title, setTitle] = useState("");
   const [dailySummary, setDailySummary] = useState("");
