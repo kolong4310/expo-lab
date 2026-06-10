@@ -13,6 +13,7 @@ interface AppHeaderProps {
   title: string;
   subtitle?: string;
   accent?: string;
+  compact?: boolean;
   onBack?: () => void;
   right?: ReactNode;
   titleStyle?: StyleProp<TextStyle>;
@@ -22,6 +23,7 @@ export default function AppHeader({
   title,
   subtitle,
   accent = DESIGN.colors.primary,
+  compact = false,
   onBack,
   right,
   titleStyle,
@@ -45,7 +47,7 @@ export default function AppHeader({
   }
 
   return (
-    <View style={styles.screenHeader}>
+    <View style={[styles.screenHeader, compact && styles.screenHeaderCompact]}>
       <Text style={[styles.screenTitle, { color: accent }, titleStyle]}>
         {title}
       </Text>
@@ -57,6 +59,9 @@ export default function AppHeader({
 const styles = StyleSheet.create({
   screenHeader: {
     marginBottom: 24,
+  },
+  screenHeaderCompact: {
+    marginBottom: 14,
   },
   screenTitle: {
     ...DESIGN.typography.largeTitle,

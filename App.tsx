@@ -72,18 +72,18 @@ function TabNavigator() {
         tabBarInactiveTintColor: DESIGN.colors.textDim,
         tabBarStyle: {
           backgroundColor: DESIGN.colors.bg,
-          borderTopWidth: DESIGN.borders.heavy,
+          borderTopWidth: DESIGN.borders.pixel,
           borderTopColor: DESIGN.colors.cyan,
-          height: 88 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
+          height: 76 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
           paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
-          paddingTop: 12,
+          paddingTop: 8,
         },
         tabBarLabelStyle: {
           fontSize: 10,
           fontWeight: "900",
           fontFamily: DESIGN.fonts.title,
           letterSpacing: 0.8,
-          marginTop: 4,
+          marginTop: 2,
         },
       })}
     >

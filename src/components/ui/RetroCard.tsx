@@ -49,10 +49,10 @@ export default function RetroCard({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: DESIGN.colors.surface,
-    borderWidth: DESIGN.borders.heavy,
-    borderRadius: 10,
-    borderRightWidth: DESIGN.borders.heavy,
-    borderBottomWidth: DESIGN.borders.heavy,
+    borderWidth: DESIGN.borders.pixel,
+    borderRadius: 8,
+    borderRightWidth: DESIGN.borders.pixel,
+    borderBottomWidth: DESIGN.borders.pixel,
   },
   corner: {
     position: "absolute",

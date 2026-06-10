@@ -26,13 +26,15 @@ export default function StatCard({
 
 const styles = StyleSheet.create({
   card: {
-    minHeight: 108,
+    minHeight: 78,
     flex: 1,
     justifyContent: "center",
-    padding: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderWidth: DESIGN.borders.pixel,
   },
   label: {
-    marginBottom: 8,
+    marginBottom: 4,
     color: DESIGN.colors.cyan,
     fontFamily: DESIGN.fonts.title,
     fontSize: 11,
@@ -41,7 +43,7 @@ const styles = StyleSheet.create({
   value: {
     color: DESIGN.colors.yellow,
     fontFamily: DESIGN.fonts.score,
-    fontSize: 20,
+    fontSize: 17,
     fontWeight: "900",
   },
 });

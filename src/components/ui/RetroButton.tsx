@@ -49,11 +49,11 @@ const styles = StyleSheet.create({
   button: {
     minHeight: 58,
     backgroundColor: DESIGN.colors.pink,
-    borderWidth: DESIGN.borders.heavy,
+    borderWidth: DESIGN.borders.pixel,
     borderColor: DESIGN.colors.cyan,
     borderRightColor: DESIGN.colors.cyan,
     borderBottomColor: DESIGN.colors.yellow,
-    borderRadius: 8,
+    borderRadius: 6,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 18,

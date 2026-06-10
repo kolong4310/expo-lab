@@ -86,11 +86,16 @@ export default function HomeScreen() {
         style={styles.container}
         contentContainerStyle={[
           styles.content,
-          { paddingBottom: insets.bottom + 190 },
+          { paddingBottom: insets.bottom + 125 },
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <AppHeader title="오늘 업무 로그" subtitle="오늘의 목표와 성장 기록" />
+        <AppHeader
+          title="오늘 업무 로그"
+          subtitle={today.replace(/-/g, ".")}
+          compact
+          titleStyle={styles.headerTitle}
+        />
 
         <View style={styles.statusRow}>
           <StatCard label="연속 달성" value={`${streak}일`} accent="pink" />
@@ -102,12 +107,16 @@ export default function HomeScreen() {
         </View>
 
         <RetroCard accent="pink" style={styles.progressCard}>
-          <PixelSectionTitle>오늘 진행률</PixelSectionTitle>
+          <View style={styles.progressHeader}>
+            <View>
+              <Text style={styles.progressLabel}>오늘 진행률</Text>
+              <Text style={styles.completeText}>
+                {stats.completed} / {stats.total}개 완료
+              </Text>
+            </View>
+            <Text style={styles.percentText}>{stats.rate}%</Text>
+          </View>
           <PixelProgressBar value={stats.rate} />
-          <Text style={styles.percentText}>{stats.rate}%</Text>
-          <Text style={styles.completeText}>
-            {stats.completed} / {stats.total}개 완료
-          </Text>
         </RetroCard>
 
         <RetroCard accent="cyan" style={styles.todoList}>
@@ -170,10 +179,18 @@ export default function HomeScreen() {
         </RetroCard>
       </ScrollView>
 
-      <View style={[styles.ctaWrap, { bottom: insets.bottom + 16 }]}>
+      <View
+        style={[
+          styles.ctaDock,
+          {
+            paddingBottom: Math.max(insets.bottom, 10),
+          },
+        ]}
+      >
         <PrimaryButton
           label="오늘 기록하기"
           onPress={() => navigation.navigate("Write")}
+          style={styles.ctaButton}
         />
       </View>
     </SafeAreaView>
@@ -186,38 +203,53 @@ const styles = StyleSheet.create({
     backgroundColor: DESIGN.colors.bg,
   },
   content: {
-    paddingHorizontal: 24,
-    paddingTop: 22,
+    paddingHorizontal: 18,
+    paddingTop: 12,
+  },
+  headerTitle: {
+    fontSize: 27,
+    letterSpacing: 0.4,
   },
   statusRow: {
     flexDirection: "row",
-    gap: 12,
-    marginBottom: 24,
+    gap: 10,
+    marginBottom: 12,
   },
   progressCard: {
-    minHeight: 220,
-    justifyContent: "center",
-    marginBottom: 28,
-    padding: 22,
+    marginBottom: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderWidth: DESIGN.borders.pixel,
+  },
+  progressHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  progressLabel: {
+    marginBottom: 3,
+    color: DESIGN.colors.yellow,
+    fontFamily: DESIGN.fonts.pixelKo,
+    fontSize: 15,
+    fontWeight: "900",
   },
   percentText: {
-    marginTop: 18,
     color: DESIGN.colors.yellow,
     fontFamily: DESIGN.fonts.score,
-    fontSize: 42,
+    fontSize: 26,
     fontWeight: "900",
-    textAlign: "center",
   },
   completeText: {
     color: DESIGN.colors.cyan,
-    fontFamily: DESIGN.fonts.score,
-    fontSize: 13,
-    fontWeight: "900",
-    textAlign: "center",
+    fontFamily: DESIGN.fonts.pixelKo,
+    fontSize: 12,
+    fontWeight: "800",
   },
   todoList: {
-    marginBottom: 24,
-    padding: 16,
+    marginBottom: 14,
+    padding: 12,
+    borderWidth: DESIGN.borders.pixel,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -240,7 +272,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   addPanel: {
-    padding: 16,
+    padding: 12,
+    borderWidth: DESIGN.borders.pixel,
   },
   addRow: {
     flexDirection: "row",
@@ -266,9 +299,19 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "900",
   },
-  ctaWrap: {
+  ctaDock: {
     position: "absolute",
-    right: 24,
-    left: 24,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    borderTopWidth: 2,
+    borderTopColor: DESIGN.colors.cyan,
+    backgroundColor: "rgba(5, 5, 5, 0.96)",
+    paddingHorizontal: 18,
+    paddingTop: 10,
+  },
+  ctaButton: {
+    minHeight: 60,
+    borderWidth: DESIGN.borders.pixel,
   },
 });

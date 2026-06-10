@@ -47,12 +47,18 @@ const InsightInput = ({
   value,
   onChangeText,
   placeholder,
-  isBig = false,
-}: any) => (
-  <RetroCard accent={isBig ? "pink" : "cyan"} style={styles.inputCard}>
+  minHeight = 88,
+}: {
+  label: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder: string;
+  minHeight?: number;
+}) => (
+  <RetroCard accent="cyan" style={styles.inputCard}>
     <PixelSectionTitle>{label}</PixelSectionTitle>
     <TextInput
-      style={[styles.textInput, isBig && styles.bigInput]}
+      style={[styles.textInput, { minHeight }]}
       value={value}
       onChangeText={onChangeText}
       placeholder={placeholder}
@@ -62,6 +68,32 @@ const InsightInput = ({
       selectionColor={DESIGN.colors.primary}
     />
   </RetroCard>
+);
+
+const SupplementalInput = ({
+  label,
+  value,
+  onChangeText,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder: string;
+}) => (
+  <View style={styles.supplementalField}>
+    <Text style={styles.supplementalLabel}>{label}</Text>
+    <TextInput
+      style={styles.supplementalInput}
+      value={value}
+      onChangeText={onChangeText}
+      placeholder={placeholder}
+      placeholderTextColor={DESIGN.colors.textDim}
+      multiline
+      textAlignVertical="top"
+      selectionColor={DESIGN.colors.primary}
+    />
+  </View>
 );
 
 export default function WriteScreen() {
@@ -80,6 +112,7 @@ export default function WriteScreen() {
   const [solution, setSolution] = useState("");
   const [memo, setMemo] = useState("");
   const [mood, setMood] = useState("good");
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   useEffect(() => {
     if (editingLog) {
@@ -92,6 +125,9 @@ export default function WriteScreen() {
       setSolution(editingLog.solution || "");
       setMemo(editingLog.memo || "");
       setMood(editingLog.mood || "good");
+      setDetailsOpen(
+        Boolean(editingLog.issue || editingLog.solution || editingLog.memo),
+      );
     }
   }, [editingLog]);
 
@@ -153,16 +189,8 @@ export default function WriteScreen() {
         <ScrollView
           style={styles.content}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: insets.bottom + 170 }}
+          contentContainerStyle={{ paddingBottom: insets.bottom + 140 }}
         >
-          <InsightInput
-            label="오늘의 한 줄"
-            value={dailySummary}
-            onChangeText={setDailySummary}
-            placeholder="오늘의 성장을 한 문장으로"
-            isBig
-          />
-
           <RetroCard accent="yellow" style={styles.inputCard}>
             <PixelSectionTitle>업무 제목</PixelSectionTitle>
             <RetroInput
@@ -173,7 +201,70 @@ export default function WriteScreen() {
             />
           </RetroCard>
 
-          <RetroCard accent="green" style={styles.inputCard}>
+          <InsightInput
+            label="오늘의 한 줄"
+            value={dailySummary}
+            onChangeText={setDailySummary}
+            placeholder="오늘 업무를 한 문장으로 요약하세요."
+            minHeight={72}
+          />
+
+          <InsightInput
+            label="상세 내용"
+            value={content}
+            onChangeText={setContent}
+            placeholder="오늘 진행한 내용을 기록하세요."
+            minHeight={120}
+          />
+          <InsightInput
+            label="배운 점"
+            value={learned}
+            onChangeText={setLearned}
+            placeholder="새로 배운 점은 무엇인가요?"
+          />
+
+          <RetroCard accent="purple" style={styles.supportCard}>
+            <TouchableOpacity
+              style={styles.supportHeader}
+              onPress={() => setDetailsOpen((open) => !open)}
+              activeOpacity={0.75}
+            >
+              <View>
+                <Text style={styles.supportTitle}>추가 기록</Text>
+                <Text style={styles.supportDescription}>
+                  이슈 · 해결 방법 · 메모
+                </Text>
+              </View>
+              <Text style={styles.supportToggle}>
+                {detailsOpen ? "접기 -" : "펼치기 +"}
+              </Text>
+            </TouchableOpacity>
+
+            {detailsOpen && (
+              <View style={styles.supportBody}>
+                <SupplementalInput
+                  label="이슈"
+                  value={issue}
+                  onChangeText={setIssue}
+                  placeholder="업무 중 막힌 점을 적어보세요."
+                />
+                <SupplementalInput
+                  label="해결 방법"
+                  value={solution}
+                  onChangeText={setSolution}
+                  placeholder="어떻게 해결했는지 적어보세요."
+                />
+                <SupplementalInput
+                  label="메모"
+                  value={memo}
+                  onChangeText={setMemo}
+                  placeholder="다음 업무를 위한 메모"
+                />
+              </View>
+            )}
+          </RetroCard>
+
+          <RetroCard accent="green" style={styles.supportCard}>
             <PixelSectionTitle>오늘 상태</PixelSectionTitle>
             <View style={styles.moodRow}>
               {MOODS.map((item) => (
@@ -198,7 +289,7 @@ export default function WriteScreen() {
             </View>
           </RetroCard>
 
-          <RetroCard accent="purple" style={styles.inputCard}>
+          <RetroCard accent="purple" style={styles.supportCard}>
             <PixelSectionTitle>태그</PixelSectionTitle>
             <View style={styles.tagRow}>
               {DEFAULT_TAGS.map((tag) => (
@@ -215,43 +306,20 @@ export default function WriteScreen() {
               ))}
             </View>
           </RetroCard>
-
-          <InsightInput
-            label="상세 내용"
-            value={content}
-            onChangeText={setContent}
-            placeholder="오늘 진행한 내용을 기록하세요."
-          />
-          <InsightInput
-            label="배운 점"
-            value={learned}
-            onChangeText={setLearned}
-            placeholder="새로 배운 점은 무엇인가요?"
-          />
-          <InsightInput
-            label="막힌 점"
-            value={issue}
-            onChangeText={setIssue}
-            placeholder="업무 중 막힌 점을 적어보세요."
-          />
-          <InsightInput
-            label="해결 방법"
-            value={solution}
-            onChangeText={setSolution}
-            placeholder="어떻게 해결했는지 적어보세요."
-          />
-          <InsightInput
-            label="메모"
-            value={memo}
-            onChangeText={setMemo}
-            placeholder="다음 업무를 위한 메모"
-          />
         </ScrollView>
 
-        <View style={[styles.ctaWrap, { bottom: insets.bottom + 16 }]}>
+        <View
+          style={[
+            styles.ctaDock,
+            {
+              paddingBottom: Math.max(insets.bottom, 10),
+            },
+          ]}
+        >
           <PrimaryButton
             label={editingLog ? "수정 완료" : "기록 저장"}
             onPress={handleSave}
+            style={styles.ctaButton}
           />
         </View>
       </KeyboardAvoidingView>
@@ -270,28 +338,74 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: 18,
     backgroundColor: DESIGN.colors.bg,
   },
   inputCard: {
-    padding: 14,
-    marginTop: 24,
+    padding: 12,
+    marginTop: 14,
+    borderWidth: DESIGN.borders.pixel,
   },
   titleInput: {
     fontWeight: "900",
     fontSize: 18,
   },
   textInput: {
-    minHeight: 96,
     fontSize: 16,
     color: DESIGN.colors.text,
-    lineHeight: 25,
+    lineHeight: 24,
   },
-  bigInput: {
-    minHeight: 108,
-    fontSize: 21,
+  supportCard: {
+    marginTop: 14,
+    padding: 12,
+    borderWidth: DESIGN.borders.pixel,
+  },
+  supportHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  supportTitle: {
+    color: DESIGN.colors.yellow,
+    fontFamily: DESIGN.fonts.pixelKo,
+    fontSize: 15,
     fontWeight: "900",
-    color: DESIGN.colors.primary,
+  },
+  supportDescription: {
+    marginTop: 4,
+    color: DESIGN.colors.textDim,
+    fontSize: 12,
+  },
+  supportToggle: {
+    color: DESIGN.colors.cyan,
+    fontFamily: DESIGN.fonts.pixelKo,
+    fontSize: 12,
+    fontWeight: "900",
+  },
+  supportBody: {
+    marginTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#343B49",
+  },
+  supplementalField: {
+    paddingTop: 12,
+  },
+  supplementalLabel: {
+    marginBottom: 6,
+    color: DESIGN.colors.cyan,
+    fontFamily: DESIGN.fonts.pixelKo,
+    fontSize: 12,
+    fontWeight: "900",
+  },
+  supplementalInput: {
+    minHeight: 76,
+    borderWidth: 1,
+    borderColor: "#343B49",
+    backgroundColor: DESIGN.colors.bgSecondary,
+    color: DESIGN.colors.text,
+    fontSize: 15,
+    lineHeight: 22,
+    padding: 10,
   },
   moodRow: {
     flexDirection: "row",
@@ -342,9 +456,19 @@ const styles = StyleSheet.create({
     color: DESIGN.colors.text,
     fontWeight: "900",
   },
-  ctaWrap: {
+  ctaDock: {
     position: "absolute",
-    left: 24,
-    right: 24,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    borderTopWidth: 2,
+    borderTopColor: DESIGN.colors.cyan,
+    backgroundColor: "rgba(5, 5, 5, 0.96)",
+    paddingHorizontal: 18,
+    paddingTop: 10,
+  },
+  ctaButton: {
+    minHeight: 60,
+    borderWidth: DESIGN.borders.pixel,
   },
 });
