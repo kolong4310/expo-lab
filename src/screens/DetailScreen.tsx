@@ -135,7 +135,9 @@ export default function DetailScreen({
           )}
           <View style={styles.metaRow}>
             {log.mood && (
-              <Text style={styles.metaChip}>{MOOD_MAP[log.mood]}</Text>
+              <Text style={styles.metaChip}>
+                {MOOD_MAP[log.mood] ?? log.mood}
+              </Text>
             )}
             {log.tags
               ?.split(",")
