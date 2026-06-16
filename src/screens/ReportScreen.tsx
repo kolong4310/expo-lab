@@ -37,6 +37,81 @@ const MOOD_LABELS: Record<string, string> = {
   hard: "힘듦",
 };
 
+type ReportInsight = {
+  id: string;
+  text: string;
+};
+
+const getMoodLabel = (mood: string): string => MOOD_LABELS[mood] ?? mood;
+
+const buildReportSubtitle = (report: ReportStats): string => {
+  if (report.totalLogCount === 0) {
+    return "기록이 쌓이면 성장 흐름을 보여드릴게요.";
+  }
+
+  if (report.logStreak >= 2) {
+    return `${report.logStreak}일째 기록 흐름을 이어가고 있어요.`;
+  }
+
+  if (report.currentMonthLogCount > 0) {
+    return `이번 달 ${report.currentMonthLogCount}개의 기록이 쌓였어요.`;
+  }
+
+  return "최근 기록을 바탕으로 성장 흐름을 정리했어요.";
+};
+
+const buildReportInsights = (report: ReportStats): ReportInsight[] => {
+  if (report.totalLogCount === 0) return [];
+
+  const insights: ReportInsight[] = [];
+  const topTag = report.topTags[0];
+  const topMood = report.moodStats[0];
+
+  if (report.currentMonthLogCount > 0) {
+    insights.push({
+      id: "month-log-count",
+      text: `이번 달 ${report.currentMonthLogCount}개의 기록을 남겼어요.`,
+    });
+  }
+
+  if (report.logStreak >= 2) {
+    insights.push({
+      id: "streak",
+      text: `${report.logStreak}일 연속 기록 중이에요. 좋은 흐름이에요.`,
+    });
+  }
+
+  if (report.recentAverageGrowthRate >= 50) {
+    insights.push({
+      id: "goal-rate-good",
+      text: `최근 7일 목표 흐름이 좋아요. 평균 완료율은 ${report.recentAverageGrowthRate}%예요.`,
+    });
+  } else if (report.recentAverageGrowthRate > 0) {
+    insights.push({
+      id: "goal-rate-started",
+      text: `최근 7일 목표 완료율은 ${report.recentAverageGrowthRate}%예요.`,
+    });
+  }
+
+  if (topTag) {
+    insights.push({
+      id: "top-tag",
+      text: `요즘 가장 자주 남긴 태그는 '${topTag.tag}'예요.`,
+    });
+  }
+
+  if (topMood) {
+    insights.push({
+      id: "top-mood",
+      text: `최근 기록에서 가장 많이 나타난 기분은 '${getMoodLabel(
+        topMood.mood,
+      )}'이에요.`,
+    });
+  }
+
+  return insights.slice(0, 4);
+};
+
 export default function ReportScreen({
   navigation,
 }: BottomTabScreenProps<"Report">) {
@@ -68,7 +143,7 @@ export default function ReportScreen({
       >
         <AppHeader
           title="성장 리포트"
-          subtitle={`이번 달 ${report.currentMonthLogCount}개의 기록을 남겼어요.`}
+          subtitle={buildReportSubtitle(report)}
           compact
         />
 
@@ -86,6 +161,7 @@ function ReportContent({ report }: { report: ReportStats }) {
   return (
     <>
       <SummaryGrid report={report} />
+      <InsightSection insights={buildReportInsights(report)} />
       <TagStats tags={report.topTags} />
       <MonthlyLogChart months={report.recentMonthlyLogs} />
       <MoodStats moods={report.moodStats} />
@@ -124,6 +200,29 @@ function SummaryGrid({ report }: { report: ReportStats }) {
         />
       ))}
     </View>
+  );
+}
+
+function InsightSection({ insights }: { insights: ReportInsight[] }) {
+  if (insights.length === 0) return null;
+
+  return (
+    <ReportSection title="이번 달 인사이트">
+      <RetroCard style={styles.insightCard}>
+        {insights.map((insight, index) => (
+          <View
+            key={insight.id}
+            style={[
+              styles.insightRow,
+              index < insights.length - 1 && styles.insightBorder,
+            ]}
+          >
+            <View style={styles.insightDot} />
+            <Text style={styles.insightText}>{insight.text}</Text>
+          </View>
+        ))}
+      </RetroCard>
+    </ReportSection>
   );
 }
 
@@ -191,7 +290,7 @@ function MoodStats({ moods }: { moods: MoodStat[] }) {
           moods.map((item, index) => (
             <StatRow
               key={item.mood}
-              label={MOOD_LABELS[item.mood] ?? item.mood}
+              label={getMoodLabel(item.mood)}
               value={`${item.count}개`}
               showBorder={index < moods.length - 1}
             />
@@ -287,6 +386,34 @@ const styles = StyleSheet.create({
     color: DESIGN.colors.text,
     fontSize: 17,
     fontWeight: "700",
+  },
+  insightCard: {
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+  },
+  insightRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 10,
+    paddingVertical: 12,
+  },
+  insightBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: DESIGN.colors.border,
+  },
+  insightDot: {
+    width: 6,
+    height: 6,
+    marginTop: 7,
+    borderRadius: 3,
+    backgroundColor: DESIGN.colors.secondary,
+  },
+  insightText: {
+    flex: 1,
+    color: DESIGN.colors.text,
+    fontSize: 14,
+    fontWeight: "500",
+    lineHeight: 21,
   },
   listCard: {
     paddingHorizontal: 20,
