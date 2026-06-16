@@ -2,6 +2,25 @@
 
 This document is a draft to help prepare Play Console Data safety answers. It is based on the current app structure: no login, no server database, and local SQLite storage on the user's device.
 
+Privacy Policy URL:
+
+```text
+https://app.notion.com/p/3813fa1a756d8053bfaed38be72f1a2e?source=copy_link
+```
+
+## Current Play Console Answer Direction
+
+- Account creation required: No.
+- Data collected by developer: No.
+- Data shared with third parties: No.
+- Data sent to a server: No.
+- Location data used: No.
+- Contacts used: No.
+- Photos, videos, files, or documents accessed: No.
+- Advertising ID used: No.
+- User-created records are stored only in the device's local SQLite database.
+- Backup/sync is not currently provided.
+
 ## Account Creation
 
 Question: Does the app require users to create an account?
@@ -113,6 +132,9 @@ Based on the current implementation:
 - Data collected by developer: No.
 - Data shared with third parties: No.
 - User records sent to server: No.
+- Location used: No.
+- Contacts used: No.
+- Photos/files access used: No.
 - Local storage: Yes, user-created records are stored on-device using SQLite.
 - Backup/sync: No.
 - Ads/advertising ID: No.

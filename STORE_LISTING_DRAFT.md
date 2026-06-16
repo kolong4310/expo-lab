@@ -137,3 +137,26 @@ Grow Day is recommended for:
 - Minimal
 - Growth-oriented
 - No exaggerated productivity claims
+
+## Submission Notes
+
+Privacy Policy URL:
+
+```text
+https://app.notion.com/p/3813fa1a756d8053bfaed38be72f1a2e?source=copy_link
+```
+
+Current preparation status:
+
+- Data safety draft prepared.
+- Privacy policy draft updated with contact and URL.
+- Store listing draft prepared.
+- Screenshot guide prepared.
+
+Remaining Play Console tasks:
+
+- Create or complete the Play Console app entry.
+- Enter the Privacy Policy URL in Play Console.
+- Confirm the Privacy Policy URL opens in a private/incognito browser window.
+- Capture and upload store screenshots.
+- Run and upload a production build when ready.

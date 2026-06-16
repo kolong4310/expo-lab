@@ -4,14 +4,19 @@ This document is a draft for Play Store review and should be checked before publ
 
 ## TODO Before Publication
 
-- TODO: Add the final "Last updated" date.
-- TODO: Add a contact email address.
-- TODO: Publish this policy at a public URL.
-- TODO: Add the public privacy policy URL to Play Console.
+- Done: Last updated date added.
+- Done: Contact email added.
+- Done: Privacy policy URL prepared.
+- TODO: Confirm the privacy policy URL opens in a private/incognito browser window.
+- TODO: Add the privacy policy URL to Play Console.
 
 ## Last Updated
 
-TODO: YYYY-MM-DD
+2026-06-16
+
+## Privacy Policy URL
+
+https://app.notion.com/p/3813fa1a756d8053bfaed38be72f1a2e?source=copy_link
 
 ## App Name
 
@@ -40,6 +45,8 @@ The app does not require:
 Users may write work logs, goal records, tags, mood status, notes, and related text inside the app.
 
 This data is stored locally on the user's device using SQLite.
+
+Users can delete work log records inside the app.
 
 ## Server Transfer
 
@@ -81,4 +88,4 @@ This privacy policy may be updated if app features or data handling practices ch
 
 For privacy-related questions, contact:
 
-TODO: add contact email or support URL
+[kolong4310@gmail.com](mailto:kolong4310@gmail.com)

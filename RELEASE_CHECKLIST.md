@@ -44,12 +44,21 @@
 - [ ] Store listing short description prepared.
 - [ ] Store listing long description prepared.
 - [ ] Screenshot captions prepared.
-- [ ] Privacy policy link prepared.
-- [ ] Play Console Data safety answers prepared.
+- [x] Privacy policy draft prepared.
+- [x] Privacy policy public URL created.
+- [ ] Privacy policy URL opens from a private/incognito browser window.
+- [ ] Privacy policy URL entered in Play Console.
+- [x] Play Console Data safety answers prepared as a draft.
 - [ ] Data storage explanation prepared: records are stored locally on-device using SQLite.
 - [ ] Confirmed no login/account system.
 - [ ] Confirmed no external server database for user records.
 - [ ] Confirmed no backup/sync feature currently provided.
+
+Privacy Policy URL:
+
+```text
+https://app.notion.com/p/3813fa1a756d8053bfaed38be72f1a2e?source=copy_link
+```
 
 ## Credentials and Release Safety
 
