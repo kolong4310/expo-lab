@@ -1,24 +1,26 @@
 # Grow Day Store Listing Draft
 
-## App One-Line Intro
+This draft is organized around common Play Console store listing fields.
 
-Grow Day is a calm daily growth log for tracking work, goals, and progress.
+## App Name
+
+Grow Day
 
 ## Short Description
 
 Write daily work logs, manage goals, and review your growth with simple reports.
 
-## Long Description
+## Full Description
 
-Grow Day helps you keep a steady record of your daily work and growth.
+Grow Day is a calm daily growth log for people who want to record work, goals, and progress without a complicated setup.
 
-Instead of turning productivity into a game, Grow Day focuses on a quiet, minimal workflow: write what you worked on, note what you learned, track goals, and look back through your archive and reports.
+Use Grow Day to write what you worked on, note what you learned, track daily goals, and look back at your records over time. The app is built around a simple flow: Today, Archive, Report, and Search.
 
-Your records stay on your device. There is no account sign-up, no server database, and no required login. You can use Grow Day as a private space for daily notes, work logs, learning records, and lightweight goal tracking.
+In Today, you can focus on today's goals and write a daily work log. In Archive, you can revisit past records by date. In Search, you can find previous notes by keyword or tag. In Report, you can review simple growth insights based on your logs, tags, mood records, streaks, and goal completion flow.
 
-Use the Today tab to focus on today's goals and write a log. Use Archive to revisit past records by date. Use Search to quickly find records by text or tags. Use Report to see simple growth insights based on your logs, tags, moods, and goal completion flow.
+Grow Day does not require account sign-up or login. Your records are stored locally on your device using SQLite. The app is designed as a private, local-first space for daily reflection and lightweight productivity tracking.
 
-Grow Day is designed for people who want to build a steady habit of reflection without noisy dashboards or complicated setup.
+Grow Day is intentionally quiet and minimal. It is made for repeated daily use, not noisy dashboards or gamified productivity.
 
 ## Key Features
 
@@ -29,9 +31,9 @@ Grow Day is designed for people who want to build a steady habit of reflection w
 - Growth report with monthly, weekly, streak, tag, mood, and goal statistics
 - Local SQLite storage on the device
 - No account sign-up required
-- Dark minimal interface designed for repeated daily use
+- Dark minimal interface designed for daily use
 
-## Recommended Keywords
+## Recommended Search Keywords
 
 - daily log
 - work log
@@ -44,19 +46,94 @@ Grow Day is designed for people who want to build a steady habit of reflection w
 - productivity report
 - local journal
 
-## Screenshot Caption Ideas
+## Screenshot Copy Suggestions
 
-- "Write today's work in one focused place"
-- "Track goals and daily progress"
-- "Review your records by date"
-- "Find past notes with search"
-- "See your growth through simple reports"
-- "Private records stored on your device"
+### Screenshot 1: Today
 
-## Recommended For
+Recommended caption:
+
+> Focus on today's goals and record your work.
+
+Alternative captions:
+
+- "Start the day with clear goals"
+- "Keep today's work in one focused place"
+
+### Screenshot 2: Write
+
+Recommended caption:
+
+> Write what you did, learned, and want to remember.
+
+Alternative captions:
+
+- "Capture your daily work log"
+- "Turn small notes into a steady record"
+
+### Screenshot 3: Report
+
+Recommended caption:
+
+> Review your growth through simple insights.
+
+Alternative captions:
+
+- "See monthly records, streaks, tags, and moods"
+- "Understand your progress without a noisy dashboard"
+
+### Screenshot 4: Archive
+
+Recommended caption:
+
+> Revisit past records by date.
+
+Alternative captions:
+
+- "Look back through your work calendar"
+- "Keep a clear archive of your progress"
+
+### Screenshot 5: Search
+
+Recommended caption:
+
+> Find previous records by keyword or tag.
+
+Alternative captions:
+
+- "Search your notes when you need them"
+- "Bring past work back into view"
+
+## App Category Candidates
+
+Primary category candidates:
+
+- Productivity
+- Tools
+
+Secondary positioning:
+
+- Personal productivity
+- Work journal
+- Goal tracking
+
+Recommended first choice:
+
+- Productivity
+
+## Target User Description
+
+Grow Day is recommended for:
 
 - Developers who want to keep a daily work log
 - People who want a quiet reflection habit
 - Users who prefer local-first personal records
 - Anyone who wants lightweight goal tracking without account setup
 - People who want simple productivity insights without a complex dashboard
+
+## Tone Notes
+
+- Calm
+- Practical
+- Minimal
+- Growth-oriented
+- No exaggerated productivity claims
