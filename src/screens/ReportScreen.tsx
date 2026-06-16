@@ -70,14 +70,17 @@ const buildReportInsights = (report: ReportStats): ReportInsight[] => {
   if (report.currentMonthLogCount > 0) {
     insights.push({
       id: "month-log-count",
-      text: `이번 달 ${report.currentMonthLogCount}개의 기록을 남겼어요.`,
+      text:
+        report.currentMonthLogCount === 1
+          ? "이번 달 첫 기록을 남겼어요."
+          : `이번 달 ${report.currentMonthLogCount}개의 기록을 남겼어요.`,
     });
   }
 
   if (report.logStreak >= 2) {
     insights.push({
       id: "streak",
-      text: `${report.logStreak}일 연속 기록 중이에요. 좋은 흐름이에요.`,
+      text: `${report.logStreak}일 연속 기록 중이에요. 차분히 이어가고 있어요.`,
     });
   }
 
@@ -89,7 +92,7 @@ const buildReportInsights = (report: ReportStats): ReportInsight[] => {
   } else if (report.recentAverageGrowthRate > 0) {
     insights.push({
       id: "goal-rate-started",
-      text: `최근 7일 목표 완료율은 ${report.recentAverageGrowthRate}%예요.`,
+      text: `최근 7일 목표 완료율은 ${report.recentAverageGrowthRate}%예요. 기록이 쌓이면 흐름이 더 선명해져요.`,
     });
   }
 
@@ -109,6 +112,13 @@ const buildReportInsights = (report: ReportStats): ReportInsight[] => {
     });
   }
 
+  if (insights.length === 1 && report.totalLogCount === 1) {
+    insights.push({
+      id: "first-baseline",
+      text: "이 기록이 앞으로의 성장 변화를 비교할 기준점이 될 거예요.",
+    });
+  }
+
   return insights.slice(0, 4);
 };
 
@@ -119,16 +129,20 @@ export default function ReportScreen({
   const [report, setReport] = useState<ReportStats>(EMPTY_REPORT);
   const reportSnapshotRef = useRef(JSON.stringify(EMPTY_REPORT));
 
+  const reloadReport = useCallback(() => {
+    const nextReport = getReportStats();
+    const nextSnapshot = JSON.stringify(nextReport);
+
+    if (reportSnapshotRef.current !== nextSnapshot) {
+      reportSnapshotRef.current = nextSnapshot;
+      setReport(nextReport);
+    }
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
-      const nextReport = getReportStats();
-      const nextSnapshot = JSON.stringify(nextReport);
-
-      if (reportSnapshotRef.current !== nextSnapshot) {
-        reportSnapshotRef.current = nextSnapshot;
-        setReport(nextReport);
-      }
-    }, []),
+      reloadReport();
+    }, [reloadReport]),
   );
 
   return (
@@ -241,7 +255,7 @@ function TagStats({ tags }: { tags: TagStat[] }) {
             />
           ))
         ) : (
-          <SectionEmptyText text="아직 사용한 태그가 없어요." />
+          <SectionEmptyText text="태그를 남기면 자주 다룬 주제가 여기에 정리돼요." />
         )}
       </RetroCard>
     </ReportSection>
@@ -296,7 +310,7 @@ function MoodStats({ moods }: { moods: MoodStat[] }) {
             />
           ))
         ) : (
-          <SectionEmptyText text="아직 기록된 오늘 상태가 없어요." />
+          <SectionEmptyText text="오늘 상태를 선택한 기록이 쌓이면 여기에 정리돼요." />
         )}
       </RetroCard>
     </ReportSection>
