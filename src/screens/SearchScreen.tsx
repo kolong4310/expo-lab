@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   FlatList,
   StatusBar,
@@ -31,10 +32,20 @@ export default function SearchScreen({
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [results, setResults] = useState<WorkLog[]>([]);
 
-  useEffect(() => {
+  const refreshResults = useCallback(() => {
     const query = keyword.trim();
     setResults(query ? searchLogs(query) : []);
   }, [keyword]);
+
+  useEffect(() => {
+    refreshResults();
+  }, [refreshResults]);
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshResults();
+    }, [refreshResults]),
+  );
 
   const submitSearch = () => {
     const query = keyword.trim();
@@ -76,6 +87,7 @@ export default function SearchScreen({
           styles.list,
           { paddingBottom: insets.bottom + 110 },
         ]}
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
@@ -153,7 +165,9 @@ export default function SearchScreen({
               </Text>
             )}
             {keyword.length > 0 && results.length === 0 && (
-              <Text style={styles.emptyText}>일치하는 기록이 없습니다.</Text>
+              <Text style={styles.emptyText}>
+                조건에 맞는 기록이 아직 없어요.
+              </Text>
             )}
           </>
         }

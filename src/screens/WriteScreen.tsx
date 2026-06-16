@@ -218,6 +218,7 @@ export default function WriteScreen({
         <ScrollView
           style={styles.content}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ paddingBottom: insets.bottom + 140 }}
         >
           <RetroCard accent="yellow" style={styles.inputCard}>
