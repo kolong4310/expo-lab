@@ -11,6 +11,17 @@ import { formatLocalDate } from "../../utils/date";
 import { getDailyGoalsWithCheck, getTodayOnlyGoals } from "./goalsRepository";
 import { getLogStreak } from "./logsRepository";
 
+const formatMonth = (date: Date): string =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+
+const getLocalWeekStart = (date = new Date()): Date => {
+  const weekStart = new Date(date);
+  const day = weekStart.getDay();
+  weekStart.setHours(0, 0, 0, 0);
+  weekStart.setDate(weekStart.getDate() - (day === 0 ? 6 : day - 1));
+  return weekStart;
+};
+
 export const getGrowthStats = (date: string): GrowthStats => {
   const dailyItems = getDailyGoalsWithCheck(date);
   const todayOnlyItems = getTodayOnlyGoals(date);
@@ -70,7 +81,7 @@ export const getMonthlyStats = (month: string): MonthlyStats => {
   };
 };
 
-export const getTagStats = (): TagStat[] => {
+export const getTagStats = (limit?: number): TagStat[] => {
   const rows = queryAll<{ tags: string | null }>(
     "SELECT tags FROM logs WHERE tags IS NOT NULL AND tags != ''",
   );
@@ -86,11 +97,9 @@ export const getTagStats = (): TagStat[] => {
 
   return Array.from(counts.entries())
     .map(([tag, count]) => ({ tag, count }))
-    .sort((a, b) => b.count - a.count);
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag))
+    .slice(0, limit);
 };
-
-const formatMonth = (date: Date): string =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 
 export const getLogCount = (): number =>
   queryFirst<{ count: number }>("SELECT COUNT(*) AS count FROM logs")?.count ??
@@ -103,9 +112,7 @@ export const getCurrentMonthLogCount = (): number =>
   )?.count ?? 0;
 
 export const getCurrentWeekLogCount = (): number => {
-  const weekStart = new Date();
-  const day = weekStart.getDay();
-  weekStart.setDate(weekStart.getDate() - (day === 0 ? 6 : day - 1));
+  const weekStart = getLocalWeekStart();
 
   return (
     queryFirst<{ count: number }>(
@@ -116,10 +123,11 @@ export const getCurrentWeekLogCount = (): number => {
 };
 
 export const getRecentMonthlyLogStats = (months = 6): MonthlyLogStat[] => {
-  const monthKeys = Array.from({ length: months }, (_, index) => {
+  const monthCount = Math.max(1, months);
+  const monthKeys = Array.from({ length: monthCount }, (_, index) => {
     const date = new Date();
     date.setDate(1);
-    date.setMonth(date.getMonth() - (months - index - 1));
+    date.setMonth(date.getMonth() - (monthCount - index - 1));
     return formatMonth(date);
   });
   const counts = queryAll<{ month: string; count: number }>(
@@ -158,7 +166,7 @@ export const getReportStats = (): ReportStats => {
     currentWeekLogCount: getCurrentWeekLogCount(),
     logStreak: getLogStreak(),
     recentAverageGrowthRate: getRecentAverageGrowthRate(),
-    topTags: getTagStats().slice(0, 5),
+    topTags: getTagStats(5),
     recentMonthlyLogs: getRecentMonthlyLogStats(),
     moodStats: getMoodStats(),
   };
