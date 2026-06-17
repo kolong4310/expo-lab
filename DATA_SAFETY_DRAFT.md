@@ -1,4 +1,4 @@
-# Grow Day Data Safety Draft
+# Tiny Growth Data Safety Draft
 
 This document is a draft to help prepare Play Console Data safety answers. It is based on the current app structure: no login, no server database, and local SQLite storage on the user's device.
 
@@ -31,7 +31,7 @@ Recommended answer:
 
 Notes:
 
-- Grow Day does not require account sign-up or login.
+- Tiny Growth does not require account sign-up or login.
 - The app does not collect email addresses, phone numbers, or profile data for account creation.
 
 ## Data Collection
@@ -58,7 +58,7 @@ Recommended answer:
 
 Notes:
 
-- Grow Day does not share user-created records with third parties.
+- Tiny Growth does not share user-created records with third parties.
 - No external server transfer is currently implemented for user records.
 
 ## Data Sent to a Server
@@ -121,7 +121,7 @@ Current app behavior:
 
 Data deletion request guidance:
 
-- Because Grow Day does not operate a server account or server database for user records, there is no remote user data for the developer to delete.
+- Because Tiny Growth does not operate a server account or server database for user records, there is no remote user data for the developer to delete.
 - For Play Console or public policy text, explain that users can delete local records in the app or remove the app from the device.
 
 ## Current Recommended Data Safety Position

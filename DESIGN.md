@@ -1,6 +1,6 @@
-# Grow Day Design System
+# Tiny Growth Design System
 
-Grow Day is a premium dark productivity app for daily developer work logs.
+Tiny Growth is a premium dark productivity app for daily developer work logs.
 The interface prioritizes information hierarchy, writing flow, and repeat use.
 
 ## Principles

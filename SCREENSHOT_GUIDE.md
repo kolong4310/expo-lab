@@ -1,4 +1,4 @@
-# Grow Day Screenshot Guide
+# Tiny Growth Screenshot Guide
 
 This guide describes store screenshot capture goals for the current Android app.
 
@@ -125,6 +125,23 @@ Watch-outs:
 - Do not show a no-result state for the main Search screenshot.
 - Keep result titles concise.
 
+## Settings
+
+Capture purpose:
+
+- Show that users can change the app language after setup.
+
+Good screen state:
+
+- Current language is visible.
+- All four language options are visible if possible.
+- The selected language state is clear.
+
+Recommended overlay copy:
+
+- "Change language anytime"
+- "설정에서 언어를 바로 변경하세요"
+
 ## Suggested Screenshot Order
 
 1. Today
@@ -132,6 +149,7 @@ Watch-outs:
 3. Report
 4. Archive
 5. Search
+6. Settings
 
 ## Sample Data Suggestions
 

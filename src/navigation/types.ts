@@ -11,6 +11,7 @@ export type BottomTabParamList = {
   Archive: undefined;
   Report: undefined;
   Search: undefined;
+  Settings: undefined;
 };
 
 export type RootStackParamList = {

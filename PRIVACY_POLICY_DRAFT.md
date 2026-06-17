@@ -1,4 +1,4 @@
-# Grow Day Privacy Policy Draft
+# Tiny Growth Privacy Policy Draft
 
 This document is a draft for Play Store review and should be checked before publication.
 
@@ -20,17 +20,17 @@ https://app.notion.com/p/3813fa1a756d8053bfaed38be72f1a2e?source=copy_link
 
 ## App Name
 
-Grow Day
+Tiny Growth
 
 ## Summary
 
-Grow Day is a local growth record app. It does not require account creation, and user-created records are stored on the user's device using SQLite.
+Tiny Growth is a local growth record app. It does not require account creation, and user-created records are stored on the user's device using SQLite.
 
-Grow Day does not send user-created records to an external server.
+Tiny Growth does not send user-created records to an external server.
 
 ## Personal Information Collection
 
-Grow Day does not collect personal information.
+Tiny Growth does not collect personal information.
 
 The app does not require:
 
@@ -50,17 +50,17 @@ Users can delete work log records inside the app.
 
 ## Server Transfer
 
-Grow Day does not send user-created records to an external server.
+Tiny Growth does not send user-created records to an external server.
 
-Grow Day currently does not operate a server database for user records.
+Tiny Growth currently does not operate a server database for user records.
 
 ## Account Creation
 
-Grow Day does not provide or require account creation.
+Tiny Growth does not provide or require account creation.
 
 ## Backup and Sync
 
-Grow Day currently does not provide separate backup or sync features.
+Tiny Growth currently does not provide separate backup or sync features.
 
 Because there is no backup or sync feature, users should understand that records are stored locally on the device.
 
@@ -70,15 +70,15 @@ If the app is deleted, local data stored on the device may also be deleted depen
 
 ## Third-Party Sharing
 
-Grow Day does not share user-created records with third parties.
+Tiny Growth does not share user-created records with third parties.
 
 ## Permissions
 
-Grow Day does not request unnecessary device permissions for its core logging features.
+Tiny Growth does not request unnecessary device permissions for its core logging features.
 
 ## Children's Privacy
 
-Grow Day is not designed to knowingly collect personal information from children.
+Tiny Growth is not designed to knowingly collect personal information from children.
 
 ## Changes to This Policy
 

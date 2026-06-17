@@ -17,6 +17,7 @@ import DetailScreen from "./src/screens/DetailScreen";
 import CalendarScreen from "./src/screens/CalendarScreen";
 import ReportScreen from "./src/screens/ReportScreen";
 import SearchScreen from "./src/screens/SearchScreen";
+import SettingsScreen from "./src/screens/SettingsScreen";
 import GoalManageScreen from "./src/screens/GoalManageScreen";
 import LanguageSelectScreen from "./src/screens/LanguageSelectScreen";
 import { initDatabase } from "./src/database/db";
@@ -59,14 +60,16 @@ function TabNavigator() {
       return focused ? "calendar" : "calendar-outline";
     if (routeName === "Report")
       return focused ? "bar-chart" : "bar-chart-outline";
-    return focused ? "search" : "search-outline";
+    if (routeName === "Search") return focused ? "search" : "search-outline";
+    return focused ? "settings" : "settings-outline";
   };
 
   const getTabAccent = (routeName: MainTabName) => {
     if (routeName === "Today") return DESIGN.colors.pink;
     if (routeName === "Archive") return DESIGN.colors.green;
     if (routeName === "Report") return DESIGN.colors.secondary;
-    return DESIGN.colors.purple;
+    if (routeName === "Search") return DESIGN.colors.purple;
+    return DESIGN.colors.textDim;
   };
 
   return (
@@ -122,6 +125,11 @@ function TabNavigator() {
         name="Search"
         component={SearchScreen}
         options={{ tabBarLabel: t("tabs.search") }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{ tabBarLabel: t("tabs.settings") }}
       />
     </Tab.Navigator>
   );

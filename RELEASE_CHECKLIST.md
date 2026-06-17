@@ -1,4 +1,4 @@
-# Grow Day Release Checklist
+# Tiny Growth Release Checklist
 
 ## Build Checks
 
@@ -24,17 +24,20 @@
 - [ ] Search tab opens correctly.
 - [ ] Search finds records by text or tag.
 - [ ] Search result opens Detail.
+- [ ] Settings tab opens correctly.
+- [ ] Settings language change updates app text immediately.
+- [ ] Settings language change persists after app relaunch.
 - [ ] Report tab opens correctly.
 - [ ] Report statistics update after create, edit, and delete.
-- [ ] Empty states look natural for Today, Archive, Search, and Report.
+- [ ] Empty states look natural for Today, Archive, Search, Report, and Settings.
 
 ## Localization Follow-up
 
-- [ ] Add a settings screen flow for changing the selected language after onboarding.
+- [x] Add a settings screen flow for changing the selected language after onboarding.
 
 ## Android Store Settings
 
-- [ ] App name confirmed: Grow Day.
+- [ ] App name confirmed: Tiny Growth.
 - [ ] Package name confirmed: com.kolong4310.growday.
 - [ ] Version confirmed in app.json.
 - [ ] android.versionCode confirmed in app.json.
@@ -54,6 +57,9 @@
 - [x] Privacy policy public URL created.
 - [ ] Privacy policy URL opens from a private/incognito browser window.
 - [ ] Privacy policy URL entered in Play Console.
+- [ ] Play Console app name entered as Tiny Growth.
+- [ ] If Play Console already has Grow Day, update it manually to Tiny Growth.
+- [ ] Privacy Policy Notion page title and body updated to Tiny Growth.
 - [x] Play Console Data safety answers prepared as a draft.
 - [ ] Data storage explanation prepared: records are stored locally on-device using SQLite.
 - [ ] Confirmed no login/account system.

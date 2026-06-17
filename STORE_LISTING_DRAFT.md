@@ -1,10 +1,10 @@
-# Grow Day Store Listing Draft
+# Tiny Growth Store Listing Draft
 
 This draft is organized around common Play Console store listing fields.
 
 ## App Name
 
-Grow Day
+Tiny Growth
 
 ## Short Description
 
@@ -12,15 +12,15 @@ Write daily work logs, manage goals, and review your growth with simple reports.
 
 ## Full Description
 
-Grow Day is a calm daily growth log for people who want to record work, goals, and progress without a complicated setup.
+Tiny Growth is a calm daily growth log for people who want to record work, goals, and progress without a complicated setup.
 
-Use Grow Day to write what you worked on, note what you learned, track daily goals, and look back at your records over time. The app is built around a simple flow: Today, Archive, Report, and Search.
+Use Tiny Growth to write what you worked on, note what you learned, track daily goals, and look back at your records over time. The app is built around a simple flow: Today, Archive, Report, Search, and Settings.
 
 In Today, you can focus on today's goals and write a daily work log. In Archive, you can revisit past records by date. In Search, you can find previous notes by keyword or tag. In Report, you can review simple growth insights based on your logs, tags, mood records, streaks, and goal completion flow.
 
-Grow Day does not require account sign-up or login. Your records are stored locally on your device using SQLite. The app is designed as a private, local-first space for daily reflection and lightweight productivity tracking.
+Tiny Growth does not require account sign-up or login. Your records are stored locally on your device using SQLite. The app is designed as a private, local-first space for daily reflection and lightweight productivity tracking.
 
-Grow Day is intentionally quiet and minimal. It is made for repeated daily use, not noisy dashboards or gamified productivity.
+Tiny Growth is intentionally quiet and minimal. It is made for repeated daily use, not noisy dashboards or gamified productivity.
 
 ## Key Features
 
@@ -29,6 +29,7 @@ Grow Day is intentionally quiet and minimal. It is made for repeated daily use, 
 - Archive calendar for date-based log review
 - Search by keywords and tags
 - Growth report with monthly, weekly, streak, tag, mood, and goal statistics
+- Language settings for Korean, English, Japanese, and Simplified Chinese
 - Local SQLite storage on the device
 - No account sign-up required
 - Dark minimal interface designed for daily use
@@ -122,7 +123,7 @@ Recommended first choice:
 
 ## Target User Description
 
-Grow Day is recommended for:
+Tiny Growth is recommended for:
 
 - Developers who want to keep a daily work log
 - People who want a quiet reflection habit
@@ -160,3 +161,4 @@ Remaining Play Console tasks:
 - Confirm the Privacy Policy URL opens in a private/incognito browser window.
 - Capture and upload store screenshots.
 - Run and upload a production build when ready.
+- If the Play Console app name was already entered as Grow Day, update it manually to Tiny Growth.
