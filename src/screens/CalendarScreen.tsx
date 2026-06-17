@@ -26,6 +26,7 @@ import {
   getLogsByDate,
 } from "../database/repositories/logsRepository";
 import { WorkLog } from "../database/types";
+import { useTranslation } from "../i18n/useTranslation";
 import { goHome } from "../navigation/homeNavigation";
 import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
@@ -78,6 +79,7 @@ export default function CalendarScreen({
   navigation,
 }: BottomTabScreenProps<"Archive">) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const fade = useRef(new Animated.Value(1)).current;
   const [selectedDate, setSelectedDate] = useState(formatLocalDate());
   const [markedDates, setMarkedDates] = useState<
@@ -139,7 +141,10 @@ export default function CalendarScreen({
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
-            <AppHeader title="기록 캘린더" onHome={() => goHome(navigation)} />
+            <AppHeader
+              title={t("archive.title")}
+              onHome={() => goHome(navigation)}
+            />
             <Animated.View style={{ opacity: fade }}>
               <RetroCard style={styles.calendarCard}>
                 <Calendar
@@ -174,14 +179,14 @@ export default function CalendarScreen({
               <Text style={styles.sectionTitle}>
                 {selectedDate.replace(/-/g, ".")}
               </Text>
-              <Text style={styles.count}>{logs.length}개 기록</Text>
+              <Text style={styles.count}>
+                {t("archive.count", { count: logs.length })}
+              </Text>
             </View>
             {logs.length === 0 && (
               <RetroCard style={styles.emptyCard}>
-                <Text style={styles.emptyTitle}>기록이 없습니다</Text>
-                <Text style={styles.emptyText}>
-                  선택한 날짜에 저장된 업무 로그가 없습니다.
-                </Text>
+                <Text style={styles.emptyTitle}>{t("archive.emptyTitle")}</Text>
+                <Text style={styles.emptyText}>{t("archive.emptyText")}</Text>
               </RetroCard>
             )}
           </>

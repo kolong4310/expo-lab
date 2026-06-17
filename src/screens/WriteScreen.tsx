@@ -27,17 +27,19 @@ import {
   updateLog,
 } from "../database/repositories/logsRepository";
 import { WorkLog } from "../database/types";
+import { TranslationKey } from "../i18n/translations";
+import { useTranslation } from "../i18n/useTranslation";
 import { goHome } from "../navigation/homeNavigation";
 import { RootStackScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
 import { formatLocalDate } from "../utils/date";
 
 const MOODS = [
-  { label: "최고", value: "best" },
-  { label: "좋음", value: "good" },
-  { label: "보통", value: "normal" },
-  { label: "힘듦", value: "hard" },
-];
+  { labelKey: "mood.best", value: "best" },
+  { labelKey: "mood.good", value: "good" },
+  { labelKey: "mood.normal", value: "normal" },
+  { labelKey: "mood.hard", value: "hard" },
+] satisfies { labelKey: TranslationKey; value: string }[];
 
 const DEFAULT_TAGS = [
   "개발",
@@ -108,6 +110,7 @@ export default function WriteScreen({
   route,
 }: RootStackScreenProps<"Write">) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const logId = route.params?.logId;
   const editingLog = useMemo(
     () => (logId !== undefined ? getLogById(logId) : null),
@@ -153,7 +156,10 @@ export default function WriteScreen({
   const handleSave = () => {
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
-      Alert.alert("알림", "제목을 입력해주세요.");
+      Alert.alert(
+        t("write.alertTitleRequired"),
+        t("write.alertTitleRequiredMessage"),
+      );
       return;
     }
 
@@ -181,23 +187,20 @@ export default function WriteScreen({
       }
 
       const message = editingLog
-        ? "오늘 기록을 수정했습니다."
-        : "오늘 기록을 저장했습니다.";
+        ? t("write.savedUpdate")
+        : t("write.savedCreate");
 
       if (Platform.OS === "android") {
         ToastAndroid.show(message, ToastAndroid.SHORT);
         goHome(navigation);
       } else {
-        Alert.alert("저장 완료", message, [
-          { text: "확인", onPress: () => goHome(navigation) },
+        Alert.alert(t("write.savedTitle"), message, [
+          { text: t("common.confirm"), onPress: () => goHome(navigation) },
         ]);
       }
     } catch (error) {
       console.error(error);
-      Alert.alert(
-        "저장 실패",
-        "기록을 저장하지 못했습니다. 다시 시도해주세요.",
-      );
+      Alert.alert(t("write.saveFailedTitle"), t("write.saveFailedMessage"));
     }
   };
 
@@ -210,7 +213,7 @@ export default function WriteScreen({
         style={styles.keyboardContainer}
       >
         <AppHeader
-          title={editingLog ? "기록 수정" : "오늘 기록"}
+          title={editingLog ? t("write.editTitle") : t("write.createTitle")}
           onBack={() => navigation.goBack()}
           onHome={() => goHome(navigation)}
         />
@@ -222,35 +225,35 @@ export default function WriteScreen({
           contentContainerStyle={{ paddingBottom: insets.bottom + 140 }}
         >
           <RetroCard accent="yellow" style={styles.inputCard}>
-            <PixelSectionTitle>업무 제목</PixelSectionTitle>
+            <PixelSectionTitle>{t("write.titleLabel")}</PixelSectionTitle>
             <RetroInput
               value={title}
               onChangeText={setTitle}
-              placeholder="오늘 어떤 업무를 진행했나요?"
+              placeholder={t("write.titlePlaceholder")}
               style={styles.titleInput}
             />
           </RetroCard>
 
           <InsightInput
-            label="오늘의 한 줄 · 권장"
+            label={t("write.summaryLabel")}
             value={dailySummary}
             onChangeText={setDailySummary}
-            placeholder="오늘 업무를 한 문장으로 요약하세요."
+            placeholder={t("write.summaryPlaceholder")}
             minHeight={72}
           />
 
           <InsightInput
-            label="상세 내용"
+            label={t("write.contentLabel")}
             value={content}
             onChangeText={setContent}
-            placeholder="오늘 진행한 내용을 기록하세요."
+            placeholder={t("write.contentPlaceholder")}
             minHeight={120}
           />
           <InsightInput
-            label="배운 점"
+            label={t("write.learnedLabel")}
             value={learned}
             onChangeText={setLearned}
-            placeholder="새로 배운 점은 무엇인가요?"
+            placeholder={t("write.learnedPlaceholder")}
           />
 
           <RetroCard accent="purple" style={styles.supportCard}>
@@ -260,42 +263,44 @@ export default function WriteScreen({
               activeOpacity={0.75}
             >
               <View>
-                <Text style={styles.supportTitle}>추가 기록</Text>
+                <Text style={styles.supportTitle}>
+                  {t("write.additionalTitle")}
+                </Text>
                 <Text style={styles.supportDescription}>
-                  이슈 · 해결 방법 · 메모
+                  {t("write.additionalDescription")}
                 </Text>
               </View>
               <Text style={styles.supportToggle}>
-                {detailsOpen ? "접기 -" : "펼치기 +"}
+                {detailsOpen ? t("write.closeDetails") : t("write.openDetails")}
               </Text>
             </TouchableOpacity>
 
             {detailsOpen && (
               <View style={styles.supportBody}>
                 <SupplementalInput
-                  label="이슈"
+                  label={t("write.issueLabel")}
                   value={issue}
                   onChangeText={setIssue}
-                  placeholder="업무 중 막힌 점을 적어보세요."
+                  placeholder={t("write.issuePlaceholder")}
                 />
                 <SupplementalInput
-                  label="해결 방법"
+                  label={t("write.solutionLabel")}
                   value={solution}
                   onChangeText={setSolution}
-                  placeholder="어떻게 해결했는지 적어보세요."
+                  placeholder={t("write.solutionPlaceholder")}
                 />
                 <SupplementalInput
-                  label="메모"
+                  label={t("write.memoLabel")}
                   value={memo}
                   onChangeText={setMemo}
-                  placeholder="다음 업무를 위한 메모"
+                  placeholder={t("write.memoPlaceholder")}
                 />
               </View>
             )}
           </RetroCard>
 
           <RetroCard accent="green" style={styles.supportCard}>
-            <PixelSectionTitle>오늘 상태</PixelSectionTitle>
+            <PixelSectionTitle>{t("write.moodLabel")}</PixelSectionTitle>
             <View style={styles.moodRow}>
               {MOODS.map((item) => (
                 <TouchableOpacity
@@ -312,7 +317,7 @@ export default function WriteScreen({
                       mood === item.value && styles.moodTextSelected,
                     ]}
                   >
-                    {item.label}
+                    {t(item.labelKey)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -320,7 +325,7 @@ export default function WriteScreen({
           </RetroCard>
 
           <RetroCard accent="purple" style={styles.supportCard}>
-            <PixelSectionTitle>태그</PixelSectionTitle>
+            <PixelSectionTitle>{t("write.tagsLabel")}</PixelSectionTitle>
             <View style={styles.tagRow}>
               {DEFAULT_TAGS.map((tag) => (
                 <TouchableOpacity
@@ -347,7 +352,7 @@ export default function WriteScreen({
           ]}
         >
           <PrimaryButton
-            label={editingLog ? "수정 완료" : "기록 저장"}
+            label={editingLog ? t("write.update") : t("write.save")}
             onPress={handleSave}
             style={styles.ctaButton}
           />

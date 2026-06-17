@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
@@ -18,7 +18,10 @@ import CalendarScreen from "./src/screens/CalendarScreen";
 import ReportScreen from "./src/screens/ReportScreen";
 import SearchScreen from "./src/screens/SearchScreen";
 import GoalManageScreen from "./src/screens/GoalManageScreen";
+import LanguageSelectScreen from "./src/screens/LanguageSelectScreen";
 import { initDatabase } from "./src/database/db";
+import { I18nProvider } from "./src/i18n/I18nProvider";
+import { useTranslation } from "./src/i18n/useTranslation";
 import { DESIGN } from "./src/theme/design";
 import PixelTabIcon from "./src/components/ui/PixelTabIcon";
 import {
@@ -45,6 +48,7 @@ const AppTheme = {
 
 function TabNavigator() {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const getTabIcon = (
     routeName: MainTabName,
@@ -102,52 +106,78 @@ function TabNavigator() {
       <Tab.Screen
         name="Today"
         component={HomeScreen}
-        options={{ tabBarLabel: "오늘" }}
+        options={{ tabBarLabel: t("tabs.today") }}
       />
       <Tab.Screen
         name="Archive"
         component={CalendarScreen}
-        options={{ tabBarLabel: "기록" }}
+        options={{ tabBarLabel: t("tabs.archive") }}
       />
       <Tab.Screen
         name="Report"
         component={ReportScreen}
-        options={{ tabBarLabel: "리포트" }}
+        options={{ tabBarLabel: t("tabs.report") }}
       />
       <Tab.Screen
         name="Search"
         component={SearchScreen}
-        options={{ tabBarLabel: "검색" }}
+        options={{ tabBarLabel: t("tabs.search") }}
       />
     </Tab.Navigator>
   );
 }
 
-export default function App() {
-  useEffect(() => {
-    initDatabase();
-  }, []);
+function AppNavigator() {
+  const { selectedLanguage } = useTranslation();
 
   return (
-    <SafeAreaProvider>
-      <View style={{ flex: 1, backgroundColor: DESIGN.colors.bg }}>
-        <NavigationContainer theme={AppTheme}>
-          <Stack.Navigator
-            id="RootStack"
-            screenOptions={{
-              headerShown: false,
-              cardStyle: { backgroundColor: DESIGN.colors.bg },
-              cardOverlayEnabled: false,
-              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-            }}
-          >
+    <NavigationContainer theme={AppTheme}>
+      <Stack.Navigator
+        id="RootStack"
+        screenOptions={{
+          headerShown: false,
+          cardStyle: { backgroundColor: DESIGN.colors.bg },
+          cardOverlayEnabled: false,
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        }}
+      >
+        {selectedLanguage ? (
+          <>
             <Stack.Screen name="Main" component={TabNavigator} />
             <Stack.Screen name="Write" component={WriteScreen} />
             <Stack.Screen name="Detail" component={DetailScreen} />
             <Stack.Screen name="GoalManage" component={GoalManageScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </View>
+          </>
+        ) : (
+          <Stack.Screen
+            name="LanguageSelect"
+            component={LanguageSelectScreen}
+          />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export default function App() {
+  const [databaseReady, setDatabaseReady] = useState(false);
+
+  useEffect(() => {
+    initDatabase();
+    setDatabaseReady(true);
+  }, []);
+
+  if (!databaseReady) {
+    return <View style={{ flex: 1, backgroundColor: DESIGN.colors.bg }} />;
+  }
+
+  return (
+    <SafeAreaProvider>
+      <I18nProvider>
+        <View style={{ flex: 1, backgroundColor: DESIGN.colors.bg }}>
+          <AppNavigator />
+        </View>
+      </I18nProvider>
     </SafeAreaProvider>
   );
 }

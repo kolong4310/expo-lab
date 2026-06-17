@@ -22,6 +22,7 @@ import RetroInput from "../components/ui/RetroInput";
 import { useLogs } from "../hooks/useLogs";
 import { useStats } from "../hooks/useStats";
 import { useTodos } from "../hooks/useTodos";
+import { useTranslation } from "../i18n/useTranslation";
 import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
 import { formatLocalDate } from "../utils/date";
@@ -59,6 +60,7 @@ export default function HomeScreen({
   navigation,
 }: BottomTabScreenProps<"Today">) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const today = formatLocalDate();
   const todayDate = new Date();
   const dateLabel = `${today.replace(/-/g, ".")} ${WEEKDAYS[todayDate.getDay()]}요일`;
@@ -107,15 +109,15 @@ export default function HomeScreen({
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <AppHeader title="오늘" subtitle={dateLabel} compact />
+        <AppHeader title={t("today.title")} subtitle={dateLabel} compact />
 
         <RetroCard style={styles.streakCard}>
           <View style={styles.cardHeading}>
             <View>
-              <Text style={styles.cardLabel}>연속 기록</Text>
+              <Text style={styles.cardLabel}>{t("today.streak")}</Text>
               <View style={styles.streakValueRow}>
                 <Text style={styles.streakValue}>{streak}</Text>
-                <Text style={styles.streakUnit}>일</Text>
+                <Text style={styles.streakUnit}>{t("today.dayUnit")}</Text>
               </View>
             </View>
             <View style={styles.streakIcon}>
@@ -127,23 +129,25 @@ export default function HomeScreen({
 
         <View style={styles.statsRow}>
           <RetroCard style={styles.statCard}>
-            <Text style={styles.cardLabel}>이번 주 성장도</Text>
+            <Text style={styles.cardLabel}>{t("today.weeklyGrowth")}</Text>
             <Text style={styles.statValue}>{weeklyRate}%</Text>
             <PixelProgressBar value={weeklyRate} />
           </RetroCard>
           <RetroCard style={styles.statCard}>
-            <Text style={styles.cardLabel}>오늘 목표 완료율</Text>
+            <Text style={styles.cardLabel}>{t("today.completionRate")}</Text>
             <Text style={styles.statValue}>{stats.rate}%</Text>
             <Text style={styles.statMeta}>
-              {stats.completed} / {stats.total} 완료
+              {stats.completed} / {stats.total} {t("today.completed")}
             </Text>
           </RetroCard>
         </View>
 
         <View style={styles.sectionHeading}>
-          <Text style={styles.sectionTitle}>오늘 목표</Text>
+          <Text style={styles.sectionTitle}>{t("today.goals")}</Text>
           <TouchableOpacity onPress={() => navigation.navigate("GoalManage")}>
-            <Text style={styles.sectionAction}>반복 목표 관리</Text>
+            <Text style={styles.sectionAction}>
+              {t("today.manageRepeatGoals")}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -153,7 +157,11 @@ export default function HomeScreen({
               key={`daily-${todo.goal_id}`}
               title={todo.title}
               completed={todo.is_done === 1}
-              meta={todo.streak > 1 ? `${todo.streak}일 연속` : todo.category}
+              meta={
+                todo.streak > 1
+                  ? `${todo.streak}${t("today.dayUnit")} ${t("today.streak")}`
+                  : todo.category
+              }
               onToggle={() => {
                 toggleDailyTodo(todo);
                 refreshStats();
@@ -165,7 +173,7 @@ export default function HomeScreen({
               key={`once-${todo.id}`}
               title={todo.title}
               completed={todo.is_done === 1}
-              meta="오늘만"
+              meta={t("today.onceGoal")}
               onToggle={() => {
                 toggleTodayOnlyTodo(todo);
                 refreshStats();
@@ -182,16 +190,18 @@ export default function HomeScreen({
           ))}
           {stats.total === 0 && (
             <View style={styles.empty}>
-              <Text style={styles.emptyTitle}>오늘 목표가 없습니다</Text>
-              <Text style={styles.emptyText}>집중할 업무를 추가해보세요.</Text>
+              <Text style={styles.emptyTitle}>{t("today.emptyTitle")}</Text>
+              <Text style={styles.emptyText}>{t("today.emptyText")}</Text>
             </View>
           )}
 
           <View style={styles.addRow}>
             <View style={styles.todayOnlyLabelWrap}>
-              <Text style={styles.todayOnlyLabel}>오늘만 목표 추가</Text>
+              <Text style={styles.todayOnlyLabel}>
+                {t("today.onceGoalAdd")}
+              </Text>
               <Text style={styles.todayOnlyDescription}>
-                이 목표는 오늘 하루에만 적용됩니다.
+                {t("today.onceGoalDescription")}
               </Text>
             </View>
             <View style={styles.todoInputRow}>
@@ -199,7 +209,7 @@ export default function HomeScreen({
                 style={styles.todoInput}
                 value={newTodoTitle}
                 onChangeText={setNewTodoTitle}
-                placeholder="오늘만 할 목표 입력"
+                placeholder={t("today.onceGoalPlaceholder")}
                 returnKeyType="done"
                 onSubmitEditing={handleAddTodo}
               />
@@ -214,9 +224,7 @@ export default function HomeScreen({
         </RetroCard>
 
         {todayLog && (
-          <Text style={styles.loggedHint}>
-            오늘 업무 기록이 저장되어 있습니다.
-          </Text>
+          <Text style={styles.loggedHint}>{t("today.loggedHint")}</Text>
         )}
       </ScrollView>
 
@@ -224,7 +232,7 @@ export default function HomeScreen({
         style={[styles.ctaDock, { paddingBottom: Math.max(insets.bottom, 10) }]}
       >
         <PrimaryButton
-          label={todayLog ? "오늘 기록 수정하기" : "오늘 기록하기"}
+          label={todayLog ? t("today.edit") : t("today.write")}
           onPress={() => {
             if (todayLog?.id !== undefined) {
               navigation.navigate("Write", { logId: todayLog.id });

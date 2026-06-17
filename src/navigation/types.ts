@@ -14,6 +14,7 @@ export type BottomTabParamList = {
 };
 
 export type RootStackParamList = {
+  LanguageSelect: undefined;
   Main: NavigatorScreenParams<BottomTabParamList> | undefined;
   Write: { date?: string; logId?: number } | undefined;
   Detail: { logId: number; returnTo?: DetailOrigin };

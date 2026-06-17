@@ -11,6 +11,8 @@
 ## Core Flow Checks
 
 - [ ] Today tab opens correctly.
+- [ ] First launch shows LanguageSelect when no language is saved.
+- [ ] Selected language is persisted and LanguageSelect does not reappear on relaunch.
 - [ ] Write screen opens from Today.
 - [ ] A new log can be saved.
 - [ ] Saved log appears in Today.
@@ -25,6 +27,10 @@
 - [ ] Report tab opens correctly.
 - [ ] Report statistics update after create, edit, and delete.
 - [ ] Empty states look natural for Today, Archive, Search, and Report.
+
+## Localization Follow-up
+
+- [ ] Add a settings screen flow for changing the selected language after onboarding.
 
 ## Android Store Settings
 

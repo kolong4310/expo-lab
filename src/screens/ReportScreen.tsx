@@ -16,6 +16,7 @@ import {
   ReportStats,
   TagStat,
 } from "../database/types";
+import { useTranslation } from "../i18n/useTranslation";
 import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
 
@@ -126,8 +127,17 @@ export default function ReportScreen({
   navigation,
 }: BottomTabScreenProps<"Report">) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const [report, setReport] = useState<ReportStats>(EMPTY_REPORT);
   const reportSnapshotRef = useRef(JSON.stringify(EMPTY_REPORT));
+  const reportSubtitle =
+    report.totalLogCount === 0
+      ? t("report.emptySubtitle")
+      : report.logStreak >= 2
+        ? t("report.streakSubtitle", { count: report.logStreak })
+        : report.currentMonthLogCount > 0
+          ? t("report.monthSubtitle", { count: report.currentMonthLogCount })
+          : t("report.defaultSubtitle");
 
   const reloadReport = useCallback(() => {
     const nextReport = getReportStats();
@@ -156,8 +166,8 @@ export default function ReportScreen({
         showsVerticalScrollIndicator={false}
       >
         <AppHeader
-          title="성장 리포트"
-          subtitle={buildReportSubtitle(report)}
+          title={t("report.title")}
+          subtitle={reportSubtitle}
           compact
         />
 
@@ -184,21 +194,22 @@ function ReportContent({ report }: { report: ReportStats }) {
 }
 
 function SummaryGrid({ report }: { report: ReportStats }) {
+  const { t } = useTranslation();
   const stats = [
     {
-      label: "이번 달 기록",
-      value: `${report.currentMonthLogCount}개`,
+      label: t("report.monthlyLogs"),
+      value: `${report.currentMonthLogCount}${t("report.countUnit")}`,
     },
     {
-      label: "이번 주 기록",
-      value: `${report.currentWeekLogCount}개`,
+      label: t("report.weeklyLogs"),
+      value: `${report.currentWeekLogCount}${t("report.countUnit")}`,
     },
     {
-      label: "연속 기록",
-      value: `${report.logStreak}일`,
+      label: t("report.logStreak"),
+      value: `${report.logStreak}${t("report.dayUnit")}`,
     },
     {
-      label: "7일 평균 완료율",
+      label: t("report.sevenDayAverage"),
       value: `${report.recentAverageGrowthRate}%`,
     },
   ];
@@ -218,10 +229,11 @@ function SummaryGrid({ report }: { report: ReportStats }) {
 }
 
 function InsightSection({ insights }: { insights: ReportInsight[] }) {
+  const { t } = useTranslation();
   if (insights.length === 0) return null;
 
   return (
-    <ReportSection title="이번 달 인사이트">
+    <ReportSection title={t("report.insightsTitle")}>
       <RetroCard style={styles.insightCard}>
         {insights.map((insight, index) => (
           <View
@@ -241,21 +253,22 @@ function InsightSection({ insights }: { insights: ReportInsight[] }) {
 }
 
 function TagStats({ tags }: { tags: TagStat[] }) {
+  const { t } = useTranslation();
   return (
-    <ReportSection title="자주 쓴 태그 TOP 5">
+    <ReportSection title={t("report.topTagsTitle")}>
       <RetroCard style={styles.listCard}>
         {tags.length > 0 ? (
           tags.map((item, index) => (
             <StatRow
               key={item.tag}
               label={`#${item.tag}`}
-              value={`${item.count}회`}
+              value={`${item.count}${t("report.countUnit")}`}
               highlighted
               showBorder={index < tags.length - 1}
             />
           ))
         ) : (
-          <SectionEmptyText text="태그를 남기면 자주 다룬 주제가 여기에 정리돼요." />
+          <SectionEmptyText text={t("report.topTagsEmpty")} />
         )}
       </RetroCard>
     </ReportSection>
@@ -263,10 +276,11 @@ function TagStats({ tags }: { tags: TagStat[] }) {
 }
 
 function MonthlyLogChart({ months }: { months: MonthlyLogStat[] }) {
+  const { t } = useTranslation();
   const maxMonthlyCount = Math.max(1, ...months.map((item) => item.count));
 
   return (
-    <ReportSection title="최근 6개월 기록">
+    <ReportSection title={t("report.recentMonthsTitle")}>
       <RetroCard style={styles.chartCard}>
         <View style={styles.chart}>
           {months.map((item) => (
@@ -297,20 +311,21 @@ function MonthlyLogChart({ months }: { months: MonthlyLogStat[] }) {
 }
 
 function MoodStats({ moods }: { moods: MoodStat[] }) {
+  const { t } = useTranslation();
   return (
-    <ReportSection title="기분별 기록">
+    <ReportSection title={t("report.moodStatsTitle")}>
       <RetroCard style={styles.listCard}>
         {moods.length > 0 ? (
           moods.map((item, index) => (
             <StatRow
               key={item.mood}
               label={getMoodLabel(item.mood)}
-              value={`${item.count}개`}
+              value={`${item.count}${t("report.countUnit")}`}
               showBorder={index < moods.length - 1}
             />
           ))
         ) : (
-          <SectionEmptyText text="오늘 상태를 선택한 기록이 쌓이면 여기에 정리돼요." />
+          <SectionEmptyText text={t("report.moodEmpty")} />
         )}
       </RetroCard>
     </ReportSection>
@@ -361,12 +376,14 @@ function SectionEmptyText({ text }: { text: string }) {
 }
 
 function EmptyReportState({ onWrite }: { onWrite: () => void }) {
+  const { t } = useTranslation();
+
   return (
     <RetroCard style={styles.emptyCard}>
-      <Text style={styles.emptyTitle}>아직 리포트를 만들 기록이 부족해요.</Text>
-      <Text style={styles.emptyText}>오늘 첫 기록을 남겨보세요.</Text>
+      <Text style={styles.emptyTitle}>{t("report.emptyTitle")}</Text>
+      <Text style={styles.emptyText}>{t("report.emptyText")}</Text>
       <PrimaryButton
-        label="오늘 기록하기"
+        label={t("report.writeToday")}
         style={styles.emptyButton}
         onPress={onWrite}
       />

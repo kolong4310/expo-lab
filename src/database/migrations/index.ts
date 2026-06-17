@@ -2,6 +2,7 @@ import * as SQLite from "expo-sqlite";
 import { initialSchemaMigration } from "./001_initialSchema";
 import { addLogMetadataFieldsMigration } from "./002_addLogMetadataFields";
 import { addTodayOnlyGoalFieldsMigration } from "./003_addTodayOnlyGoalFields";
+import { addAppSettingsMigration } from "./004_addAppSettings";
 import { Migration } from "./types";
 
 interface ExecutedMigration {
@@ -12,6 +13,7 @@ const migrations: Migration[] = [
   initialSchemaMigration,
   addLogMetadataFieldsMigration,
   addTodayOnlyGoalFieldsMigration,
+  addAppSettingsMigration,
 ];
 
 const createMigrationsTable = (db: SQLite.SQLiteDatabase) => {

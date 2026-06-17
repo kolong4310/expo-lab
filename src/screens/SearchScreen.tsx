@@ -18,6 +18,7 @@ import LogCard from "../components/LogCard";
 import RetroInput from "../components/ui/RetroInput";
 import { searchLogs } from "../database/repositories/logsRepository";
 import { WorkLog } from "../database/types";
+import { useTranslation } from "../i18n/useTranslation";
 import { goHome } from "../navigation/homeNavigation";
 import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
@@ -28,6 +29,7 @@ export default function SearchScreen({
   navigation,
 }: BottomTabScreenProps<"Search">) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const [keyword, setKeyword] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [results, setResults] = useState<WorkLog[]>([]);
@@ -91,14 +93,17 @@ export default function SearchScreen({
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
-            <AppHeader title="검색" onHome={() => goHome(navigation)} />
+            <AppHeader
+              title={t("search.title")}
+              onHome={() => goHome(navigation)}
+            />
             <View style={styles.searchWrap}>
               <Ionicons name="search" size={19} color={DESIGN.colors.textDim} />
               <RetroInput
                 style={styles.searchInput}
                 value={keyword}
                 onChangeText={setKeyword}
-                placeholder="기록 또는 태그 검색"
+                placeholder={t("search.placeholder")}
                 returnKeyType="search"
                 onSubmitEditing={submitSearch}
               />
@@ -116,9 +121,9 @@ export default function SearchScreen({
             {recentSearches.length > 0 && (
               <>
                 <View style={styles.sectionHeading}>
-                  <Text style={styles.sectionTitle}>최근 검색</Text>
+                  <Text style={styles.sectionTitle}>{t("search.recent")}</Text>
                   <TouchableOpacity onPress={() => setRecentSearches([])}>
-                    <Text style={styles.clearText}>지우기</Text>
+                    <Text style={styles.clearText}>{t("search.clear")}</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.chipGrid}>
@@ -140,7 +145,7 @@ export default function SearchScreen({
               </>
             )}
 
-            <Text style={styles.sectionTitle}>인기 태그</Text>
+            <Text style={styles.sectionTitle}>{t("search.popularTags")}</Text>
             <View style={styles.chipGrid}>
               {POPULAR_TAGS.map((tag) => (
                 <TouchableOpacity
@@ -154,20 +159,18 @@ export default function SearchScreen({
             </View>
 
             <View style={styles.resultHeading}>
-              <Text style={styles.sectionTitle}>검색 결과</Text>
+              <Text style={styles.sectionTitle}>{t("search.results")}</Text>
               {keyword.length > 0 && (
-                <Text style={styles.count}>{results.length}개</Text>
+                <Text style={styles.count}>
+                  {t("search.count", { count: results.length })}
+                </Text>
               )}
             </View>
             {keyword.length === 0 && (
-              <Text style={styles.emptyText}>
-                검색어를 입력하면 관련 기록이 표시됩니다.
-              </Text>
+              <Text style={styles.emptyText}>{t("search.emptyPrompt")}</Text>
             )}
             {keyword.length > 0 && results.length === 0 && (
-              <Text style={styles.emptyText}>
-                조건에 맞는 기록이 아직 없어요.
-              </Text>
+              <Text style={styles.emptyText}>{t("search.emptyResult")}</Text>
             )}
           </>
         }
