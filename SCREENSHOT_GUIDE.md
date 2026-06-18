@@ -59,8 +59,8 @@ Watch-outs:
 
 Optional capture:
 
-- The save-complete growth feedback alert can be captured as an additional
-  candidate if it helps explain the writing flow.
+- The GrowthFeedbackModal shown after saving from Write can be captured as an
+  additional candidate if it helps explain the writing flow.
 - Do not treat this as a required store screenshot; keep the main Write
   screenshot focused on the writing screen itself.
 

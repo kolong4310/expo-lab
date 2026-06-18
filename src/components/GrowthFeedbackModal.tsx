@@ -1,0 +1,302 @@
+import React, { useEffect, useRef } from "react";
+import {
+  Animated,
+  Modal,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import { DESIGN } from "../theme/design";
+import PrimaryButton from "./PrimaryButton";
+
+interface GrowthFeedbackModalProps {
+  visible: boolean;
+  title: string;
+  message: string;
+  confirmLabel: string;
+  onConfirm: () => void;
+}
+
+export default function GrowthFeedbackModal({
+  visible,
+  title,
+  message,
+  confirmLabel,
+  onConfirm,
+}: GrowthFeedbackModalProps) {
+  const { width } = useWindowDimensions();
+  const overlayOpacity = useRef(new Animated.Value(0)).current;
+  const cardProgress = useRef(new Animated.Value(0)).current;
+  const sproutScale = useRef(new Animated.Value(0.7)).current;
+  const sparkleProgress = useRef(new Animated.Value(0)).current;
+  const buttonOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!visible) {
+      overlayOpacity.setValue(0);
+      cardProgress.setValue(0);
+      sproutScale.setValue(0.7);
+      sparkleProgress.setValue(0);
+      buttonOpacity.setValue(0);
+      return;
+    }
+
+    Animated.parallel([
+      Animated.timing(overlayOpacity, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+      Animated.spring(cardProgress, {
+        toValue: 1,
+        speed: 14,
+        bounciness: 7,
+        useNativeDriver: true,
+      }),
+      Animated.sequence([
+        Animated.delay(110),
+        Animated.spring(sproutScale, {
+          toValue: 1,
+          speed: 16,
+          bounciness: 10,
+          useNativeDriver: true,
+        }),
+      ]),
+      Animated.sequence([
+        Animated.delay(180),
+        Animated.timing(sparkleProgress, {
+          toValue: 1,
+          duration: 480,
+          useNativeDriver: true,
+        }),
+      ]),
+      Animated.sequence([
+        Animated.delay(260),
+        Animated.timing(buttonOpacity, {
+          toValue: 1,
+          duration: 180,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
+  }, [
+    buttonOpacity,
+    cardProgress,
+    overlayOpacity,
+    sparkleProgress,
+    sproutScale,
+    visible,
+  ]);
+
+  const cardTranslateY = cardProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [18, 0],
+  });
+  const sparkleScale = sparkleProgress.interpolate({
+    inputRange: [0, 0.55, 1],
+    outputRange: [0.4, 1, 0.72],
+  });
+  const sparkleOpacity = sparkleProgress.interpolate({
+    inputRange: [0, 0.3, 1],
+    outputRange: [0, 1, 0],
+  });
+  const cardWidth = Math.min(width - 40, 360);
+
+  return (
+    <Modal
+      transparent
+      visible={visible}
+      animationType="none"
+      onRequestClose={onConfirm}
+      statusBarTranslucent
+    >
+      <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
+        <Animated.View
+          style={[
+            styles.card,
+            {
+              width: cardWidth,
+              opacity: cardProgress,
+              transform: [{ translateY: cardTranslateY }],
+            },
+          ]}
+        >
+          <View style={styles.growthStage}>
+            <Animated.View
+              style={[
+                styles.sparkle,
+                styles.sparkleOne,
+                {
+                  opacity: sparkleOpacity,
+                  transform: [{ scale: sparkleScale }],
+                },
+              ]}
+            />
+            <Animated.View
+              style={[
+                styles.sparkle,
+                styles.sparkleTwo,
+                {
+                  opacity: sparkleOpacity,
+                  transform: [{ scale: sparkleScale }],
+                },
+              ]}
+            />
+            <Animated.View
+              style={[
+                styles.sparkle,
+                styles.sparkleThree,
+                {
+                  opacity: sparkleOpacity,
+                  transform: [{ scale: sparkleScale }],
+                },
+              ]}
+            />
+
+            <Animated.View
+              style={[
+                styles.sprout,
+                {
+                  transform: [{ scale: sproutScale }],
+                },
+              ]}
+            >
+              <View style={styles.leafRow}>
+                <View style={[styles.leaf, styles.leftLeaf]} />
+                <View style={[styles.leaf, styles.rightLeaf]} />
+              </View>
+              <View style={styles.stem} />
+              <View style={styles.soil} />
+            </Animated.View>
+          </View>
+
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.message}>{message}</Text>
+
+          <Animated.View
+            style={[styles.buttonWrap, { opacity: buttonOpacity }]}
+          >
+            <PrimaryButton
+              label={confirmLabel}
+              onPress={onConfirm}
+              style={styles.button}
+            />
+          </Animated.View>
+        </Animated.View>
+      </Animated.View>
+    </Modal>
+  );
+}
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(5,8,12,0.72)",
+    paddingHorizontal: 20,
+  },
+  card: {
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: DESIGN.colors.borderStrong,
+    borderRadius: DESIGN.radius.card,
+    backgroundColor: DESIGN.colors.surface,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 20,
+  },
+  growthStage: {
+    width: 112,
+    height: 88,
+    alignItems: "center",
+    justifyContent: "flex-end",
+    marginBottom: 8,
+  },
+  sprout: {
+    alignItems: "center",
+  },
+  leafRow: {
+    width: 48,
+    height: 24,
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  leaf: {
+    width: 24,
+    height: 16,
+    backgroundColor: DESIGN.colors.success,
+  },
+  leftLeaf: {
+    borderTopLeftRadius: 16,
+    borderBottomRightRadius: 16,
+    transform: [{ rotate: "-18deg" }],
+  },
+  rightLeaf: {
+    marginLeft: -3,
+    borderTopRightRadius: 16,
+    borderBottomLeftRadius: 16,
+    transform: [{ rotate: "18deg" }],
+  },
+  stem: {
+    width: 5,
+    height: 26,
+    borderRadius: 6,
+    backgroundColor: DESIGN.colors.success,
+  },
+  soil: {
+    width: 58,
+    height: 10,
+    borderRadius: DESIGN.radius.pill,
+    backgroundColor: "rgba(76,201,240,0.18)",
+    marginTop: -2,
+  },
+  sparkle: {
+    position: "absolute",
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: DESIGN.colors.secondary,
+  },
+  sparkleOne: {
+    top: 12,
+    left: 26,
+  },
+  sparkleTwo: {
+    top: 20,
+    right: 24,
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: DESIGN.colors.primaryLight,
+  },
+  sparkleThree: {
+    top: 38,
+    right: 10,
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: DESIGN.colors.success,
+  },
+  title: {
+    color: DESIGN.colors.text,
+    fontSize: 19,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  message: {
+    color: DESIGN.colors.textDim,
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: "center",
+    marginTop: 10,
+  },
+  buttonWrap: {
+    alignSelf: "stretch",
+    marginTop: 22,
+  },
+  button: {
+    minHeight: 52,
+  },
+});

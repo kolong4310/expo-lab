@@ -16,6 +16,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import AppHeader from "../components/AppHeader";
+import GrowthFeedbackModal from "../components/GrowthFeedbackModal";
 import PrimaryButton from "../components/PrimaryButton";
 import PixelSectionTitle from "../components/ui/PixelSectionTitle";
 import RetroCard from "../components/ui/RetroCard";
@@ -158,6 +159,7 @@ export default function WriteScreen({
   const [memo, setMemo] = useState("");
   const [mood, setMood] = useState("good");
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [feedbackKey, setFeedbackKey] = useState<TranslationKey | null>(null);
 
   useEffect(() => {
     if (editingLog) {
@@ -224,13 +226,16 @@ export default function WriteScreen({
         isEditMode: Boolean(editingLog),
       });
 
-      Alert.alert(t("write.feedbackTitle"), t(feedbackKey), [
-        { text: t("write.feedbackConfirm"), onPress: () => goHome(navigation) },
-      ]);
+      setFeedbackKey(feedbackKey);
     } catch (error) {
       console.error(error);
       Alert.alert(t("write.saveFailedTitle"), t("write.saveFailedMessage"));
     }
+  };
+
+  const handleFeedbackConfirm = () => {
+    setFeedbackKey(null);
+    goHome(navigation);
   };
 
   return (
@@ -387,6 +392,14 @@ export default function WriteScreen({
           />
         </View>
       </KeyboardAvoidingView>
+
+      <GrowthFeedbackModal
+        visible={feedbackKey !== null}
+        title={t("write.feedbackTitle")}
+        message={feedbackKey ? t(feedbackKey) : ""}
+        confirmLabel={t("write.feedbackConfirm")}
+        onConfirm={handleFeedbackConfirm}
+      />
     </SafeAreaView>
   );
 }

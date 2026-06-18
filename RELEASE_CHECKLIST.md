@@ -15,9 +15,11 @@
 - [ ] Selected language is persisted and LanguageSelect does not reappear on relaunch.
 - [ ] Write screen opens from Today.
 - [ ] A new log can be saved.
-- [ ] Growth feedback appears after saving a new log.
-- [ ] Edit feedback appears after updating an existing log.
-- [ ] Growth feedback copy is checked in ko/en/ja/zh.
+- [ ] Growth feedback modal appears after saving a new log.
+- [ ] Edit feedback modal appears after updating an existing log.
+- [ ] Growth feedback modal copy is checked in ko/en/ja/zh.
+- [ ] Growth feedback modal animation and layout work on a small Android screen.
+- [ ] Growth feedback modal does not appear after a save failure.
 - [ ] Saved log appears in Today.
 - [ ] Archive tab opens correctly.
 - [ ] Archive shows saved records by date.
