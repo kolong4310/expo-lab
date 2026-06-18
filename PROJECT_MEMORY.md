@@ -293,8 +293,8 @@ implementation is modern and minimal.
 
 ## Verified Commands
 
-- `npm run typecheck`
-- `npm run format:check`
+- `npm.cmd run typecheck`
+- `npm.cmd run format:check`
 - `npx expo export --platform android --output-dir .expo-export-check`
 - `git diff --check`
 - `npx expo config --type public`
@@ -302,6 +302,9 @@ implementation is modern and minimal.
 
 ## Latest Commits
 
+- `29293e6` Add dark and light appearance settings
+- `00e03c7` Polish Tiny Growth visual tone
+- `dc36d4a` Add subtle micro interactions
 - `09adf67` Add animated growth feedback modal
 - `4a992d9` Add growth feedback after saving logs
 - `5d61498` Add settings language switcher
