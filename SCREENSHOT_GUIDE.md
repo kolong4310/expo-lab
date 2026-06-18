@@ -57,6 +57,13 @@ Watch-outs:
 - Do not include private or company-sensitive text.
 - Keep sample text short enough to avoid visual clutter.
 
+Optional capture:
+
+- The save-complete growth feedback alert can be captured as an additional
+  candidate if it helps explain the writing flow.
+- Do not treat this as a required store screenshot; keep the main Write
+  screenshot focused on the writing screen itself.
+
 ## Report
 
 Capture purpose:

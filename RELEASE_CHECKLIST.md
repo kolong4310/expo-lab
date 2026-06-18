@@ -15,6 +15,9 @@
 - [ ] Selected language is persisted and LanguageSelect does not reappear on relaunch.
 - [ ] Write screen opens from Today.
 - [ ] A new log can be saved.
+- [ ] Growth feedback appears after saving a new log.
+- [ ] Edit feedback appears after updating an existing log.
+- [ ] Growth feedback copy is checked in ko/en/ja/zh.
 - [ ] Saved log appears in Today.
 - [ ] Archive tab opens correctly.
 - [ ] Archive shows saved records by date.

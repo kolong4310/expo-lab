@@ -8,7 +8,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -50,6 +49,38 @@ const DEFAULT_TAGS = [
   "SQLite",
   "UI",
 ];
+
+interface GrowthFeedbackInput {
+  tags: string[];
+  mood: string;
+  selectedGoalCount: number;
+  isEditMode: boolean;
+}
+
+const buildGrowthFeedback = ({
+  tags,
+  mood,
+  selectedGoalCount,
+  isEditMode,
+}: GrowthFeedbackInput): TranslationKey => {
+  if (isEditMode) {
+    return "write.feedbackEdit";
+  }
+
+  if (selectedGoalCount > 0) {
+    return "write.feedbackWithGoal";
+  }
+
+  if (tags.length > 0) {
+    return "write.feedbackWithTag";
+  }
+
+  if (mood && mood !== "good") {
+    return "write.feedbackWithMood";
+  }
+
+  return "write.feedbackDefault";
+};
 
 const InsightInput = ({
   label,
@@ -186,18 +217,16 @@ export default function WriteScreen({
         addLog(logData);
       }
 
-      const message = editingLog
-        ? t("write.savedUpdate")
-        : t("write.savedCreate");
+      const feedbackKey = buildGrowthFeedback({
+        tags: selectedTags,
+        mood,
+        selectedGoalCount: 0,
+        isEditMode: Boolean(editingLog),
+      });
 
-      if (Platform.OS === "android") {
-        ToastAndroid.show(message, ToastAndroid.SHORT);
-        goHome(navigation);
-      } else {
-        Alert.alert(t("write.savedTitle"), message, [
-          { text: t("common.confirm"), onPress: () => goHome(navigation) },
-        ]);
-      }
+      Alert.alert(t("write.feedbackTitle"), t(feedbackKey), [
+        { text: t("write.feedbackConfirm"), onPress: () => goHome(navigation) },
+      ]);
     } catch (error) {
       console.error(error);
       Alert.alert(t("write.saveFailedTitle"), t("write.saveFailedMessage"));
