@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { DESIGN } from "../theme/design";
+import { useAppTheme } from "../theme/useAppTheme";
 
 interface TinySproutProps {
   size?: number;
@@ -10,9 +11,12 @@ interface TinySproutProps {
 
 export default function TinySprout({
   size = 48,
-  leafColor = DESIGN.colors.success,
-  seedColor = DESIGN.colors.warning,
+  leafColor,
+  seedColor,
 }: TinySproutProps) {
+  const { theme } = useAppTheme();
+  const resolvedLeafColor = leafColor ?? theme.colors.success;
+  const resolvedSeedColor = seedColor ?? theme.colors.warning;
   const leafWidth = size * 0.33;
   const leafHeight = size * 0.22;
   const stemWidth = Math.max(3, size * 0.08);
@@ -30,7 +34,7 @@ export default function TinySprout({
               height: leafHeight,
               borderTopLeftRadius: leafHeight,
               borderBottomRightRadius: leafHeight,
-              backgroundColor: leafColor,
+              backgroundColor: resolvedLeafColor,
             },
           ]}
         />
@@ -43,7 +47,7 @@ export default function TinySprout({
               height: leafHeight,
               borderTopRightRadius: leafHeight,
               borderBottomLeftRadius: leafHeight,
-              backgroundColor: leafColor,
+              backgroundColor: resolvedLeafColor,
             },
           ]}
         />
@@ -55,7 +59,7 @@ export default function TinySprout({
             width: stemWidth,
             height: stemHeight,
             borderRadius: stemWidth,
-            backgroundColor: leafColor,
+            backgroundColor: resolvedLeafColor,
           },
         ]}
       />
@@ -66,7 +70,7 @@ export default function TinySprout({
             width: size * 0.72,
             height: size * 0.18,
             borderRadius: size,
-            backgroundColor: seedColor,
+            backgroundColor: resolvedSeedColor,
           },
         ]}
       />

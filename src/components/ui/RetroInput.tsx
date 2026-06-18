@@ -7,6 +7,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { DESIGN } from "../../theme/design";
+import { useAppTheme } from "../../theme/useAppTheme";
 
 type RetroInputProps = TextInputProps & {
   containerStyle?: StyleProp<ViewStyle>;
@@ -18,12 +19,23 @@ export default function RetroInput({
   placeholderTextColor,
   ...props
 }: RetroInputProps) {
+  const { theme } = useAppTheme();
+
   return (
     <TextInput
       {...props}
-      placeholderTextColor={placeholderTextColor || DESIGN.colors.textDim}
-      selectionColor={DESIGN.colors.primary}
-      style={[styles.input, containerStyle, style]}
+      placeholderTextColor={placeholderTextColor || theme.colors.muted}
+      selectionColor={theme.colors.primary}
+      style={[
+        styles.input,
+        {
+          borderColor: theme.colors.border,
+          backgroundColor: theme.colors.surfaceAlt,
+          color: theme.colors.text,
+        },
+        containerStyle,
+        style,
+      ]}
     />
   );
 }
@@ -32,10 +44,7 @@ const styles = StyleSheet.create({
   input: {
     minHeight: 50,
     borderWidth: 1,
-    borderColor: DESIGN.colors.border,
     borderRadius: DESIGN.radius.input,
-    backgroundColor: DESIGN.colors.bgSecondary,
-    color: DESIGN.colors.text,
     fontSize: 16,
     paddingHorizontal: 14,
     paddingVertical: 11,

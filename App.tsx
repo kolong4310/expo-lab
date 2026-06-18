@@ -24,6 +24,8 @@ import { initDatabase } from "./src/database/db";
 import { I18nProvider } from "./src/i18n/I18nProvider";
 import { useTranslation } from "./src/i18n/useTranslation";
 import { DESIGN } from "./src/theme/design";
+import { ThemeProvider } from "./src/theme/ThemeProvider";
+import { useAppTheme } from "./src/theme/useAppTheme";
 import PixelTabIcon from "./src/components/ui/PixelTabIcon";
 import {
   BottomTabParamList,
@@ -34,22 +36,10 @@ import {
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
-const AppTheme = {
-  ...DefaultTheme,
-  dark: true,
-  colors: {
-    ...DefaultTheme.colors,
-    background: DESIGN.colors.bg,
-    card: DESIGN.colors.bg,
-    text: DESIGN.colors.text,
-    border: DESIGN.colors.border,
-    primary: DESIGN.colors.primary,
-  },
-};
-
 function TabNavigator() {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { theme } = useAppTheme();
 
   const getTabIcon = (
     routeName: MainTabName,
@@ -65,11 +55,11 @@ function TabNavigator() {
   };
 
   const getTabAccent = (routeName: MainTabName) => {
-    if (routeName === "Today") return DESIGN.colors.pink;
-    if (routeName === "Archive") return DESIGN.colors.green;
-    if (routeName === "Report") return DESIGN.colors.secondary;
-    if (routeName === "Search") return DESIGN.colors.purple;
-    return DESIGN.colors.textDim;
+    if (routeName === "Today") return theme.colors.primary;
+    if (routeName === "Archive") return theme.colors.success;
+    if (routeName === "Report") return theme.colors.secondary;
+    if (routeName === "Search") return theme.colors.primary;
+    return theme.colors.muted;
   };
 
   return (
@@ -78,7 +68,7 @@ function TabNavigator() {
       screenOptions={({ route }) => ({
         headerShown: false,
         sceneStyle: {
-          backgroundColor: DESIGN.colors.bg,
+          backgroundColor: theme.colors.background,
         },
         tabBarIcon: ({ focused, color }) => (
           <PixelTabIcon
@@ -88,12 +78,12 @@ function TabNavigator() {
             accent={getTabAccent(route.name)}
           />
         ),
-        tabBarActiveTintColor: DESIGN.colors.primary,
-        tabBarInactiveTintColor: DESIGN.colors.textDim,
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.muted,
         tabBarStyle: {
-          backgroundColor: DESIGN.colors.surface,
+          backgroundColor: theme.colors.surface,
           borderTopWidth: 1,
-          borderTopColor: DESIGN.colors.border,
+          borderTopColor: theme.colors.border,
           height: 76 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
           paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
           paddingTop: 8,
@@ -137,14 +127,27 @@ function TabNavigator() {
 
 function AppNavigator() {
   const { selectedLanguage } = useTranslation();
+  const { theme } = useAppTheme();
+  const navigationTheme = {
+    ...DefaultTheme,
+    dark: theme.mode === "dark",
+    colors: {
+      ...DefaultTheme.colors,
+      background: theme.colors.background,
+      card: theme.colors.background,
+      text: theme.colors.text,
+      border: theme.colors.border,
+      primary: theme.colors.primary,
+    },
+  };
 
   return (
-    <NavigationContainer theme={AppTheme}>
+    <NavigationContainer theme={navigationTheme}>
       <Stack.Navigator
         id="RootStack"
         screenOptions={{
           headerShown: false,
-          cardStyle: { backgroundColor: DESIGN.colors.bg },
+          cardStyle: { backgroundColor: theme.colors.background },
           cardOverlayEnabled: false,
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
@@ -181,11 +184,21 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <I18nProvider>
-        <View style={{ flex: 1, backgroundColor: DESIGN.colors.bg }}>
-          <AppNavigator />
-        </View>
-      </I18nProvider>
+      <ThemeProvider>
+        <I18nProvider>
+          <ThemedAppRoot />
+        </I18nProvider>
+      </ThemeProvider>
     </SafeAreaProvider>
+  );
+}
+
+function ThemedAppRoot() {
+  const { theme } = useAppTheme();
+
+  return (
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <AppNavigator />
+    </View>
   );
 }

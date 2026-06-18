@@ -23,6 +23,7 @@ import { useTranslation } from "../i18n/useTranslation";
 import { goHome } from "../navigation/homeNavigation";
 import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
+import { useAppTheme } from "../theme/useAppTheme";
 
 const POPULAR_TAGS = ["ReactNative", "SQLite", "UI", "공부", "운동", "개발"];
 
@@ -31,6 +32,7 @@ export default function SearchScreen({
 }: BottomTabScreenProps<"Search">) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { mode, theme } = useAppTheme();
   const [keyword, setKeyword] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [results, setResults] = useState<WorkLog[]>([]);
@@ -66,8 +68,13 @@ export default function SearchScreen({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <StatusBar
+        barStyle={mode === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={theme.colors.background}
+      />
       <FlatList
         data={results}
         renderItem={({ item }) => (
@@ -98,8 +105,16 @@ export default function SearchScreen({
               title={t("search.title")}
               onHome={() => goHome(navigation)}
             />
-            <View style={styles.searchWrap}>
-              <Ionicons name="search" size={19} color={DESIGN.colors.textDim} />
+            <View
+              style={[
+                styles.searchWrap,
+                {
+                  borderColor: theme.colors.border,
+                  backgroundColor: theme.colors.surface,
+                },
+              ]}
+            >
+              <Ionicons name="search" size={19} color={theme.colors.muted} />
               <RetroInput
                 style={styles.searchInput}
                 value={keyword}
@@ -113,7 +128,7 @@ export default function SearchScreen({
                   <Ionicons
                     name="close-circle"
                     size={19}
-                    color={DESIGN.colors.textDim}
+                    color={theme.colors.muted}
                   />
                 </TouchableOpacity>
               )}
@@ -122,9 +137,17 @@ export default function SearchScreen({
             {recentSearches.length > 0 && (
               <>
                 <View style={styles.sectionHeading}>
-                  <Text style={styles.sectionTitle}>{t("search.recent")}</Text>
+                  <Text
+                    style={[styles.sectionTitle, { color: theme.colors.text }]}
+                  >
+                    {t("search.recent")}
+                  </Text>
                   <TouchableOpacity onPress={() => setRecentSearches([])}>
-                    <Text style={styles.clearText}>{t("search.clear")}</Text>
+                    <Text
+                      style={[styles.clearText, { color: theme.colors.muted }]}
+                    >
+                      {t("search.clear")}
+                    </Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.chipGrid}>
@@ -137,16 +160,25 @@ export default function SearchScreen({
                       <Ionicons
                         name="time-outline"
                         size={14}
-                        color={DESIGN.colors.textDim}
+                        color={theme.colors.muted}
                       />
-                      <Text style={styles.recentText}>{item}</Text>
+                      <Text
+                        style={[
+                          styles.recentText,
+                          { color: theme.colors.text },
+                        ]}
+                      >
+                        {item}
+                      </Text>
                     </AnimatedPressable>
                   ))}
                 </View>
               </>
             )}
 
-            <Text style={styles.sectionTitle}>{t("search.popularTags")}</Text>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              {t("search.popularTags")}
+            </Text>
             <View style={styles.chipGrid}>
               {POPULAR_TAGS.map((tag) => (
                 <AnimatedPressable
@@ -154,24 +186,34 @@ export default function SearchScreen({
                   style={styles.tagChip}
                   onPress={() => selectKeyword(tag)}
                 >
-                  <Text style={styles.tagText}>#{tag}</Text>
+                  <Text
+                    style={[styles.tagText, { color: theme.colors.secondary }]}
+                  >
+                    #{tag}
+                  </Text>
                 </AnimatedPressable>
               ))}
             </View>
 
             <View style={styles.resultHeading}>
-              <Text style={styles.sectionTitle}>{t("search.results")}</Text>
+              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                {t("search.results")}
+              </Text>
               {keyword.length > 0 && (
-                <Text style={styles.count}>
+                <Text style={[styles.count, { color: theme.colors.muted }]}>
                   {t("search.count", { count: results.length })}
                 </Text>
               )}
             </View>
             {keyword.length === 0 && (
-              <Text style={styles.emptyText}>{t("search.emptyPrompt")}</Text>
+              <Text style={[styles.emptyText, { color: theme.colors.muted }]}>
+                {t("search.emptyPrompt")}
+              </Text>
             )}
             {keyword.length > 0 && results.length === 0 && (
-              <Text style={styles.emptyText}>{t("search.emptyResult")}</Text>
+              <Text style={[styles.emptyText, { color: theme.colors.muted }]}>
+                {t("search.emptyResult")}
+              </Text>
             )}
           </>
         }
@@ -181,16 +223,14 @@ export default function SearchScreen({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DESIGN.colors.bg },
+  container: { flex: 1 },
   list: { paddingHorizontal: 20, paddingTop: 12 },
   searchWrap: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 28,
     borderWidth: 1,
-    borderColor: DESIGN.colors.border,
     borderRadius: 18,
-    backgroundColor: DESIGN.colors.surface,
     paddingHorizontal: 14,
   },
   searchInput: {
@@ -204,8 +244,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  sectionTitle: { color: DESIGN.colors.text, fontSize: 17, fontWeight: "700" },
-  clearText: { color: DESIGN.colors.textDim, fontSize: 12, fontWeight: "600" },
+  sectionTitle: { fontSize: 17, fontWeight: "700" },
+  clearText: { fontSize: 12, fontWeight: "600" },
   chipGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -225,7 +265,6 @@ const styles = StyleSheet.create({
   },
   recentText: {
     marginLeft: 6,
-    color: DESIGN.colors.text,
     fontSize: 13,
     fontWeight: "500",
   },
@@ -236,7 +275,6 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
   },
   tagText: {
-    color: DESIGN.colors.primaryLight,
     fontSize: 13,
     fontWeight: "600",
   },
@@ -246,10 +284,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 14,
   },
-  count: { color: DESIGN.colors.textDim, fontSize: 12, fontWeight: "600" },
+  count: { fontSize: 12, fontWeight: "600" },
   emptyText: {
     marginBottom: 20,
-    color: DESIGN.colors.textDim,
     fontSize: 13,
     lineHeight: 20,
   },

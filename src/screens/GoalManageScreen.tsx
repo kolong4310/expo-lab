@@ -27,6 +27,7 @@ import { Goal } from "../database/types";
 import { goHome } from "../navigation/homeNavigation";
 import { RootStackScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
+import { useAppTheme } from "../theme/useAppTheme";
 
 const CATEGORIES = ["건강", "공부", "일", "생활", "성장", "기타"];
 
@@ -34,6 +35,7 @@ export default function GoalManageScreen({
   navigation,
 }: RootStackScreenProps<"GoalManage">) {
   const insets = useSafeAreaInsets();
+  const { mode, theme } = useAppTheme();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [newTitle, setNewTitle] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("성장");
@@ -66,13 +68,24 @@ export default function GoalManageScreen({
   };
 
   const renderGoal = ({ item }: { item: Goal }) => (
-    <View style={styles.goalRow}>
+    <View
+      style={[
+        styles.goalRow,
+        {
+          borderColor: theme.colors.border,
+          backgroundColor: theme.colors.surface,
+        },
+      ]}
+    >
       <View style={styles.goalInfo}>
-        <Text style={styles.goalCategory}>{item.category}</Text>
+        <Text style={[styles.goalCategory, { color: theme.colors.muted }]}>
+          {item.category}
+        </Text>
         <Text
           style={[
             styles.goalTitle,
-            item.is_active === 0 && styles.disabledText,
+            { color: theme.colors.text },
+            item.is_active === 0 && { color: theme.colors.muted },
           ]}
         >
           {item.title}
@@ -80,9 +93,15 @@ export default function GoalManageScreen({
       </View>
       <TouchableOpacity
         onPress={() => handleToggleActive(item)}
-        style={[styles.switchBox, item.is_active === 1 && styles.switchOn]}
+        style={[
+          styles.switchBox,
+          { backgroundColor: theme.colors.surfaceAlt },
+          item.is_active === 1 && {
+            backgroundColor: `${theme.colors.primary}29`,
+          },
+        ]}
       >
-        <Text style={styles.switchText}>
+        <Text style={[styles.switchText, { color: theme.colors.success }]}>
           {item.is_active === 1 ? "ON" : "OFF"}
         </Text>
       </TouchableOpacity>
@@ -90,8 +109,13 @@ export default function GoalManageScreen({
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <StatusBar
+        barStyle={mode === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={theme.colors.background}
+      />
       <FlatList
         data={goals}
         renderItem={renderGoal}
@@ -129,14 +153,23 @@ export default function GoalManageScreen({
                     key={cat}
                     style={[
                       styles.catChip,
-                      selectedCategory === cat && styles.catChipSelected,
+                      {
+                        borderColor: theme.colors.border,
+                        backgroundColor: theme.colors.surfaceAlt,
+                      },
+                      selectedCategory === cat && {
+                        borderColor: theme.colors.primary,
+                        backgroundColor: theme.colors.primary,
+                      },
                     ]}
                     onPress={() => setSelectedCategory(cat)}
                   >
                     <Text
                       style={[
                         styles.catText,
-                        selectedCategory === cat && styles.catTextSelected,
+                        { color: theme.colors.text },
+                        selectedCategory === cat &&
+                          mode === "light" && { color: theme.colors.surface },
                       ]}
                     >
                       {cat}
@@ -152,7 +185,9 @@ export default function GoalManageScreen({
         }
         ListEmptyComponent={
           <RetroCard style={styles.emptyCard}>
-            <Text style={styles.emptyText}>등록된 반복 목표가 없습니다.</Text>
+            <Text style={[styles.emptyText, { color: theme.colors.muted }]}>
+              등록된 반복 목표가 없습니다.
+            </Text>
           </RetroCard>
         }
       />
@@ -163,7 +198,6 @@ export default function GoalManageScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: DESIGN.colors.bg,
   },
   list: {
     paddingHorizontal: 20,
@@ -181,29 +215,17 @@ const styles = StyleSheet.create({
   },
   catChip: {
     borderWidth: 1,
-    borderColor: DESIGN.colors.border,
     borderRadius: DESIGN.radius.pill,
-    backgroundColor: DESIGN.colors.bgSecondary,
     paddingHorizontal: 14,
     paddingVertical: 9,
     marginRight: 8,
   },
-  catChipSelected: {
-    borderColor: DESIGN.colors.primary,
-    backgroundColor: DESIGN.colors.primary,
-  },
   catText: {
-    color: DESIGN.colors.text,
     fontWeight: "600",
     fontSize: 13,
   },
-  catTextSelected: {
-    color: DESIGN.colors.text,
-  },
   goalRow: {
-    backgroundColor: DESIGN.colors.surface,
     borderWidth: 1,
-    borderColor: DESIGN.colors.border,
     borderRadius: DESIGN.radius.card,
     padding: 18,
     marginBottom: 12,
@@ -214,38 +236,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   goalCategory: {
-    color: DESIGN.colors.textDim,
     fontWeight: "600",
     fontSize: 12,
     marginBottom: 4,
   },
   goalTitle: {
-    color: DESIGN.colors.text,
     fontWeight: "600",
     fontSize: 16,
-  },
-  disabledText: {
-    color: DESIGN.colors.textDim,
   },
   switchBox: {
     minWidth: 58,
     alignItems: "center",
     paddingVertical: 8,
     borderRadius: DESIGN.radius.pill,
-    backgroundColor: DESIGN.colors.bgSecondary,
-  },
-  switchOn: {
-    backgroundColor: "rgba(116,217,159,0.16)",
   },
   switchText: {
-    color: DESIGN.colors.success,
     fontWeight: "700",
     fontSize: 12,
   },
   emptyCard: {
     padding: 20,
   },
-  emptyText: {
-    color: DESIGN.colors.textDim,
-  },
+  emptyText: {},
 });

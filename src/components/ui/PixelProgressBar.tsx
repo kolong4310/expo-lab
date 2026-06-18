@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { DESIGN } from "../../theme/design";
+import { useAppTheme } from "../../theme/useAppTheme";
 
 type PixelProgressBarProps = {
   value: number;
@@ -8,11 +9,20 @@ type PixelProgressBarProps = {
 };
 
 export default function PixelProgressBar({ value }: PixelProgressBarProps) {
+  const { theme } = useAppTheme();
   const width = `${Math.max(0, Math.min(100, value))}%` as `${number}%`;
 
   return (
-    <View style={styles.track}>
-      <View style={[styles.fill, { width }]} />
+    <View style={[styles.track, { backgroundColor: theme.colors.surfaceAlt }]}>
+      <View
+        style={[
+          styles.fill,
+          {
+            width,
+            backgroundColor: theme.colors.primary,
+          },
+        ]}
+      />
     </View>
   );
 }
@@ -22,11 +32,9 @@ const styles = StyleSheet.create({
     height: 8,
     overflow: "hidden",
     borderRadius: 999,
-    backgroundColor: DESIGN.colors.bgSecondary,
   },
   fill: {
     height: "100%",
     borderRadius: 999,
-    backgroundColor: DESIGN.colors.primary,
   },
 });

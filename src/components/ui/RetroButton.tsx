@@ -8,6 +8,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { DESIGN } from "../../theme/design";
+import { useAppTheme } from "../../theme/useAppTheme";
 import AnimatedPressable from "../AnimatedPressable";
 
 type RetroButtonProps = PressableProps & {
@@ -25,6 +26,7 @@ export default function RetroButton({
   ...props
 }: RetroButtonProps) {
   const isSecondary = variant === "secondary";
+  const { theme } = useAppTheme();
 
   return (
     <AnimatedPressable
@@ -32,13 +34,29 @@ export default function RetroButton({
       pressedScale={0.98}
       style={[
         styles.button,
+        {
+          backgroundColor: isSecondary
+            ? theme.colors.surfaceAlt
+            : theme.colors.primary,
+          borderColor: theme.colors.borderStrong,
+        },
         isSecondary && styles.secondary,
         props.disabled && styles.disabled,
         style,
       ]}
     >
       <Text
-        style={[styles.text, isSecondary && styles.secondaryText, textStyle]}
+        style={[
+          styles.text,
+          {
+            color:
+              theme.mode === "light" && !isSecondary
+                ? theme.colors.surface
+                : theme.colors.text,
+          },
+          isSecondary && styles.secondaryText,
+          textStyle,
+        ]}
       >
         {label}
       </Text>
@@ -57,18 +75,13 @@ const styles = StyleSheet.create({
   },
   secondary: {
     borderWidth: 1,
-    borderColor: DESIGN.colors.borderStrong,
-    backgroundColor: DESIGN.colors.surfaceAlt,
   },
   disabled: {
     opacity: 0.4,
   },
   text: {
-    color: DESIGN.colors.text,
     fontSize: 16,
     fontWeight: "700",
   },
-  secondaryText: {
-    color: DESIGN.colors.text,
-  },
+  secondaryText: {},
 });

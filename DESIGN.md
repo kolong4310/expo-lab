@@ -39,6 +39,20 @@ The interface prioritizes information hierarchy, writing flow, and repeat use.
 - Do not use external copyrighted assets, Lottie, GIFs, character images, or
   branded visual references.
 
+## Theme / Appearance
+
+- Dark mode is the default Tiny Growth tone: dark garden background, soft mint
+  primary actions, sage secondary accents, and warm seed-yellow highlights.
+- Light mode uses a soft garden tone: pale green-white background, white cards,
+  deep green-black text, muted sage secondary text, mint actions, and warm seed
+  accents.
+- Both modes must preserve the same information hierarchy and spacing.
+- Check contrast whenever text, chips, chart bars, or buttons move between modes.
+- Theme colors should come from `src/theme/theme.ts`; avoid adding new
+  hard-coded colors unless they are mode-specific overlays.
+- Do not add external theme libraries. Theme state is managed by
+  `ThemeProvider` and persisted in SQLite `app_settings`.
+
 ## Layout
 
 - Screen horizontal padding: `20`

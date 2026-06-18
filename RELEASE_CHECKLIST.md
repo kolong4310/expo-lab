@@ -32,6 +32,11 @@
 - [ ] Settings tab opens correctly.
 - [ ] Settings language change updates app text immediately.
 - [ ] Settings language change persists after app relaunch.
+- [ ] Settings dark/light mode change updates the app immediately.
+- [ ] Selected dark/light mode persists after app relaunch.
+- [ ] Theme setting copy is checked in ko/en/ja/zh.
+- [ ] Major screens are checked in both dark and light mode.
+- [ ] Light mode screenshots are reviewed for contrast and Tiny Growth tone.
 - [ ] Report tab opens correctly.
 - [ ] Report statistics update after create, edit, and delete.
 - [ ] Empty states look natural for Today, Archive, Search, Report, and Settings.

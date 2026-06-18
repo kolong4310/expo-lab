@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { DESIGN } from "../theme/design";
+import { useAppTheme } from "../theme/useAppTheme";
 
 interface AppHeaderProps {
   title: string;
@@ -30,6 +31,8 @@ export default function AppHeader({
   right,
   titleStyle,
 }: AppHeaderProps) {
+  const { theme } = useAppTheme();
+
   if (onBack || right || onHome) {
     return (
       <View style={styles.navigationHeader}>
@@ -43,12 +46,20 @@ export default function AppHeader({
               <Ionicons
                 name="chevron-back"
                 size={24}
-                color={DESIGN.colors.text}
+                color={theme.colors.text}
               />
             </TouchableOpacity>
           )}
         </View>
-        <Text style={[styles.navigationTitle, titleStyle]}>{title}</Text>
+        <Text
+          style={[
+            styles.navigationTitle,
+            { color: theme.colors.text },
+            titleStyle,
+          ]}
+        >
+          {title}
+        </Text>
         <View style={[styles.side, styles.right]}>
           <View style={styles.rightActions}>
             {right}
@@ -62,7 +73,7 @@ export default function AppHeader({
                 <Ionicons
                   name="home-outline"
                   size={21}
-                  color={DESIGN.colors.textDim}
+                  color={theme.colors.muted}
                 />
               </TouchableOpacity>
             )}
@@ -74,8 +85,16 @@ export default function AppHeader({
 
   return (
     <View style={[styles.screenHeader, compact && styles.screenHeaderCompact]}>
-      <Text style={[styles.screenTitle, titleStyle]}>{title}</Text>
-      {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+      <Text
+        style={[styles.screenTitle, { color: theme.colors.text }, titleStyle]}
+      >
+        {title}
+      </Text>
+      {subtitle && (
+        <Text style={[styles.subtitle, { color: theme.colors.muted }]}>
+          {subtitle}
+        </Text>
+      )}
     </View>
   );
 }
@@ -89,11 +108,9 @@ const styles = StyleSheet.create({
   },
   screenTitle: {
     ...DESIGN.typography.largeTitle,
-    color: DESIGN.colors.text,
   },
   subtitle: {
     marginTop: 5,
-    color: DESIGN.colors.textDim,
     fontSize: 14,
     fontWeight: "500",
   },
@@ -121,7 +138,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   navigationTitle: {
-    color: DESIGN.colors.text,
     fontSize: 17,
     fontWeight: "700",
   },

@@ -143,12 +143,14 @@ Watch-outs:
 Capture purpose:
 
 - Show that users can change the app language after setup.
+- Optionally show that users can switch between dark and light appearance.
 
 Good screen state:
 
 - Current language is visible.
 - All four language options are visible if possible.
 - The selected language state is clear.
+- If capturing appearance, the selected dark/light mode state is clear.
 
 Recommended overlay copy:
 
@@ -163,6 +165,12 @@ Recommended overlay copy:
 4. Archive
 5. Search
 6. Settings
+
+Optional screenshot candidates:
+
+- Light mode Today screen to show the soft garden theme.
+- Settings appearance section showing dark/light mode selection.
+- Light mode Report screen if chart contrast looks strong and polished.
 
 ## Sample Data Suggestions
 

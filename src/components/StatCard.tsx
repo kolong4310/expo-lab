@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleProp, StyleSheet, Text, ViewStyle } from "react-native";
 import { DESIGN } from "../theme/design";
+import { useAppTheme } from "../theme/useAppTheme";
 import RetroCard from "./ui/RetroCard";
 
 interface StatCardProps {
@@ -11,10 +12,12 @@ interface StatCardProps {
 }
 
 export default function StatCard({ label, value, style }: StatCardProps) {
+  const { theme } = useAppTheme();
+
   return (
     <RetroCard style={[styles.card, style]}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
+      <Text style={[styles.label, { color: theme.colors.muted }]}>{label}</Text>
+      <Text style={[styles.value, { color: theme.colors.text }]}>{value}</Text>
     </RetroCard>
   );
 }
@@ -27,12 +30,10 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   label: {
-    color: DESIGN.colors.textDim,
     fontSize: 13,
     fontWeight: "600",
   },
   value: {
-    color: DESIGN.colors.text,
     fontSize: 28,
     fontWeight: "700",
     letterSpacing: -0.8,

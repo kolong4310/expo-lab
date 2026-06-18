@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, View, ViewProps } from "react-native";
 import { DESIGN } from "../../theme/design";
+import { useAppTheme } from "../../theme/useAppTheme";
 
 type RetroCardProps = ViewProps & {
   accent?: "cyan" | "pink" | "green" | "yellow" | "purple";
@@ -12,8 +13,20 @@ export default function RetroCard({
   accent: _accent,
   ...props
 }: RetroCardProps) {
+  const { theme } = useAppTheme();
+
   return (
-    <View {...props} style={[styles.card, style]}>
+    <View
+      {...props}
+      style={[
+        styles.card,
+        {
+          borderColor: theme.colors.border,
+          backgroundColor: theme.colors.surface,
+        },
+        style,
+      ]}
+    >
       {children}
     </View>
   );

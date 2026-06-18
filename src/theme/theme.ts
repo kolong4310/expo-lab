@@ -1,4 +1,11 @@
-export const AppColors = {
+export type AppThemeMode = "dark" | "light";
+
+export interface AppTheme {
+  mode: AppThemeMode;
+  colors: typeof darkThemeColors;
+}
+
+export const darkThemeColors = {
   background: "#0B1010",
   surface: "#151C1A",
   surfaceAlt: "#1D2723",
@@ -12,6 +19,41 @@ export const AppColors = {
   border: "rgba(247,251,247,0.055)",
   borderStrong: "rgba(247,251,247,0.13)",
 };
+
+export const lightThemeColors: typeof darkThemeColors = {
+  background: "#F4F7EF",
+  surface: "#FFFFFF",
+  surfaceAlt: "#EAF1E6",
+  primary: "#2F8F5F",
+  secondary: "#5FAE92",
+  success: "#2F9D63",
+  warning: "#B7791F",
+  danger: "#D94F4F",
+  text: "#14201A",
+  muted: "#607468",
+  border: "rgba(47,80,60,0.10)",
+  borderStrong: "rgba(47,80,60,0.18)",
+};
+
+export const darkTheme: AppTheme = {
+  mode: "dark",
+  colors: darkThemeColors,
+};
+
+export const lightTheme: AppTheme = {
+  mode: "light",
+  colors: lightThemeColors,
+};
+
+export const DEFAULT_THEME_MODE: AppThemeMode = "dark";
+
+export const isAppThemeMode = (value: string | null): value is AppThemeMode =>
+  value === "dark" || value === "light";
+
+export const getThemeByMode = (mode: AppThemeMode): AppTheme =>
+  mode === "light" ? lightTheme : darkTheme;
+
+export const AppColors = darkThemeColors;
 
 export const AppFonts = {
   title: undefined,

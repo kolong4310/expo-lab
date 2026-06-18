@@ -21,11 +21,13 @@ import { useTodos } from "../hooks/useTodos";
 import { useTranslation } from "../i18n/useTranslation";
 import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
+import { useAppTheme } from "../theme/useAppTheme";
 import { formatLocalDate } from "../utils/date";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 function TrendChart({ values }: { values: number[] }) {
+  const { theme } = useAppTheme();
   const data = values.length === 7 ? values : Array(7).fill(0);
 
   return (
@@ -36,15 +38,25 @@ function TrendChart({ values }: { values: number[] }) {
 
         return (
           <View key={index} style={styles.chartColumn}>
-            <View style={styles.chartTrack}>
+            <View
+              style={[
+                styles.chartTrack,
+                { backgroundColor: theme.colors.surfaceAlt },
+              ]}
+            >
               <View
                 style={[
                   styles.chartBar,
-                  { height: `${Math.max(8, value)}%` as `${number}%` },
+                  {
+                    height: `${Math.max(8, value)}%` as `${number}%`,
+                    backgroundColor: theme.colors.secondary,
+                  },
                 ]}
               />
             </View>
-            <Text style={styles.chartLabel}>{WEEKDAYS[date.getDay()]}</Text>
+            <Text style={[styles.chartLabel, { color: theme.colors.muted }]}>
+              {WEEKDAYS[date.getDay()]}
+            </Text>
           </View>
         );
       })}
@@ -57,6 +69,7 @@ export default function HomeScreen({
 }: BottomTabScreenProps<"Today">) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { mode, theme } = useAppTheme();
   const today = formatLocalDate();
   const todayDate = new Date();
   const dateLabel = `${today.replace(/-/g, ".")} ${WEEKDAYS[todayDate.getDay()]}요일`;
@@ -95,10 +108,15 @@ export default function HomeScreen({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <StatusBar
+        barStyle={mode === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={theme.colors.background}
+      />
       <ScrollView
-        style={styles.container}
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
         contentContainerStyle={[
           styles.content,
           { paddingBottom: insets.bottom + 120 },
@@ -111,24 +129,51 @@ export default function HomeScreen({
           <RetroCard style={styles.streakCard}>
             <View style={styles.heroIntro}>
               <View>
-                <Text style={styles.heroTitle}>{t("today.heroTitle")}</Text>
-                <Text style={styles.heroSubtitle}>
+                <Text style={[styles.heroTitle, { color: theme.colors.text }]}>
+                  {t("today.heroTitle")}
+                </Text>
+                <Text
+                  style={[styles.heroSubtitle, { color: theme.colors.muted }]}
+                >
                   {t("today.heroSubtitle")}
                 </Text>
               </View>
-              <View style={styles.sproutBadge}>
+              <View
+                style={[
+                  styles.sproutBadge,
+                  {
+                    borderColor: theme.colors.border,
+                    backgroundColor: `${theme.colors.primary}14`,
+                  },
+                ]}
+              >
                 <TinySprout size={38} />
               </View>
             </View>
             <View style={styles.cardHeading}>
               <View>
-                <Text style={styles.cardLabel}>{t("today.streak")}</Text>
+                <Text style={[styles.cardLabel, { color: theme.colors.muted }]}>
+                  {t("today.streak")}
+                </Text>
                 <View style={styles.streakValueRow}>
-                  <Text style={styles.streakValue}>{streak}</Text>
-                  <Text style={styles.streakUnit}>{t("today.dayUnit")}</Text>
+                  <Text
+                    style={[styles.streakValue, { color: theme.colors.text }]}
+                  >
+                    {streak}
+                  </Text>
+                  <Text
+                    style={[styles.streakUnit, { color: theme.colors.muted }]}
+                  >
+                    {t("today.dayUnit")}
+                  </Text>
                 </View>
               </View>
-              <View style={styles.streakIcon}>
+              <View
+                style={[
+                  styles.streakIcon,
+                  { backgroundColor: `${theme.colors.primary}1C` },
+                ]}
+              >
                 <Ionicons name="leaf" size={21} color={DESIGN.colors.success} />
               </View>
             </View>
@@ -139,14 +184,22 @@ export default function HomeScreen({
         <FadeInView delay={70}>
           <View style={styles.statsRow}>
             <RetroCard style={styles.statCard}>
-              <Text style={styles.cardLabel}>{t("today.weeklyGrowth")}</Text>
-              <Text style={styles.statValue}>{weeklyRate}%</Text>
+              <Text style={[styles.cardLabel, { color: theme.colors.muted }]}>
+                {t("today.weeklyGrowth")}
+              </Text>
+              <Text style={[styles.statValue, { color: theme.colors.text }]}>
+                {weeklyRate}%
+              </Text>
               <PixelProgressBar value={weeklyRate} />
             </RetroCard>
             <RetroCard style={styles.statCard}>
-              <Text style={styles.cardLabel}>{t("today.completionRate")}</Text>
-              <Text style={styles.statValue}>{stats.rate}%</Text>
-              <Text style={styles.statMeta}>
+              <Text style={[styles.cardLabel, { color: theme.colors.muted }]}>
+                {t("today.completionRate")}
+              </Text>
+              <Text style={[styles.statValue, { color: theme.colors.text }]}>
+                {stats.rate}%
+              </Text>
+              <Text style={[styles.statMeta, { color: theme.colors.success }]}>
                 {stats.completed} / {stats.total} {t("today.completed")}
               </Text>
             </RetroCard>
@@ -154,9 +207,13 @@ export default function HomeScreen({
         </FadeInView>
 
         <View style={styles.sectionHeading}>
-          <Text style={styles.sectionTitle}>{t("today.goals")}</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+            {t("today.goals")}
+          </Text>
           <AnimatedPressable onPress={() => navigation.navigate("GoalManage")}>
-            <Text style={styles.sectionAction}>
+            <Text
+              style={[styles.sectionAction, { color: theme.colors.secondary }]}
+            >
               {t("today.manageRepeatGoals")}
             </Text>
           </AnimatedPressable>
@@ -202,17 +259,28 @@ export default function HomeScreen({
             ))}
             {stats.total === 0 && (
               <View style={styles.empty}>
-                <Text style={styles.emptyTitle}>{t("today.emptyTitle")}</Text>
-                <Text style={styles.emptyText}>{t("today.emptyText")}</Text>
+                <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
+                  {t("today.emptyTitle")}
+                </Text>
+                <Text style={[styles.emptyText, { color: theme.colors.muted }]}>
+                  {t("today.emptyText")}
+                </Text>
               </View>
             )}
 
             <View style={styles.addRow}>
               <View style={styles.todayOnlyLabelWrap}>
-                <Text style={styles.todayOnlyLabel}>
+                <Text
+                  style={[styles.todayOnlyLabel, { color: theme.colors.text }]}
+                >
                   {t("today.onceGoalAdd")}
                 </Text>
-                <Text style={styles.todayOnlyDescription}>
+                <Text
+                  style={[
+                    styles.todayOnlyDescription,
+                    { color: theme.colors.muted },
+                  ]}
+                >
                   {t("today.onceGoalDescription")}
                 </Text>
               </View>
@@ -230,7 +298,15 @@ export default function HomeScreen({
                   pressedScale={0.97}
                   onPress={handleAddTodo}
                 >
-                  <Ionicons name="add" size={22} color={DESIGN.colors.text} />
+                  <Ionicons
+                    name="add"
+                    size={22}
+                    color={
+                      mode === "light"
+                        ? theme.colors.surface
+                        : theme.colors.text
+                    }
+                  />
                 </AnimatedPressable>
               </View>
             </View>
@@ -238,12 +314,24 @@ export default function HomeScreen({
         </FadeInView>
 
         {todayLog && (
-          <Text style={styles.loggedHint}>{t("today.loggedHint")}</Text>
+          <Text style={[styles.loggedHint, { color: theme.colors.muted }]}>
+            {t("today.loggedHint")}
+          </Text>
         )}
       </ScrollView>
 
       <View
-        style={[styles.ctaDock, { paddingBottom: Math.max(insets.bottom, 10) }]}
+        style={[
+          styles.ctaDock,
+          {
+            paddingBottom: Math.max(insets.bottom, 10),
+            borderTopColor: theme.colors.border,
+            backgroundColor:
+              mode === "light"
+                ? "rgba(244,247,239,0.96)"
+                : "rgba(11,16,16,0.96)",
+          },
+        ]}
       >
         <PrimaryButton
           label={todayLog ? t("today.edit") : t("today.write")}

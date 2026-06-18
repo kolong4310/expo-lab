@@ -115,6 +115,12 @@ const ko = {
   "settings.currentLanguage": "현재 언어",
   "settings.changeLanguage": "언어를 선택하면 앱 문구가 바로 변경됩니다.",
   "settings.languageUpdated": "언어가 변경되었습니다.",
+  "settings.appearance": "화면 모드",
+  "settings.appearanceSubtitle": "앱의 밝기를 선택할 수 있어요.",
+  "settings.currentTheme": "현재 화면 모드",
+  "settings.themeDark": "다크 모드",
+  "settings.themeLight": "라이트 모드",
+  "settings.themeUpdated": "화면 모드가 변경되었습니다.",
 };
 
 export type TranslationKey = keyof typeof ko;
@@ -240,6 +246,12 @@ export const translations: Record<AppLanguage, TranslationMap> = {
     "settings.currentLanguage": "Current language",
     "settings.changeLanguage": "Choose a language to update the app instantly.",
     "settings.languageUpdated": "Language updated.",
+    "settings.appearance": "Appearance",
+    "settings.appearanceSubtitle": "Choose how the app looks.",
+    "settings.currentTheme": "Current appearance",
+    "settings.themeDark": "Dark mode",
+    "settings.themeLight": "Light mode",
+    "settings.themeUpdated": "Appearance updated.",
   },
   ja: {
     "app.name": "Tiny Growth",
@@ -357,6 +369,12 @@ export const translations: Record<AppLanguage, TranslationMap> = {
     "settings.currentLanguage": "現在の言語",
     "settings.changeLanguage": "言語を選ぶとアプリの表示がすぐに変わります。",
     "settings.languageUpdated": "言語を変更しました。",
+    "settings.appearance": "表示モード",
+    "settings.appearanceSubtitle": "アプリの見た目を選択できます。",
+    "settings.currentTheme": "現在の表示モード",
+    "settings.themeDark": "ダークモード",
+    "settings.themeLight": "ライトモード",
+    "settings.themeUpdated": "表示モードを変更しました。",
   },
   zh: {
     "app.name": "Tiny Growth",
@@ -470,5 +488,11 @@ export const translations: Record<AppLanguage, TranslationMap> = {
     "settings.currentLanguage": "当前语言",
     "settings.changeLanguage": "选择语言后，应用文字会立即更新。",
     "settings.languageUpdated": "语言已更新。",
+    "settings.appearance": "显示模式",
+    "settings.appearanceSubtitle": "选择应用的显示风格。",
+    "settings.currentTheme": "当前显示模式",
+    "settings.themeDark": "深色模式",
+    "settings.themeLight": "浅色模式",
+    "settings.themeUpdated": "显示模式已更新。",
   },
 };

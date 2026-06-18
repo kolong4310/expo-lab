@@ -32,6 +32,7 @@ import { useTranslation } from "../i18n/useTranslation";
 import { goHome } from "../navigation/homeNavigation";
 import { RootStackScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
+import { useAppTheme } from "../theme/useAppTheme";
 import { formatLocalDate } from "../utils/date";
 
 const MOODS = [
@@ -95,21 +96,25 @@ const InsightInput = ({
   onChangeText: (text: string) => void;
   placeholder: string;
   minHeight?: number;
-}) => (
-  <RetroCard accent="cyan" style={styles.inputCard}>
-    <PixelSectionTitle>{label}</PixelSectionTitle>
-    <TextInput
-      style={[styles.textInput, { minHeight }]}
-      value={value}
-      onChangeText={onChangeText}
-      placeholder={placeholder}
-      placeholderTextColor={DESIGN.colors.textDim}
-      multiline
-      textAlignVertical="top"
-      selectionColor={DESIGN.colors.primary}
-    />
-  </RetroCard>
-);
+}) => {
+  const { theme } = useAppTheme();
+
+  return (
+    <RetroCard accent="cyan" style={styles.inputCard}>
+      <PixelSectionTitle>{label}</PixelSectionTitle>
+      <TextInput
+        style={[styles.textInput, { minHeight, color: theme.colors.text }]}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor={theme.colors.muted}
+        multiline
+        textAlignVertical="top"
+        selectionColor={theme.colors.primary}
+      />
+    </RetroCard>
+  );
+};
 
 const SupplementalInput = ({
   label,
@@ -121,21 +126,34 @@ const SupplementalInput = ({
   value: string;
   onChangeText: (text: string) => void;
   placeholder: string;
-}) => (
-  <View style={styles.supplementalField}>
-    <Text style={styles.supplementalLabel}>{label}</Text>
-    <TextInput
-      style={styles.supplementalInput}
-      value={value}
-      onChangeText={onChangeText}
-      placeholder={placeholder}
-      placeholderTextColor={DESIGN.colors.textDim}
-      multiline
-      textAlignVertical="top"
-      selectionColor={DESIGN.colors.primary}
-    />
-  </View>
-);
+}) => {
+  const { theme } = useAppTheme();
+
+  return (
+    <View style={styles.supplementalField}>
+      <Text style={[styles.supplementalLabel, { color: theme.colors.muted }]}>
+        {label}
+      </Text>
+      <TextInput
+        style={[
+          styles.supplementalInput,
+          {
+            borderColor: theme.colors.border,
+            backgroundColor: theme.colors.surfaceAlt,
+            color: theme.colors.text,
+          },
+        ]}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor={theme.colors.muted}
+        multiline
+        textAlignVertical="top"
+        selectionColor={theme.colors.primary}
+      />
+    </View>
+  );
+};
 
 export default function WriteScreen({
   navigation,
@@ -143,6 +161,7 @@ export default function WriteScreen({
 }: RootStackScreenProps<"Write">) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { mode, theme } = useAppTheme();
   const logId = route.params?.logId;
   const editingLog = useMemo(
     () => (logId !== undefined ? getLogById(logId) : null),
@@ -239,12 +258,20 @@ export default function WriteScreen({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <StatusBar
+        barStyle={mode === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={theme.colors.background}
+      />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 12 : 0}
-        style={styles.keyboardContainer}
+        style={[
+          styles.keyboardContainer,
+          { backgroundColor: theme.colors.background },
+        ]}
       >
         <AppHeader
           title={editingLog ? t("write.editTitle") : t("write.createTitle")}
@@ -253,12 +280,14 @@ export default function WriteScreen({
         />
 
         <ScrollView
-          style={styles.content}
+          style={[styles.content, { backgroundColor: theme.colors.background }]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ paddingBottom: insets.bottom + 140 }}
         >
-          <Text style={styles.gentleHint}>{t("write.gentleHint")}</Text>
+          <Text style={[styles.gentleHint, { color: theme.colors.muted }]}>
+            {t("write.gentleHint")}
+          </Text>
 
           <RetroCard accent="yellow" style={styles.inputCard}>
             <PixelSectionTitle>{t("write.titleLabel")}</PixelSectionTitle>
@@ -343,14 +372,24 @@ export default function WriteScreen({
                   key={item.value}
                   style={[
                     styles.moodChip,
-                    mood === item.value && styles.moodChipSelected,
+                    {
+                      borderColor: theme.colors.border,
+                      backgroundColor: theme.colors.surfaceAlt,
+                    },
+                    mood === item.value && {
+                      backgroundColor: theme.colors.primary,
+                      borderColor: theme.colors.primary,
+                    },
                   ]}
                   onPress={() => setMood(item.value)}
                 >
                   <Text
                     style={[
                       styles.moodText,
+                      { color: theme.colors.text },
                       mood === item.value && styles.moodTextSelected,
+                      mood === item.value &&
+                        mode === "light" && { color: theme.colors.surface },
                     ]}
                   >
                     {t(item.labelKey)}
@@ -368,11 +407,20 @@ export default function WriteScreen({
                   key={tag}
                   style={[
                     styles.tagChip,
-                    selectedTags.includes(tag) && styles.tagChipSelected,
+                    {
+                      borderColor: theme.colors.border,
+                      backgroundColor: theme.colors.surfaceAlt,
+                    },
+                    selectedTags.includes(tag) && {
+                      backgroundColor: `${theme.colors.primary}29`,
+                      borderColor: theme.colors.primary,
+                    },
                   ]}
                   onPress={() => toggleTag(tag)}
                 >
-                  <Text style={styles.tagText}>#{tag}</Text>
+                  <Text style={[styles.tagText, { color: theme.colors.text }]}>
+                    #{tag}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -384,6 +432,11 @@ export default function WriteScreen({
             styles.ctaDock,
             {
               paddingBottom: Math.max(insets.bottom, 10),
+              borderTopColor: theme.colors.border,
+              backgroundColor:
+                mode === "light"
+                  ? "rgba(244,247,239,0.96)"
+                  : "rgba(11,16,16,0.96)",
             },
           ]}
         >
@@ -418,7 +471,6 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
-    backgroundColor: DESIGN.colors.bg,
   },
   inputCard: {
     padding: 20,
@@ -426,7 +478,6 @@ const styles = StyleSheet.create({
   },
   gentleHint: {
     marginTop: 12,
-    color: DESIGN.colors.textDim,
     fontSize: 13,
     lineHeight: 20,
   },
@@ -436,7 +487,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     fontSize: 16,
-    color: DESIGN.colors.text,
     lineHeight: 24,
   },
   supportCard: {
@@ -473,17 +523,13 @@ const styles = StyleSheet.create({
   },
   supplementalLabel: {
     marginBottom: 6,
-    color: DESIGN.colors.textDim,
     fontSize: 12,
     fontWeight: "600",
   },
   supplementalInput: {
     minHeight: 76,
     borderWidth: 1,
-    borderColor: DESIGN.colors.border,
     borderRadius: DESIGN.radius.input,
-    backgroundColor: DESIGN.colors.bgSecondary,
-    color: DESIGN.colors.text,
     fontSize: 15,
     lineHeight: 22,
     padding: 10,
@@ -494,17 +540,11 @@ const styles = StyleSheet.create({
   },
   moodChip: {
     borderWidth: 1,
-    borderColor: DESIGN.colors.border,
     borderRadius: DESIGN.radius.pill,
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginRight: 8,
     marginBottom: 8,
-    backgroundColor: DESIGN.colors.bgSecondary,
-  },
-  moodChipSelected: {
-    backgroundColor: DESIGN.colors.primary,
-    borderColor: DESIGN.colors.primary,
   },
   moodText: {
     color: DESIGN.colors.text,
@@ -520,17 +560,11 @@ const styles = StyleSheet.create({
   },
   tagChip: {
     borderWidth: 1,
-    borderColor: DESIGN.colors.border,
     borderRadius: DESIGN.radius.pill,
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginRight: 8,
     marginBottom: 8,
-    backgroundColor: DESIGN.colors.bgSecondary,
-  },
-  tagChipSelected: {
-    backgroundColor: "rgba(116,217,159,0.16)",
-    borderColor: DESIGN.colors.primary,
   },
   tagText: {
     fontSize: 13,

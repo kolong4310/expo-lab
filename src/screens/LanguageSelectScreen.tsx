@@ -7,23 +7,34 @@ import { AppLanguage } from "../i18n/languages";
 import { useTranslation } from "../i18n/useTranslation";
 import { RootStackScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
+import { useAppTheme } from "../theme/useAppTheme";
 
 export default function LanguageSelectScreen(
   _props: RootStackScreenProps<"LanguageSelect">,
 ) {
   const { setLanguage, t } = useTranslation();
+  const { mode, theme } = useAppTheme();
 
   const handleSelect = (language: AppLanguage) => {
     setLanguage(language);
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <StatusBar
+        barStyle={mode === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={theme.colors.background}
+      />
       <View style={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.title}>{t("language.title")}</Text>
-          <Text style={styles.description}>{t("language.description")}</Text>
+          <Text style={[styles.title, { color: theme.colors.text }]}>
+            {t("language.title")}
+          </Text>
+          <Text style={[styles.description, { color: theme.colors.muted }]}>
+            {t("language.description")}
+          </Text>
         </View>
 
         <FadeInView delay={80}>
@@ -37,7 +48,6 @@ export default function LanguageSelectScreen(
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: DESIGN.colors.bg,
   },
   content: {
     flex: 1,
@@ -49,11 +59,9 @@ const styles = StyleSheet.create({
   },
   title: {
     ...DESIGN.typography.largeTitle,
-    color: DESIGN.colors.text,
   },
   description: {
     marginTop: 8,
-    color: DESIGN.colors.textDim,
     fontSize: 15,
     lineHeight: 22,
   },

@@ -86,6 +86,9 @@ implementation is modern and minimal.
 - Shared press micro-interactions live in `src/components/AnimatedPressable.tsx`.
 - Shared entrance motion lives in `src/components/FadeInView.tsx`.
 - Shared code-drawn seed/sprout motif lives in `src/components/TinySprout.tsx`.
+- App appearance state lives in `src/theme/ThemeProvider.tsx` and
+  `src/theme/useAppTheme.ts`.
+- Theme mode is stored in SQLite `app_settings` with key `selectedThemeMode`.
 
 ## Database Structure
 
@@ -255,6 +258,29 @@ implementation is modern and minimal.
 - Updated `DESIGN.md` with Tiny Growth Visual Tone rules and refreshed colors.
 - Updated `SCREENSHOT_GUIDE.md` with store screenshot tone guidance.
 - No DB, migration, navigation, external asset, Lottie/GIF, or library changes.
+
+## Appearance Work on 2026-06-18
+
+- Added app theme mode support:
+  - `AppThemeMode = "dark" | "light"`.
+  - `darkTheme`, `lightTheme`, and `getThemeByMode()` in `src/theme/theme.ts`.
+  - `ThemeProvider` and `useAppTheme()` for current theme state.
+- Reused the existing SQLite `app_settings` table; no migration was added.
+- Added `selectedThemeMode` storage helpers to `settingsRepository.ts`.
+- Added Settings appearance controls:
+  - `ThemeOptionList` with dark/light options.
+  - Current appearance card.
+  - AnimatedPressable press feedback and selected check state.
+- Added i18n keys for Settings appearance copy in `ko`, `en`, `ja`, and `zh`.
+- Wired NavigationContainer, bottom tabs, status bars, and key common components
+  to the active theme.
+- Applied theme colors to major surfaces and components including Today, Write,
+  Report, Search, Archive, Settings, LanguageSelect, GrowthFeedbackModal,
+  LogCard, LanguageOptionList, RetroCard, RetroButton, and RetroInput.
+- Dark mode remains the default and preserves the existing Tiny Growth visual
+  tone. Light mode uses a soft garden palette with dark readable text.
+- Updated `DESIGN.md`, `RELEASE_CHECKLIST.md`, and `SCREENSHOT_GUIDE.md` for
+  appearance mode behavior and QA.
 
 ## Important Bug Fixes
 

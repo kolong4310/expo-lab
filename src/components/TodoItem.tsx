@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { DESIGN } from "../theme/design";
+import { useAppTheme } from "../theme/useAppTheme";
 import AnimatedPressable from "./AnimatedPressable";
 
 interface TodoItemProps {
@@ -19,28 +20,52 @@ export default function TodoItem({
   onToggle,
   onDelete,
 }: TodoItemProps) {
+  const { theme } = useAppTheme();
+  const selectedTextColor =
+    theme.mode === "light" ? theme.colors.surface : theme.colors.text;
+
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, { borderBottomColor: theme.colors.border }]}>
       <AnimatedPressable
         style={styles.toggleArea}
         onPress={onToggle}
         pressedScale={0.99}
       >
-        <View style={[styles.check, completed && styles.checkDone]}>
+        <View
+          style={[
+            styles.check,
+            { borderColor: theme.colors.borderStrong },
+            completed && {
+              borderColor: theme.colors.secondary,
+              backgroundColor: theme.colors.secondary,
+            },
+          ]}
+        >
           {completed && (
-            <Ionicons name="checkmark" size={15} color={DESIGN.colors.text} />
+            <Ionicons name="checkmark" size={15} color={selectedTextColor} />
           )}
         </View>
         <View style={styles.textWrap}>
-          <Text style={[styles.title, completed && styles.titleDone]}>
+          <Text
+            style={[
+              styles.title,
+              { color: theme.colors.text },
+              completed && { color: theme.colors.muted },
+              completed && styles.titleDone,
+            ]}
+          >
             {title}
           </Text>
-          {meta && <Text style={styles.meta}>{meta}</Text>}
+          {meta && (
+            <Text style={[styles.meta, { color: theme.colors.muted }]}>
+              {meta}
+            </Text>
+          )}
         </View>
       </AnimatedPressable>
       {onDelete && (
         <TouchableOpacity onPress={onDelete} hitSlop={10}>
-          <Ionicons name="close" size={19} color={DESIGN.colors.textDim} />
+          <Ionicons name="close" size={19} color={theme.colors.muted} />
         </TouchableOpacity>
       )}
     </View>
@@ -53,7 +78,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: DESIGN.colors.border,
   },
   toggleArea: {
     flex: 1,
@@ -67,30 +91,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1.5,
-    borderColor: DESIGN.colors.borderStrong,
     borderRadius: 11,
   },
-  checkDone: {
-    borderColor: DESIGN.colors.secondary,
-    backgroundColor: DESIGN.colors.secondary,
-  },
+  checkDone: {},
   textWrap: {
     flex: 1,
     marginLeft: 13,
   },
   title: {
-    color: DESIGN.colors.text,
     fontSize: 15,
     fontWeight: "600",
     lineHeight: 22,
   },
   titleDone: {
-    color: DESIGN.colors.textDim,
     textDecorationLine: "line-through",
   },
   meta: {
     marginTop: 2,
-    color: DESIGN.colors.textDim,
     fontSize: 12,
   },
 });

@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { DESIGN } from "../theme/design";
+import { useAppTheme } from "../theme/useAppTheme";
 import PrimaryButton from "./PrimaryButton";
 import TinySprout from "./TinySprout";
 
@@ -26,6 +27,7 @@ export default function GrowthFeedbackModal({
   confirmLabel,
   onConfirm,
 }: GrowthFeedbackModalProps) {
+  const { theme } = useAppTheme();
   const { width } = useWindowDimensions();
   const overlayOpacity = useRef(new Animated.Value(0)).current;
   const cardProgress = useRef(new Animated.Value(0)).current;
@@ -112,13 +114,26 @@ export default function GrowthFeedbackModal({
       onRequestClose={onConfirm}
       statusBarTranslucent
     >
-      <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
+      <Animated.View
+        style={[
+          styles.overlay,
+          {
+            opacity: overlayOpacity,
+            backgroundColor:
+              theme.mode === "light"
+                ? "rgba(20,32,26,0.30)"
+                : "rgba(5,8,12,0.72)",
+          },
+        ]}
+      >
         <Animated.View
           style={[
             styles.card,
             {
               width: cardWidth,
               opacity: cardProgress,
+              borderColor: theme.colors.borderStrong,
+              backgroundColor: theme.colors.surface,
               transform: [{ translateY: cardTranslateY }],
             },
           ]}
@@ -130,6 +145,7 @@ export default function GrowthFeedbackModal({
                 styles.sparkleOne,
                 {
                   opacity: sparkleOpacity,
+                  backgroundColor: theme.colors.secondary,
                   transform: [{ scale: sparkleScale }],
                 },
               ]}
@@ -140,6 +156,7 @@ export default function GrowthFeedbackModal({
                 styles.sparkleTwo,
                 {
                   opacity: sparkleOpacity,
+                  backgroundColor: theme.colors.primary,
                   transform: [{ scale: sparkleScale }],
                 },
               ]}
@@ -150,6 +167,7 @@ export default function GrowthFeedbackModal({
                 styles.sparkleThree,
                 {
                   opacity: sparkleOpacity,
+                  backgroundColor: theme.colors.success,
                   transform: [{ scale: sparkleScale }],
                 },
               ]}
@@ -167,8 +185,12 @@ export default function GrowthFeedbackModal({
             </Animated.View>
           </View>
 
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.message}>{message}</Text>
+          <Text style={[styles.title, { color: theme.colors.text }]}>
+            {title}
+          </Text>
+          <Text style={[styles.message, { color: theme.colors.muted }]}>
+            {message}
+          </Text>
 
           <Animated.View
             style={[styles.buttonWrap, { opacity: buttonOpacity }]}
@@ -190,15 +212,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(5,8,12,0.72)",
     paddingHorizontal: 20,
   },
   card: {
     alignItems: "center",
     borderWidth: 1,
-    borderColor: DESIGN.colors.borderStrong,
     borderRadius: DESIGN.radius.card,
-    backgroundColor: DESIGN.colors.surface,
     paddingHorizontal: 24,
     paddingTop: 24,
     paddingBottom: 20,
@@ -218,7 +237,6 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: DESIGN.colors.secondary,
   },
   sparkleOne: {
     top: 12,
@@ -230,7 +248,6 @@ const styles = StyleSheet.create({
     width: 5,
     height: 5,
     borderRadius: 2.5,
-    backgroundColor: DESIGN.colors.primaryLight,
   },
   sparkleThree: {
     top: 38,
@@ -238,16 +255,13 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: DESIGN.colors.success,
   },
   title: {
-    color: DESIGN.colors.text,
     fontSize: 19,
     fontWeight: "700",
     textAlign: "center",
   },
   message: {
-    color: DESIGN.colors.textDim,
     fontSize: 15,
     lineHeight: 22,
     textAlign: "center",

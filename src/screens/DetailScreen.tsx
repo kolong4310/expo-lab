@@ -23,6 +23,7 @@ import { deleteLog, getLogById } from "../database/repositories/logsRepository";
 import { goHome, goToMainTab } from "../navigation/homeNavigation";
 import { RootStackScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
+import { useAppTheme } from "../theme/useAppTheme";
 
 const MOOD_MAP: Record<string, string> = {
   best: "최고",
@@ -52,6 +53,7 @@ export default function DetailScreen({
   route,
 }: RootStackScreenProps<"Detail">) {
   const insets = useSafeAreaInsets();
+  const { mode, theme } = useAppTheme();
   const { logId, returnTo } = route.params;
   const log = getLogById(logId);
 
@@ -94,8 +96,13 @@ export default function DetailScreen({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <StatusBar
+        barStyle={mode === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={theme.colors.background}
+      />
       <AppHeader
         title="기록 상세"
         onBack={() => navigation.goBack()}
@@ -109,7 +116,7 @@ export default function DetailScreen({
               <Ionicons
                 name="create-outline"
                 size={20}
-                color={DESIGN.colors.text}
+                color={theme.colors.text}
               />
             </TouchableOpacity>
             <TouchableOpacity onPress={handleDelete} style={styles.iconButton}>

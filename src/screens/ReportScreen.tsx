@@ -28,6 +28,7 @@ import {
 import { useTranslation } from "../i18n/useTranslation";
 import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
+import { useAppTheme } from "../theme/useAppTheme";
 
 const EMPTY_REPORT: ReportStats = {
   totalLogCount: 0,
@@ -137,6 +138,7 @@ export default function ReportScreen({
 }: BottomTabScreenProps<"Report">) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { mode, theme } = useAppTheme();
   const [report, setReport] = useState<ReportStats>(EMPTY_REPORT);
   const reportSnapshotRef = useRef(JSON.stringify(EMPTY_REPORT));
   const reportSubtitle =
@@ -165,8 +167,13 @@ export default function ReportScreen({
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={DESIGN.colors.bg} />
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <StatusBar
+        barStyle={mode === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={theme.colors.background}
+      />
       <ScrollView
         contentContainerStyle={[
           styles.content,
@@ -244,6 +251,7 @@ function SummaryGrid({ report }: { report: ReportStats }) {
 
 function InsightSection({ insights }: { insights: ReportInsight[] }) {
   const { t } = useTranslation();
+  const { theme } = useAppTheme();
   if (insights.length === 0) return null;
 
   return (
@@ -252,7 +260,9 @@ function InsightSection({ insights }: { insights: ReportInsight[] }) {
         <RetroCard style={styles.insightCard}>
           <View style={styles.insightHeader}>
             <TinySprout size={34} />
-            <Text style={styles.insightHeaderText}>
+            <Text
+              style={[styles.insightHeaderText, { color: theme.colors.muted }]}
+            >
               {t("report.defaultSubtitle")}
             </Text>
           </View>
@@ -261,11 +271,21 @@ function InsightSection({ insights }: { insights: ReportInsight[] }) {
               key={insight.id}
               style={[
                 styles.insightRow,
-                index < insights.length - 1 && styles.insightBorder,
+                index < insights.length - 1 && {
+                  borderBottomWidth: 1,
+                  borderBottomColor: theme.colors.border,
+                },
               ]}
             >
-              <View style={styles.insightDot} />
-              <Text style={styles.insightText}>{insight.text}</Text>
+              <View
+                style={[
+                  styles.insightDot,
+                  { backgroundColor: theme.colors.secondary },
+                ]}
+              />
+              <Text style={[styles.insightText, { color: theme.colors.text }]}>
+                {insight.text}
+              </Text>
             </View>
           ))}
         </RetroCard>
@@ -299,6 +319,7 @@ function TagStats({ tags }: { tags: TagStat[] }) {
 
 function MonthlyLogChart({ months }: { months: MonthlyLogStat[] }) {
   const { t } = useTranslation();
+  const { theme } = useAppTheme();
   const maxMonthlyCount = Math.max(1, ...months.map((item) => item.count));
 
   return (
@@ -307,15 +328,22 @@ function MonthlyLogChart({ months }: { months: MonthlyLogStat[] }) {
         <View style={styles.chart}>
           {months.map((item, index) => (
             <View key={item.month} style={styles.chartColumn}>
-              <Text style={styles.chartCount}>{item.count}</Text>
-              <View style={styles.chartTrack}>
+              <Text style={[styles.chartCount, { color: theme.colors.muted }]}>
+                {item.count}
+              </Text>
+              <View
+                style={[
+                  styles.chartTrack,
+                  { backgroundColor: `${theme.colors.primary}14` },
+                ]}
+              >
                 <AnimatedMonthlyBar
                   count={item.count}
                   maxCount={maxMonthlyCount}
                   delay={index * 35}
                 />
               </View>
-              <Text style={styles.chartLabel}>
+              <Text style={[styles.chartLabel, { color: theme.colors.muted }]}>
                 {Number(item.month.slice(5))}월
               </Text>
             </View>
@@ -335,6 +363,7 @@ function AnimatedMonthlyBar({
   delay: number;
   maxCount: number;
 }) {
+  const { theme } = useAppTheme();
   const progress = useRef(new Animated.Value(0)).current;
   const targetHeight = count === 0 ? 4 : Math.max(14, (count / maxCount) * 108);
 
@@ -353,7 +382,14 @@ function AnimatedMonthlyBar({
     outputRange: [4, targetHeight],
   });
 
-  return <Animated.View style={[styles.chartBar, { height }]} />;
+  return (
+    <Animated.View
+      style={[
+        styles.chartBar,
+        { height, backgroundColor: theme.colors.primary },
+      ]}
+    />
+  );
 }
 
 function MoodStats({ moods }: { moods: MoodStat[] }) {
@@ -385,9 +421,13 @@ function ReportSection({
   title: string;
   children: React.ReactNode;
 }) {
+  const { theme } = useAppTheme();
+
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+        {title}
+      </Text>
       {children}
     </View>
   );
@@ -404,32 +444,58 @@ function StatRow({
   highlighted?: boolean;
   showBorder: boolean;
 }) {
+  const { theme } = useAppTheme();
+
   return (
-    <View style={[styles.listRow, showBorder && styles.rowBorder]}>
+    <View
+      style={[
+        styles.listRow,
+        showBorder && {
+          borderBottomWidth: 1,
+          borderBottomColor: theme.colors.border,
+        },
+      ]}
+    >
       <Text
-        style={[styles.rowLabel, highlighted && styles.highlightedLabel]}
+        style={[
+          styles.rowLabel,
+          { color: highlighted ? theme.colors.secondary : theme.colors.text },
+        ]}
         numberOfLines={1}
       >
         {label}
       </Text>
-      <Text style={styles.countText}>{value}</Text>
+      <Text style={[styles.countText, { color: theme.colors.muted }]}>
+        {value}
+      </Text>
     </View>
   );
 }
 
 function SectionEmptyText({ text }: { text: string }) {
-  return <Text style={styles.sectionEmpty}>{text}</Text>;
+  const { theme } = useAppTheme();
+
+  return (
+    <Text style={[styles.sectionEmpty, { color: theme.colors.muted }]}>
+      {text}
+    </Text>
+  );
 }
 
 function EmptyReportState({ onWrite }: { onWrite: () => void }) {
   const { t } = useTranslation();
+  const { theme } = useAppTheme();
 
   return (
     <FadeInView>
       <RetroCard style={styles.emptyCard}>
         <TinySprout size={58} />
-        <Text style={styles.emptyTitle}>{t("report.emptyTitle")}</Text>
-        <Text style={styles.emptyText}>{t("report.emptyText")}</Text>
+        <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
+          {t("report.emptyTitle")}
+        </Text>
+        <Text style={[styles.emptyText, { color: theme.colors.muted }]}>
+          {t("report.emptyText")}
+        </Text>
         <PrimaryButton
           label={t("report.writeToday")}
           style={styles.emptyButton}
@@ -443,7 +509,6 @@ function EmptyReportState({ onWrite }: { onWrite: () => void }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: DESIGN.colors.bg,
   },
   content: {
     paddingHorizontal: 20,
@@ -466,7 +531,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     marginBottom: 12,
-    color: DESIGN.colors.text,
     fontSize: 17,
     fontWeight: "700",
   },
@@ -493,20 +557,14 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingVertical: 12,
   },
-  insightBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: DESIGN.colors.border,
-  },
   insightDot: {
     width: 6,
     height: 6,
     marginTop: 7,
     borderRadius: 3,
-    backgroundColor: DESIGN.colors.secondary,
   },
   insightText: {
     flex: 1,
-    color: DESIGN.colors.text,
     fontSize: 14,
     fontWeight: "500",
     lineHeight: 21,
@@ -522,27 +580,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 12,
   },
-  rowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: DESIGN.colors.border,
-  },
   rowLabel: {
     flex: 1,
-    color: DESIGN.colors.text,
     fontSize: 14,
     fontWeight: "600",
   },
-  highlightedLabel: {
-    color: DESIGN.colors.primaryLight,
-  },
   countText: {
-    color: DESIGN.colors.textDim,
     fontSize: 13,
     fontWeight: "600",
   },
   sectionEmpty: {
     paddingVertical: 20,
-    color: DESIGN.colors.textDim,
     fontSize: 13,
     lineHeight: 20,
   },
@@ -564,7 +612,6 @@ const styles = StyleSheet.create({
   },
   chartCount: {
     marginBottom: 7,
-    color: DESIGN.colors.textDim,
     fontSize: 11,
     fontWeight: "600",
   },
@@ -574,16 +621,13 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     overflow: "hidden",
     borderRadius: 10,
-    backgroundColor: "rgba(116,217,159,0.08)",
   },
   chartBar: {
     width: "100%",
     borderRadius: 10,
-    backgroundColor: DESIGN.colors.primary,
   },
   chartLabel: {
     marginTop: 8,
-    color: DESIGN.colors.textDim,
     fontSize: 11,
   },
   emptyCard: {
@@ -592,7 +636,6 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     marginTop: 14,
-    color: DESIGN.colors.text,
     fontSize: 17,
     fontWeight: "700",
     lineHeight: 24,
@@ -600,7 +643,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     marginTop: 8,
-    color: DESIGN.colors.textDim,
     fontSize: 14,
     textAlign: "center",
   },
