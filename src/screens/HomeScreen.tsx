@@ -10,6 +10,7 @@ import AnimatedPressable from "../components/AnimatedPressable";
 import AppHeader from "../components/AppHeader";
 import FadeInView from "../components/FadeInView";
 import PrimaryButton from "../components/PrimaryButton";
+import TinySprout from "../components/TinySprout";
 import TodoItem from "../components/TodoItem";
 import PixelProgressBar from "../components/ui/PixelProgressBar";
 import RetroCard from "../components/ui/RetroCard";
@@ -108,6 +109,17 @@ export default function HomeScreen({
 
         <FadeInView>
           <RetroCard style={styles.streakCard}>
+            <View style={styles.heroIntro}>
+              <View>
+                <Text style={styles.heroTitle}>{t("today.heroTitle")}</Text>
+                <Text style={styles.heroSubtitle}>
+                  {t("today.heroSubtitle")}
+                </Text>
+              </View>
+              <View style={styles.sproutBadge}>
+                <TinySprout size={38} />
+              </View>
+            </View>
             <View style={styles.cardHeading}>
               <View>
                 <Text style={styles.cardLabel}>{t("today.streak")}</Text>
@@ -117,11 +129,7 @@ export default function HomeScreen({
                 </View>
               </View>
               <View style={styles.streakIcon}>
-                <Ionicons
-                  name="flame"
-                  size={21}
-                  color={DESIGN.colors.warning}
-                />
+                <Ionicons name="leaf" size={21} color={DESIGN.colors.success} />
               </View>
             </View>
             <TrendChart values={recentRates} />
@@ -263,7 +271,34 @@ const styles = StyleSheet.create({
   },
   streakCard: {
     marginBottom: 16,
-    padding: 22,
+    padding: 24,
+  },
+  heroIntro: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  heroTitle: {
+    color: DESIGN.colors.text,
+    fontSize: 20,
+    fontWeight: "800",
+  },
+  heroSubtitle: {
+    marginTop: 6,
+    color: DESIGN.colors.textDim,
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  sproutBadge: {
+    width: 54,
+    height: 54,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: DESIGN.colors.border,
+    borderRadius: 27,
+    backgroundColor: "rgba(116,217,159,0.08)",
   },
   cardHeading: {
     flexDirection: "row",
@@ -298,7 +333,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 21,
-    backgroundColor: "rgba(245,158,11,0.12)",
+    backgroundColor: "rgba(116,217,159,0.11)",
   },
   chart: {
     height: 72,
@@ -416,7 +451,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 10,
-    borderRadius: 16,
+    borderRadius: 18,
     backgroundColor: DESIGN.colors.primary,
   },
   loggedHint: {
@@ -432,7 +467,7 @@ const styles = StyleSheet.create({
     left: 0,
     borderTopWidth: 1,
     borderTopColor: DESIGN.colors.border,
-    backgroundColor: "rgba(11,15,20,0.96)",
+    backgroundColor: "rgba(11,16,16,0.96)",
     paddingHorizontal: 20,
     paddingTop: 10,
   },

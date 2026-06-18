@@ -258,6 +258,8 @@ export default function WriteScreen({
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ paddingBottom: insets.bottom + 140 }}
         >
+          <Text style={styles.gentleHint}>{t("write.gentleHint")}</Text>
+
           <RetroCard accent="yellow" style={styles.inputCard}>
             <PixelSectionTitle>{t("write.titleLabel")}</PixelSectionTitle>
             <RetroInput
@@ -420,7 +422,13 @@ const styles = StyleSheet.create({
   },
   inputCard: {
     padding: 20,
-    marginTop: 16,
+    marginTop: 12,
+  },
+  gentleHint: {
+    marginTop: 12,
+    color: DESIGN.colors.textDim,
+    fontSize: 13,
+    lineHeight: 20,
   },
   titleInput: {
     fontWeight: "600",
@@ -521,7 +529,7 @@ const styles = StyleSheet.create({
     backgroundColor: DESIGN.colors.bgSecondary,
   },
   tagChipSelected: {
-    backgroundColor: "rgba(108,99,255,0.18)",
+    backgroundColor: "rgba(116,217,159,0.16)",
     borderColor: DESIGN.colors.primary,
   },
   tagText: {
@@ -536,7 +544,7 @@ const styles = StyleSheet.create({
     left: 0,
     borderTopWidth: 1,
     borderTopColor: DESIGN.colors.border,
-    backgroundColor: "rgba(11,15,20,0.96)",
+    backgroundColor: "rgba(11,16,16,0.96)",
     paddingHorizontal: 20,
     paddingTop: 10,
   },

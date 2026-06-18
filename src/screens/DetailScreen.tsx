@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   metaRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 18 },
   metaChip: {
     borderRadius: DESIGN.radius.pill,
-    backgroundColor: "rgba(34,197,94,0.14)",
+    backgroundColor: "rgba(116,217,159,0.14)",
     color: DESIGN.colors.success,
     fontSize: 12,
     fontWeight: "600",
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   },
   tagChip: {
     borderRadius: DESIGN.radius.pill,
-    backgroundColor: "rgba(108,99,255,0.14)",
+    backgroundColor: "rgba(116,217,159,0.14)",
     color: DESIGN.colors.primaryLight,
     fontSize: 12,
     fontWeight: "600",

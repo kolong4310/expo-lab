@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { DESIGN } from "../theme/design";
 import PrimaryButton from "./PrimaryButton";
+import TinySprout from "./TinySprout";
 
 interface GrowthFeedbackModalProps {
   visible: boolean;
@@ -162,12 +163,7 @@ export default function GrowthFeedbackModal({
                 },
               ]}
             >
-              <View style={styles.leafRow}>
-                <View style={[styles.leaf, styles.leftLeaf]} />
-                <View style={[styles.leaf, styles.rightLeaf]} />
-              </View>
-              <View style={styles.stem} />
-              <View style={styles.soil} />
+              <TinySprout size={58} />
             </Animated.View>
           </View>
 
@@ -216,41 +212,6 @@ const styles = StyleSheet.create({
   },
   sprout: {
     alignItems: "center",
-  },
-  leafRow: {
-    width: 48,
-    height: 24,
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  leaf: {
-    width: 24,
-    height: 16,
-    backgroundColor: DESIGN.colors.success,
-  },
-  leftLeaf: {
-    borderTopLeftRadius: 16,
-    borderBottomRightRadius: 16,
-    transform: [{ rotate: "-18deg" }],
-  },
-  rightLeaf: {
-    marginLeft: -3,
-    borderTopRightRadius: 16,
-    borderBottomLeftRadius: 16,
-    transform: [{ rotate: "18deg" }],
-  },
-  stem: {
-    width: 5,
-    height: 26,
-    borderRadius: 6,
-    backgroundColor: DESIGN.colors.success,
-  },
-  soil: {
-    width: 58,
-    height: 10,
-    borderRadius: DESIGN.radius.pill,
-    backgroundColor: "rgba(76,201,240,0.18)",
-    marginTop: -2,
   },
   sparkle: {
     position: "absolute",

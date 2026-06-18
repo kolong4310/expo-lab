@@ -55,14 +55,16 @@ Primary files:
 
 Core palette:
 
-- Background `#0B0F14`
-- Card `#151B23`
-- Primary `#6C63FF`
-- Secondary `#4CC9F0`
-- Success `#22C55E`
-- Text `#FFFFFF`
-- Subtext `#8B93A7`
-- Border `rgba(255,255,255,0.06)`
+- Background `#0B1010`
+- Card `#151C1A`
+- Elevated surface `#1D2723`
+- Primary `#74D99F`
+- Secondary `#8AD7C1`
+- Success `#5FD38D`
+- Warm seed accent `#E6B86A`
+- Text `#F7FBF7`
+- Subtext `#9BAEA4`
+- Border `rgba(247,251,247,0.055)`
 
 Compatibility component filenames such as `RetroCard` remain, but their visual
 implementation is modern and minimal.
@@ -83,6 +85,7 @@ implementation is modern and minimal.
 - Save-complete feedback UI is `src/components/GrowthFeedbackModal.tsx`.
 - Shared press micro-interactions live in `src/components/AnimatedPressable.tsx`.
 - Shared entrance motion lives in `src/components/FadeInView.tsx`.
+- Shared code-drawn seed/sprout motif lives in `src/components/TinySprout.tsx`.
 
 ## Database Structure
 
@@ -223,6 +226,35 @@ implementation is modern and minimal.
   - `git diff --check`
   - `npx.cmd expo export --platform android --output-dir .expo-export-check`
 - Cleaned `.expo-export-check` after export verification.
+
+## Visual Polish on 2026-06-18
+
+- Refined Tiny Growth from a plain dark productivity tone toward a soft growth
+  tone while keeping the app dark, minimal, and adult-friendly.
+- Updated theme tokens from purple/cyan accents to mint, sage, and warm seed
+  yellow accents.
+- Added `TinySprout`, a code-drawn `View`-based sprout/seed motif with no image
+  assets or external libraries.
+- Reused `TinySprout` only in key moments:
+  - Today hero card.
+  - Report insight/empty state.
+  - GrowthFeedbackModal.
+- Improved Today first impression:
+  - Added `today.heroTitle` and `today.heroSubtitle`.
+  - Reframed the streak card as "today's tiny growth".
+  - Changed the primary CTA to a small-growth note action.
+- Improved Write tone:
+  - Softer placeholders.
+  - Added a short gentle writing hint.
+  - Updated save/update button wording.
+- Improved Report tone:
+  - Warmer empty state and insight copy.
+  - Softer chart colors while preserving existing report behavior.
+- Improved empty-state wording across Today, Archive, Report, and Search to
+  emphasize records growing over time instead of missing data.
+- Updated `DESIGN.md` with Tiny Growth Visual Tone rules and refreshed colors.
+- Updated `SCREENSHOT_GUIDE.md` with store screenshot tone guidance.
+- No DB, migration, navigation, external asset, Lottie/GIF, or library changes.
 
 ## Important Bug Fixes
 

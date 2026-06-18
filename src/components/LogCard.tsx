@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginTop: 12,
     borderRadius: DESIGN.radius.pill,
-    backgroundColor: "rgba(108,99,255,0.14)",
+    backgroundColor: "rgba(116,217,159,0.14)",
     color: DESIGN.colors.primary,
     fontSize: 11,
     fontWeight: "600",

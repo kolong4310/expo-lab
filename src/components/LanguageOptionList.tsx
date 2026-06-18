@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   languageButtonSelected: {
-    backgroundColor: "rgba(108,99,255,0.08)",
+    backgroundColor: "rgba(116,217,159,0.08)",
   },
   buttonBorder: {
     borderBottomWidth: 1,
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginRight: 12,
     borderRadius: 17,
-    backgroundColor: "rgba(108,99,255,0.14)",
+    backgroundColor: "rgba(116,217,159,0.14)",
   },
   selectedIcon: {
     backgroundColor: DESIGN.colors.primary,

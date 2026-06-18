@@ -1,16 +1,16 @@
 export const AppColors = {
-  background: "#0B0F14",
-  surface: "#151B23",
-  surfaceAlt: "#1F2630",
-  primary: "#6C63FF",
-  secondary: "#4CC9F0",
-  success: "#22C55E",
-  warning: "#F59E0B",
+  background: "#0B1010",
+  surface: "#151C1A",
+  surfaceAlt: "#1D2723",
+  primary: "#74D99F",
+  secondary: "#8AD7C1",
+  success: "#5FD38D",
+  warning: "#E6B86A",
   danger: "#F87171",
-  text: "#FFFFFF",
-  muted: "#8B93A7",
-  border: "rgba(255,255,255,0.06)",
-  borderStrong: "rgba(255,255,255,0.12)",
+  text: "#F7FBF7",
+  muted: "#9BAEA4",
+  border: "rgba(247,251,247,0.055)",
+  borderStrong: "rgba(247,251,247,0.13)",
 };
 
 export const AppFonts = {
@@ -28,9 +28,9 @@ export const AppSpacing = {
 };
 
 export const AppRadius = {
-  input: 14,
-  button: 18,
-  card: 24,
+  input: 16,
+  button: 20,
+  card: 26,
   pill: 999,
 };
 

@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     backgroundColor: DESIGN.colors.bgSecondary,
   },
   switchOn: {
-    backgroundColor: "rgba(34,197,94,0.18)",
+    backgroundColor: "rgba(116,217,159,0.16)",
   },
   switchText: {
     color: DESIGN.colors.success,

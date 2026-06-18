@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   },
   tagChip: {
     borderRadius: DESIGN.radius.pill,
-    backgroundColor: "rgba(108,99,255,0.14)",
+    backgroundColor: "rgba(116,217,159,0.14)",
     paddingHorizontal: 13,
     paddingVertical: 9,
   },

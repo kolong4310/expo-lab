@@ -16,6 +16,7 @@ import AppHeader from "../components/AppHeader";
 import FadeInView from "../components/FadeInView";
 import PrimaryButton from "../components/PrimaryButton";
 import StatCard from "../components/StatCard";
+import TinySprout from "../components/TinySprout";
 import RetroCard from "../components/ui/RetroCard";
 import { getReportStats } from "../database/repositories/statsRepository";
 import {
@@ -249,6 +250,12 @@ function InsightSection({ insights }: { insights: ReportInsight[] }) {
     <ReportSection title={t("report.insightsTitle")}>
       <FadeInView delay={120}>
         <RetroCard style={styles.insightCard}>
+          <View style={styles.insightHeader}>
+            <TinySprout size={34} />
+            <Text style={styles.insightHeaderText}>
+              {t("report.defaultSubtitle")}
+            </Text>
+          </View>
           {insights.map((insight, index) => (
             <View
               key={insight.id}
@@ -420,6 +427,7 @@ function EmptyReportState({ onWrite }: { onWrite: () => void }) {
   return (
     <FadeInView>
       <RetroCard style={styles.emptyCard}>
+        <TinySprout size={58} />
         <Text style={styles.emptyTitle}>{t("report.emptyTitle")}</Text>
         <Text style={styles.emptyText}>{t("report.emptyText")}</Text>
         <PrimaryButton
@@ -464,7 +472,20 @@ const styles = StyleSheet.create({
   },
   insightCard: {
     paddingHorizontal: 18,
-    paddingVertical: 8,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  insightHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 6,
+  },
+  insightHeaderText: {
+    flex: 1,
+    color: DESIGN.colors.textDim,
+    fontSize: 13,
+    lineHeight: 19,
   },
   insightRow: {
     flexDirection: "row",
@@ -553,12 +574,12 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     overflow: "hidden",
     borderRadius: 10,
-    backgroundColor: DESIGN.colors.bgSecondary,
+    backgroundColor: "rgba(116,217,159,0.08)",
   },
   chartBar: {
     width: "100%",
     borderRadius: 10,
-    backgroundColor: DESIGN.colors.secondary,
+    backgroundColor: DESIGN.colors.primary,
   },
   chartLabel: {
     marginTop: 8,
@@ -570,6 +591,7 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   emptyTitle: {
+    marginTop: 14,
     color: DESIGN.colors.text,
     fontSize: 17,
     fontWeight: "700",

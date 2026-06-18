@@ -13,24 +13,40 @@ The interface prioritizes information hierarchy, writing flow, and repeat use.
 
 ## Colors
 
-- Background: `#0B0F14`
-- Card: `#151B23`
-- Elevated surface: `#1F2630`
-- Primary: `#6C63FF`
-- Secondary: `#4CC9F0`
-- Success: `#22C55E`
-- Text: `#FFFFFF`
-- Subtext: `#8B93A7`
-- Border: `rgba(255,255,255,0.06)`
+- Background: `#0B1010`
+- Card: `#151C1A`
+- Elevated surface: `#1D2723`
+- Primary: `#74D99F`
+- Secondary: `#8AD7C1`
+- Success: `#5FD38D`
+- Warm seed accent: `#E6B86A`
+- Text: `#F7FBF7`
+- Subtext: `#9BAEA4`
+- Border: `rgba(247,251,247,0.055)`
+
+## Tiny Growth Visual Tone
+
+- Keep the base dark, quiet, and minimal, then add soft growth warmth through
+  mint, sage, and seed-yellow accents.
+- Use seed/sprout motifs as small supporting details, not mascots or characters.
+- Prefer code-drawn `View` shapes such as `TinySprout` over image assets.
+- Primary actions should feel like leaving a small growth note rather than
+  completing a heavy task.
+- Empty states should imply that records will grow over time, not that something
+  is missing or wrong.
+- Cards can be softly rounded and spacious, but avoid toy-like proportions,
+  loud colors, and decorative clutter.
+- Do not use external copyrighted assets, Lottie, GIFs, character images, or
+  branded visual references.
 
 ## Layout
 
 - Screen horizontal padding: `20`
 - Card gap: `16`
 - Card padding: `20-24`
-- Card radius: `24`
+- Card radius: `26`
 - Button height: `56`
-- Button radius: `18`
+- Button radius: `20`
 
 ## Motion / Micro-interaction
 
@@ -49,6 +65,7 @@ The interface prioritizes information hierarchy, writing flow, and repeat use.
 - `src/components/ui/RetroButton.tsx`: compatibility button using the modern CTA style
 - `src/components/ui/RetroInput.tsx`: compatibility input using the modern field style
 - `src/components/AppHeader.tsx`: screen and navigation headers
+- `src/components/TinySprout.tsx`: small code-drawn seed/sprout motif
 - `src/components/TodoItem.tsx`: daily goal checklist row
 - `src/components/LogCard.tsx`: reusable work-log result card
 

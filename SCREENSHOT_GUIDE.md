@@ -8,6 +8,9 @@ This guide describes store screenshot capture goals for the current Android app.
 - Use realistic but non-sensitive sample data.
 - Avoid showing private personal information.
 - Keep the dark minimal visual style visible.
+- Show the soft growth tone where possible: small sprout details, mint accents,
+  rounded cards, and calm empty-state copy.
+- Avoid screenshot states that make the app look like a game, toy, or mascot app.
 - Prefer Korean app UI screenshots if the store listing is Korean; use English overlay copy only if the listing is English.
 - Make sure the status bar and navigation area do not distract from the main content.
 
@@ -21,7 +24,8 @@ Good screen state:
 
 - At least one daily or today-only goal is visible.
 - Today's progress/streak area is visible.
-- The "오늘 기록하기" or "오늘 기록 수정하기" CTA is visible.
+- The "오늘의 작은 성장" hero card and small sprout detail are visible.
+- The main growth-note CTA is visible and not hidden by the navigation area.
 
 Recommended overlay copy:
 
@@ -43,6 +47,7 @@ Capture purpose:
 Good screen state:
 
 - Title field has a short sample title.
+- The gentle writing hint is visible if it fits naturally.
 - Daily summary or detail text is partially filled.
 - Mood and tag sections are visible if possible.
 
@@ -74,6 +79,7 @@ Good screen state:
 
 - Several records exist so summary cards are populated.
 - Insight card is visible.
+- The subtle sprout/seed motif appears once without dominating the screen.
 - Monthly chart, tag, or mood statistics are visible.
 
 Recommended overlay copy:
