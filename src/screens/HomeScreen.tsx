@@ -1,19 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import AnimatedPressable from "../components/AnimatedPressable";
 import AppHeader from "../components/AppHeader";
+import FadeInView from "../components/FadeInView";
 import PrimaryButton from "../components/PrimaryButton";
 import TodoItem from "../components/TodoItem";
 import PixelProgressBar from "../components/ui/PixelProgressBar";
@@ -111,117 +106,128 @@ export default function HomeScreen({
       >
         <AppHeader title={t("today.title")} subtitle={dateLabel} compact />
 
-        <RetroCard style={styles.streakCard}>
-          <View style={styles.cardHeading}>
-            <View>
-              <Text style={styles.cardLabel}>{t("today.streak")}</Text>
-              <View style={styles.streakValueRow}>
-                <Text style={styles.streakValue}>{streak}</Text>
-                <Text style={styles.streakUnit}>{t("today.dayUnit")}</Text>
+        <FadeInView>
+          <RetroCard style={styles.streakCard}>
+            <View style={styles.cardHeading}>
+              <View>
+                <Text style={styles.cardLabel}>{t("today.streak")}</Text>
+                <View style={styles.streakValueRow}>
+                  <Text style={styles.streakValue}>{streak}</Text>
+                  <Text style={styles.streakUnit}>{t("today.dayUnit")}</Text>
+                </View>
+              </View>
+              <View style={styles.streakIcon}>
+                <Ionicons
+                  name="flame"
+                  size={21}
+                  color={DESIGN.colors.warning}
+                />
               </View>
             </View>
-            <View style={styles.streakIcon}>
-              <Ionicons name="flame" size={21} color={DESIGN.colors.warning} />
-            </View>
-          </View>
-          <TrendChart values={recentRates} />
-        </RetroCard>
+            <TrendChart values={recentRates} />
+          </RetroCard>
+        </FadeInView>
 
-        <View style={styles.statsRow}>
-          <RetroCard style={styles.statCard}>
-            <Text style={styles.cardLabel}>{t("today.weeklyGrowth")}</Text>
-            <Text style={styles.statValue}>{weeklyRate}%</Text>
-            <PixelProgressBar value={weeklyRate} />
-          </RetroCard>
-          <RetroCard style={styles.statCard}>
-            <Text style={styles.cardLabel}>{t("today.completionRate")}</Text>
-            <Text style={styles.statValue}>{stats.rate}%</Text>
-            <Text style={styles.statMeta}>
-              {stats.completed} / {stats.total} {t("today.completed")}
-            </Text>
-          </RetroCard>
-        </View>
+        <FadeInView delay={70}>
+          <View style={styles.statsRow}>
+            <RetroCard style={styles.statCard}>
+              <Text style={styles.cardLabel}>{t("today.weeklyGrowth")}</Text>
+              <Text style={styles.statValue}>{weeklyRate}%</Text>
+              <PixelProgressBar value={weeklyRate} />
+            </RetroCard>
+            <RetroCard style={styles.statCard}>
+              <Text style={styles.cardLabel}>{t("today.completionRate")}</Text>
+              <Text style={styles.statValue}>{stats.rate}%</Text>
+              <Text style={styles.statMeta}>
+                {stats.completed} / {stats.total} {t("today.completed")}
+              </Text>
+            </RetroCard>
+          </View>
+        </FadeInView>
 
         <View style={styles.sectionHeading}>
           <Text style={styles.sectionTitle}>{t("today.goals")}</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("GoalManage")}>
+          <AnimatedPressable onPress={() => navigation.navigate("GoalManage")}>
             <Text style={styles.sectionAction}>
               {t("today.manageRepeatGoals")}
             </Text>
-          </TouchableOpacity>
+          </AnimatedPressable>
         </View>
 
-        <RetroCard style={styles.todoCard}>
-          {dailyTodos.map((todo) => (
-            <TodoItem
-              key={`daily-${todo.goal_id}`}
-              title={todo.title}
-              completed={todo.is_done === 1}
-              meta={
-                todo.streak > 1
-                  ? `${todo.streak}${t("today.dayUnit")} ${t("today.streak")}`
-                  : todo.category
-              }
-              onToggle={() => {
-                toggleDailyTodo(todo);
-                refreshStats();
-              }}
-            />
-          ))}
-          {todayOnlyTodos.map((todo) => (
-            <TodoItem
-              key={`once-${todo.id}`}
-              title={todo.title}
-              completed={todo.is_done === 1}
-              meta={t("today.onceGoal")}
-              onToggle={() => {
-                toggleTodayOnlyTodo(todo);
-                refreshStats();
-              }}
-              onDelete={
-                todo.id === undefined
-                  ? undefined
-                  : () => {
-                      deleteTodo(todo.id!);
-                      refreshStats();
-                    }
-              }
-            />
-          ))}
-          {stats.total === 0 && (
-            <View style={styles.empty}>
-              <Text style={styles.emptyTitle}>{t("today.emptyTitle")}</Text>
-              <Text style={styles.emptyText}>{t("today.emptyText")}</Text>
-            </View>
-          )}
-
-          <View style={styles.addRow}>
-            <View style={styles.todayOnlyLabelWrap}>
-              <Text style={styles.todayOnlyLabel}>
-                {t("today.onceGoalAdd")}
-              </Text>
-              <Text style={styles.todayOnlyDescription}>
-                {t("today.onceGoalDescription")}
-              </Text>
-            </View>
-            <View style={styles.todoInputRow}>
-              <RetroInput
-                style={styles.todoInput}
-                value={newTodoTitle}
-                onChangeText={setNewTodoTitle}
-                placeholder={t("today.onceGoalPlaceholder")}
-                returnKeyType="done"
-                onSubmitEditing={handleAddTodo}
+        <FadeInView delay={120}>
+          <RetroCard style={styles.todoCard}>
+            {dailyTodos.map((todo) => (
+              <TodoItem
+                key={`daily-${todo.goal_id}`}
+                title={todo.title}
+                completed={todo.is_done === 1}
+                meta={
+                  todo.streak > 1
+                    ? `${todo.streak}${t("today.dayUnit")} ${t("today.streak")}`
+                    : todo.category
+                }
+                onToggle={() => {
+                  toggleDailyTodo(todo);
+                  refreshStats();
+                }}
               />
-              <TouchableOpacity
-                style={styles.addButton}
-                onPress={handleAddTodo}
-              >
-                <Ionicons name="add" size={22} color={DESIGN.colors.text} />
-              </TouchableOpacity>
+            ))}
+            {todayOnlyTodos.map((todo) => (
+              <TodoItem
+                key={`once-${todo.id}`}
+                title={todo.title}
+                completed={todo.is_done === 1}
+                meta={t("today.onceGoal")}
+                onToggle={() => {
+                  toggleTodayOnlyTodo(todo);
+                  refreshStats();
+                }}
+                onDelete={
+                  todo.id === undefined
+                    ? undefined
+                    : () => {
+                        deleteTodo(todo.id!);
+                        refreshStats();
+                      }
+                }
+              />
+            ))}
+            {stats.total === 0 && (
+              <View style={styles.empty}>
+                <Text style={styles.emptyTitle}>{t("today.emptyTitle")}</Text>
+                <Text style={styles.emptyText}>{t("today.emptyText")}</Text>
+              </View>
+            )}
+
+            <View style={styles.addRow}>
+              <View style={styles.todayOnlyLabelWrap}>
+                <Text style={styles.todayOnlyLabel}>
+                  {t("today.onceGoalAdd")}
+                </Text>
+                <Text style={styles.todayOnlyDescription}>
+                  {t("today.onceGoalDescription")}
+                </Text>
+              </View>
+              <View style={styles.todoInputRow}>
+                <RetroInput
+                  style={styles.todoInput}
+                  value={newTodoTitle}
+                  onChangeText={setNewTodoTitle}
+                  placeholder={t("today.onceGoalPlaceholder")}
+                  returnKeyType="done"
+                  onSubmitEditing={handleAddTodo}
+                />
+                <AnimatedPressable
+                  style={styles.addButton}
+                  pressedScale={0.97}
+                  onPress={handleAddTodo}
+                >
+                  <Ionicons name="add" size={22} color={DESIGN.colors.text} />
+                </AnimatedPressable>
+              </View>
             </View>
-          </View>
-        </RetroCard>
+          </RetroCard>
+        </FadeInView>
 
         {todayLog && (
           <Text style={styles.loggedHint}>{t("today.loggedHint")}</Text>

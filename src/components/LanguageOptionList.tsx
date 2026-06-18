@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { AppLanguage, LANGUAGE_OPTIONS } from "../i18n/languages";
 import { DESIGN } from "../theme/design";
+import AnimatedPressable from "./AnimatedPressable";
 import RetroCard from "./ui/RetroCard";
 
 const LANGUAGE_ICONS: Record<AppLanguage, keyof typeof Ionicons.glyphMap> = {
@@ -27,14 +28,14 @@ export default function LanguageOptionList({
         const selected = selectedLanguage === language.code;
 
         return (
-          <TouchableOpacity
+          <AnimatedPressable
             key={language.code}
             style={[
               styles.languageButton,
               selected && styles.languageButtonSelected,
               index < LANGUAGE_OPTIONS.length - 1 && styles.buttonBorder,
             ]}
-            activeOpacity={0.78}
+            pressedScale={0.98}
             onPress={() => onSelect(language.code)}
           >
             <View
@@ -54,7 +55,7 @@ export default function LanguageOptionList({
               size={18}
               color={selected ? DESIGN.colors.success : DESIGN.colors.textDim}
             />
-          </TouchableOpacity>
+          </AnimatedPressable>
         );
       })}
     </RetroCard>

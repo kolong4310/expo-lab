@@ -1,6 +1,7 @@
 import React from "react";
 import { StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import FadeInView from "../components/FadeInView";
 import LanguageOptionList from "../components/LanguageOptionList";
 import { AppLanguage } from "../i18n/languages";
 import { useTranslation } from "../i18n/useTranslation";
@@ -25,7 +26,9 @@ export default function LanguageSelectScreen(
           <Text style={styles.description}>{t("language.description")}</Text>
         </View>
 
-        <LanguageOptionList onSelect={handleSelect} />
+        <FadeInView delay={80}>
+          <LanguageOptionList onSelect={handleSelect} />
+        </FadeInView>
       </View>
     </SafeAreaView>
   );

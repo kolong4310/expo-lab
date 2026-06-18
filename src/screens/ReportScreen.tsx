@@ -1,11 +1,19 @@
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useRef, useState } from "react";
-import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import AppHeader from "../components/AppHeader";
+import FadeInView from "../components/FadeInView";
 import PrimaryButton from "../components/PrimaryButton";
 import StatCard from "../components/StatCard";
 import RetroCard from "../components/ui/RetroCard";
@@ -216,13 +224,18 @@ function SummaryGrid({ report }: { report: ReportStats }) {
 
   return (
     <View style={styles.summaryGrid}>
-      {stats.map((item) => (
-        <StatCard
+      {stats.map((item, index) => (
+        <FadeInView
           key={item.label}
-          label={item.label}
-          value={item.value}
-          style={styles.summaryCard}
-        />
+          delay={index * 45}
+          style={styles.summaryItem}
+        >
+          <StatCard
+            label={item.label}
+            value={item.value}
+            style={styles.summaryCard}
+          />
+        </FadeInView>
       ))}
     </View>
   );
@@ -234,20 +247,22 @@ function InsightSection({ insights }: { insights: ReportInsight[] }) {
 
   return (
     <ReportSection title={t("report.insightsTitle")}>
-      <RetroCard style={styles.insightCard}>
-        {insights.map((insight, index) => (
-          <View
-            key={insight.id}
-            style={[
-              styles.insightRow,
-              index < insights.length - 1 && styles.insightBorder,
-            ]}
-          >
-            <View style={styles.insightDot} />
-            <Text style={styles.insightText}>{insight.text}</Text>
-          </View>
-        ))}
-      </RetroCard>
+      <FadeInView delay={120}>
+        <RetroCard style={styles.insightCard}>
+          {insights.map((insight, index) => (
+            <View
+              key={insight.id}
+              style={[
+                styles.insightRow,
+                index < insights.length - 1 && styles.insightBorder,
+              ]}
+            >
+              <View style={styles.insightDot} />
+              <Text style={styles.insightText}>{insight.text}</Text>
+            </View>
+          ))}
+        </RetroCard>
+      </FadeInView>
     </ReportSection>
   );
 }
@@ -283,20 +298,14 @@ function MonthlyLogChart({ months }: { months: MonthlyLogStat[] }) {
     <ReportSection title={t("report.recentMonthsTitle")}>
       <RetroCard style={styles.chartCard}>
         <View style={styles.chart}>
-          {months.map((item) => (
+          {months.map((item, index) => (
             <View key={item.month} style={styles.chartColumn}>
               <Text style={styles.chartCount}>{item.count}</Text>
               <View style={styles.chartTrack}>
-                <View
-                  style={[
-                    styles.chartBar,
-                    {
-                      height:
-                        item.count === 0
-                          ? 4
-                          : Math.max(14, (item.count / maxMonthlyCount) * 108),
-                    },
-                  ]}
+                <AnimatedMonthlyBar
+                  count={item.count}
+                  maxCount={maxMonthlyCount}
+                  delay={index * 35}
                 />
               </View>
               <Text style={styles.chartLabel}>
@@ -308,6 +317,36 @@ function MonthlyLogChart({ months }: { months: MonthlyLogStat[] }) {
       </RetroCard>
     </ReportSection>
   );
+}
+
+function AnimatedMonthlyBar({
+  count,
+  delay,
+  maxCount,
+}: {
+  count: number;
+  delay: number;
+  maxCount: number;
+}) {
+  const progress = useRef(new Animated.Value(0)).current;
+  const targetHeight = count === 0 ? 4 : Math.max(14, (count / maxCount) * 108);
+
+  useEffect(() => {
+    progress.setValue(0);
+    Animated.timing(progress, {
+      toValue: 1,
+      duration: 420,
+      delay,
+      useNativeDriver: false,
+    }).start();
+  }, [delay, progress, targetHeight]);
+
+  const height = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [4, targetHeight],
+  });
+
+  return <Animated.View style={[styles.chartBar, { height }]} />;
 }
 
 function MoodStats({ moods }: { moods: MoodStat[] }) {
@@ -379,15 +418,17 @@ function EmptyReportState({ onWrite }: { onWrite: () => void }) {
   const { t } = useTranslation();
 
   return (
-    <RetroCard style={styles.emptyCard}>
-      <Text style={styles.emptyTitle}>{t("report.emptyTitle")}</Text>
-      <Text style={styles.emptyText}>{t("report.emptyText")}</Text>
-      <PrimaryButton
-        label={t("report.writeToday")}
-        style={styles.emptyButton}
-        onPress={onWrite}
-      />
-    </RetroCard>
+    <FadeInView>
+      <RetroCard style={styles.emptyCard}>
+        <Text style={styles.emptyTitle}>{t("report.emptyTitle")}</Text>
+        <Text style={styles.emptyText}>{t("report.emptyText")}</Text>
+        <PrimaryButton
+          label={t("report.writeToday")}
+          style={styles.emptyButton}
+          onPress={onWrite}
+        />
+      </RetroCard>
+    </FadeInView>
   );
 }
 
@@ -405,9 +446,12 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 12,
   },
-  summaryCard: {
+  summaryItem: {
     minWidth: 136,
     flexBasis: "47%",
+  },
+  summaryCard: {
+    flex: 1,
   },
   section: {
     marginTop: 22,

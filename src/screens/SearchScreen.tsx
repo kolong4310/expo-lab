@@ -13,6 +13,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import AnimatedPressable from "../components/AnimatedPressable";
 import AppHeader from "../components/AppHeader";
 import LogCard from "../components/LogCard";
 import RetroInput from "../components/ui/RetroInput";
@@ -128,7 +129,7 @@ export default function SearchScreen({
                 </View>
                 <View style={styles.chipGrid}>
                   {recentSearches.map((item) => (
-                    <TouchableOpacity
+                    <AnimatedPressable
                       key={item}
                       style={styles.recentChip}
                       onPress={() => selectKeyword(item)}
@@ -139,7 +140,7 @@ export default function SearchScreen({
                         color={DESIGN.colors.textDim}
                       />
                       <Text style={styles.recentText}>{item}</Text>
-                    </TouchableOpacity>
+                    </AnimatedPressable>
                   ))}
                 </View>
               </>
@@ -148,13 +149,13 @@ export default function SearchScreen({
             <Text style={styles.sectionTitle}>{t("search.popularTags")}</Text>
             <View style={styles.chipGrid}>
               {POPULAR_TAGS.map((tag) => (
-                <TouchableOpacity
+                <AnimatedPressable
                   key={tag}
                   style={styles.tagChip}
                   onPress={() => selectKeyword(tag)}
                 >
                   <Text style={styles.tagText}>#{tag}</Text>
-                </TouchableOpacity>
+                </AnimatedPressable>
               ))}
             </View>
 

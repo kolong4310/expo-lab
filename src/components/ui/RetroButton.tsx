@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Pressable,
   PressableProps,
   StyleProp,
   StyleSheet,
@@ -9,6 +8,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { DESIGN } from "../../theme/design";
+import AnimatedPressable from "../AnimatedPressable";
 
 type RetroButtonProps = PressableProps & {
   label: string;
@@ -27,12 +27,12 @@ export default function RetroButton({
   const isSecondary = variant === "secondary";
 
   return (
-    <Pressable
+    <AnimatedPressable
       {...props}
-      style={({ pressed }) => [
+      pressedScale={0.98}
+      style={[
         styles.button,
         isSecondary && styles.secondary,
-        pressed && styles.pressed,
         props.disabled && styles.disabled,
         style,
       ]}
@@ -42,7 +42,7 @@ export default function RetroButton({
       >
         {label}
       </Text>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
@@ -59,10 +59,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: DESIGN.colors.borderStrong,
     backgroundColor: DESIGN.colors.surfaceAlt,
-  },
-  pressed: {
-    opacity: 0.82,
-    transform: [{ scale: 0.99 }],
   },
   disabled: {
     opacity: 0.4,

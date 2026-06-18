@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { DESIGN } from "../theme/design";
+import AnimatedPressable from "./AnimatedPressable";
 
 interface TodoItemProps {
   title: string;
@@ -20,10 +21,10 @@ export default function TodoItem({
 }: TodoItemProps) {
   return (
     <View style={styles.row}>
-      <TouchableOpacity
+      <AnimatedPressable
         style={styles.toggleArea}
         onPress={onToggle}
-        activeOpacity={0.7}
+        pressedScale={0.99}
       >
         <View style={[styles.check, completed && styles.checkDone]}>
           {completed && (
@@ -36,7 +37,7 @@ export default function TodoItem({
           </Text>
           {meta && <Text style={styles.meta}>{meta}</Text>}
         </View>
-      </TouchableOpacity>
+      </AnimatedPressable>
       {onDelete && (
         <TouchableOpacity onPress={onDelete} hitSlop={10}>
           <Ionicons name="close" size={19} color={DESIGN.colors.textDim} />

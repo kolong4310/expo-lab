@@ -1,14 +1,14 @@
-# Project Memory - Grow Day
+# Project Memory - Tiny Growth
 
-Last updated: 2026-06-16
+Last updated: 2026-06-18
 Branch: `dev`
 Repository: `https://github.com/kolong4310/expo-lab`
 
 ## Product Direction
 
-Grow Day is a premium dark productivity app for developers to manage daily goals
-and write work logs. It should feel closer to Linear, Raycast, Notion Calendar,
-and Apple productivity tools than a game.
+Tiny Growth is a premium dark productivity app for developers to manage daily
+goals and write work logs. It should feel closer to Linear, Raycast, Notion
+Calendar, and Apple productivity tools than a game.
 
 Do not reintroduce:
 
@@ -27,16 +27,23 @@ Reference image: `docs/c1.png`
 - Preserve log create, update, delete, search, calendar, and goal behavior.
 - Work on `dev`.
 - Run `npm run typecheck` and `npm run format:check` before pushing.
-- Push with `node push.js "Meaningful commit message"`.
+- After completing requested code or documentation changes, commit and push to
+  `origin/dev` automatically unless the user explicitly says not to push.
+- Prefer `node push.js "Meaningful commit message"` only when all modified files
+  should be included. If unrelated local changes exist, stage the intended files
+  explicitly, then `git commit` and `git push origin dev`.
 
 ## Current Navigation
 
 - Today: productivity dashboard and daily goals
 - Archive: calendar and date-based logs
+- Report: growth statistics and insights
 - Search: recent searches, tags, and results
+- Settings: language selection after onboarding
 - Write: create or update a work log
 - Detail: read, edit, or delete a log
 - GoalManage: configure repeat goals
+- LanguageSelect: first-run language choice when no selected language is saved
 
 ## Design System
 
@@ -63,12 +70,19 @@ implementation is modern and minimal.
 ## Current Code Structure
 
 - Navigation is typed in `src/navigation/types.ts`.
-- Bottom tabs are `Today`, `Archive`, `Report`, and `Search`.
+- Bottom tabs are `Today`, `Archive`, `Report`, `Search`, and `Settings`.
 - Root stack screens are `Main`, `Write`, `Detail`, and `GoalManage`.
 - Navigation helpers live in `src/navigation/homeNavigation.ts`.
 - SQLite access is split into repositories under `src/database/repositories/`.
 - SQLite schema setup and migration runner live in `src/database/db.ts` and
   `src/database/migrations/`.
+- i18n files live in `src/i18n/`.
+- First-run language selection is `src/screens/LanguageSelectScreen.tsx`.
+- Post-onboarding language changes are handled in `src/screens/SettingsScreen.tsx`.
+- Shared language option UI is `src/components/LanguageOptionList.tsx`.
+- Save-complete feedback UI is `src/components/GrowthFeedbackModal.tsx`.
+- Shared press micro-interactions live in `src/components/AnimatedPressable.tsx`.
+- Shared entrance motion lives in `src/components/FadeInView.tsx`.
 
 ## Database Structure
 
@@ -76,8 +90,27 @@ implementation is modern and minimal.
   `goal_checks`, and `today_only_goals` tables with `IF NOT EXISTS`.
 - `002_addLogMetadataFields.ts` and `003_addTodayOnlyGoalFields.ts` handle
   compatibility columns safely.
+- `004_addAppSettings.ts` creates `app_settings` with `IF NOT EXISTS`.
+- `settingsRepository.ts` stores `selectedLanguage` in `app_settings`.
 - `schema_migrations` records executed migrations.
 - No destructive SQL has been added.
+
+## Localization
+
+- Supported languages are `ko`, `en`, `ja`, and `zh`.
+- `AppLanguage = "ko" | "en" | "ja" | "zh"`.
+- `translations.ts` uses flat translation keys.
+- `TranslationKey` is derived from the Korean translation map.
+- `translations: Record<AppLanguage, TranslationMap>` keeps language key sets
+  aligned at typecheck time.
+- `I18nProvider` loads `selectedLanguage` from SQLite after database
+  initialization and exposes `language`, `selectedLanguage`, `setLanguage`,
+  and `t`.
+- If `selectedLanguage` is missing, `LanguageSelectScreen` is shown.
+- Selecting a language stores it in SQLite and immediately switches to `Main`.
+- Settings language changes reuse the same `setLanguage()` path, update SQLite,
+  and immediately refresh app text.
+- No external i18n or storage library has been added.
 
 ## Recent Work Completed
 
@@ -130,6 +163,67 @@ implementation is modern and minimal.
 - Confirmed Android preview APK build and real-device install were completed by
   the user.
 
+## Work Completed on 2026-06-17
+
+- Added first-run language selection for `ko`, `en`, `ja`, and `zh`.
+- Added internal i18n structure without external libraries:
+  - `src/i18n/languages.ts`
+  - `src/i18n/translations.ts`
+  - `src/i18n/I18nProvider.tsx`
+  - `src/i18n/useTranslation.ts`
+- Added SQLite `app_settings` table through safe migration `004_addAppSettings`.
+- Added `settingsRepository.ts` for `selectedLanguage`.
+- Added `LanguageSelectScreen` for first launch when no language is saved.
+- Added `Settings` bottom tab and `SettingsScreen` for changing language after
+  onboarding.
+- Added `LanguageOptionList` shared component for language buttons.
+- Updated bottom tabs to `Today / Archive / Report / Search / Settings`.
+- Connected key app text to translation keys for tabs, LanguageSelect, Today,
+  Write, Report, Archive, Search, and Settings.
+- Renamed app display name from Grow Day to Tiny Growth.
+- Updated `app.json` display name to `Tiny Growth`.
+- Kept `android.package` as `com.kolong4310.growday`.
+- Kept `slug` as `grow-day` to avoid EAS/project-link risk.
+- Kept `extra.eas.projectId` unchanged.
+- Updated store/release/privacy/data safety/screenshot/design documents for
+  Tiny Growth.
+- Added release checklist notes for Play Console and Notion manual name changes.
+- QA checked Tiny Growth naming, Settings UX, 5-tab layout, i18n key coverage,
+  language persistence flow, and existing navigation flow.
+
+## Work Completed on 2026-06-18
+
+- Added save-complete growth feedback after Write save/update:
+  - `buildGrowthFeedback()` chooses short feedback from edit, tag, mood, goal,
+    or default state.
+  - Reused i18n keys for `ko`, `en`, `ja`, and `zh`.
+  - Preserved existing save failure Alert behavior.
+- Replaced the save-success Alert with `GrowthFeedbackModal`:
+  - Uses only React Native `Animated`, `View`, and `Text`.
+  - Shows a dark overlay, minimal card, code-drawn sprout, subtle sparkles, and
+    confirm CTA.
+  - Confirm closes the modal and then uses the existing `goHome(navigation)`
+    Today return flow.
+- Added app-wide micro-interaction primitives:
+  - `AnimatedPressable` for subtle `0.97-0.99` press scale.
+  - `FadeInView` for short fade/slide card entrance motion.
+- Applied micro-interactions conservatively:
+  - `PrimaryButton`/`RetroButton` CTAs.
+  - Today key cards, goal manage action, today-only add button, and goal toggle
+    rows.
+  - Report summary/insight/empty cards and animated monthly bars.
+  - Settings and first-run language selection cards.
+  - Language option rows while preserving selected/check states.
+  - Search recent and tag chips only; bulk result lists were left unanimated.
+- Updated `DESIGN.md` with Motion / Micro-interaction guidance.
+- Updated release and screenshot docs for GrowthFeedbackModal QA.
+- Verified:
+  - `npm.cmd run typecheck`
+  - `npm.cmd run format:check`
+  - `git diff --check`
+  - `npx.cmd expo export --platform android --output-dir .expo-export-check`
+- Cleaned `.expo-export-check` after export verification.
+
 ## Important Bug Fixes
 
 - Fixed the report screen focus-update loop by only updating state when the
@@ -150,6 +244,10 @@ implementation is modern and minimal.
 
 ## Latest Commits
 
+- `09adf67` Add animated growth feedback modal
+- `4a992d9` Add growth feedback after saving logs
+- `5d61498` Add settings language switcher
+- `05931b7` Add first-run language selection
 - `f9daecb` Update Play Store privacy submission docs
 - `3087e00` Expand Play Store submission docs
 - `b02747e` Add Play Store release drafts
@@ -169,17 +267,32 @@ implementation is modern and minimal.
 
 - If app navigation behavior is touched next, keep the `Main` tab nesting
   model intact and preserve typed route params.
+- Preserve the current bottom tab order:
+  `Today / Archive / Report / Search / Settings`.
 - If database work continues, add migrations rather than changing existing
   tables or deleting data.
+- Do not delete or reset user SQLite data.
+- Keep `004_addAppSettings` and `app_settings.selectedLanguage` intact.
+- Do not add external i18n or storage libraries.
 - If a maximum update depth error appears again, check for `useEffect` or
   `useFocusEffect` callbacks that re-query SQLite objects on every render.
 - Do not remove `extra.eas.projectId` from `app.json`; it links the project to
   EAS.
+- Do not change `android.package` unless a deliberate Play Console migration is
+  planned.
+- Keep `slug` as `grow-day` unless EAS/Play Console implications are reviewed.
 - `PROJECT_MEMORY.md` is user/project memory. Commit it only when the user asks
   to update memory.
+- The user asked on 2026-06-18 to keep `PROJECT_MEMORY.md` updated with the
+  rule that future completed work should be committed and pushed automatically.
+- When pushing with local unrelated changes present, do not use broad staging;
+  stage the intended files explicitly and leave unrelated changes alone.
 - Before Play Store submission:
   - Confirm the Privacy Policy URL opens in a private/incognito browser.
+  - Update Play Console app name to Tiny Growth.
+  - Update the Notion Privacy Policy page title/body to Tiny Growth.
   - Enter the Privacy Policy URL in Play Console.
   - Complete Play Console Data safety answers from `DATA_SAFETY_DRAFT.md`.
   - Capture store screenshots using `SCREENSHOT_GUIDE.md`.
+  - Include Settings/language screenshots if useful.
   - Increase `android.versionCode` before the next production release if needed.

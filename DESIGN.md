@@ -32,6 +32,15 @@ The interface prioritizes information hierarchy, writing flow, and repeat use.
 - Button height: `56`
 - Button radius: `18`
 
+## Motion / Micro-interaction
+
+- Buttons and selectable rows use a subtle press scale around `0.97-0.99`.
+- Card entrance motion should stay short: `250-400ms` fade with a small vertical slide.
+- Save completion feedback uses `GrowthFeedbackModal` for a single lightweight success moment.
+- Repeating animation should be avoided unless it directly supports feedback.
+- Motion should keep the dark minimal tone and must not become game-like.
+- Do not use external copyrighted animation assets, GIFs, Lottie files, or character images.
+
 ## Component Structure
 
 - `src/theme/theme.ts`: base color, spacing, and radius tokens

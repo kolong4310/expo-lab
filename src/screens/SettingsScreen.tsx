@@ -5,6 +5,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import AppHeader from "../components/AppHeader";
+import FadeInView from "../components/FadeInView";
 import LanguageOptionList from "../components/LanguageOptionList";
 import RetroCard from "../components/ui/RetroCard";
 import { LANGUAGE_OPTIONS } from "../i18n/languages";
@@ -37,12 +38,16 @@ export default function SettingsScreen(
           compact
         />
 
-        <RetroCard style={styles.currentCard}>
-          <Text style={styles.cardLabel}>{t("settings.currentLanguage")}</Text>
-          <Text style={styles.currentValue}>
-            {currentLanguage?.nativeLabel ?? language}
-          </Text>
-        </RetroCard>
+        <FadeInView>
+          <RetroCard style={styles.currentCard}>
+            <Text style={styles.cardLabel}>
+              {t("settings.currentLanguage")}
+            </Text>
+            <Text style={styles.currentValue}>
+              {currentLanguage?.nativeLabel ?? language}
+            </Text>
+          </RetroCard>
+        </FadeInView>
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>{t("settings.language")}</Text>
@@ -51,12 +56,14 @@ export default function SettingsScreen(
           </Text>
         </View>
 
-        <LanguageOptionList
-          selectedLanguage={language}
-          onSelect={(nextLanguage) => {
-            setLanguage(nextLanguage);
-          }}
-        />
+        <FadeInView delay={80}>
+          <LanguageOptionList
+            selectedLanguage={language}
+            onSelect={(nextLanguage) => {
+              setLanguage(nextLanguage);
+            }}
+          />
+        </FadeInView>
       </ScrollView>
     </SafeAreaView>
   );
