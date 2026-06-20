@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { DESIGN } from "../theme/design";
+import { LIGHT_PASTEL } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 
 interface AppHeaderProps {
@@ -31,7 +32,7 @@ export default function AppHeader({
   right,
   titleStyle,
 }: AppHeaderProps) {
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
 
   if (onBack || right || onHome) {
     return (
@@ -41,7 +42,10 @@ export default function AppHeader({
             <TouchableOpacity
               onPress={onBack}
               hitSlop={10}
-              style={styles.iconButton}
+              style={[
+                styles.iconButton,
+                mode === "light" && styles.lightIconButton,
+              ]}
             >
               <Ionicons
                 name="chevron-back"
@@ -67,7 +71,10 @@ export default function AppHeader({
               <TouchableOpacity
                 onPress={onHome}
                 hitSlop={10}
-                style={styles.iconButton}
+                style={[
+                  styles.iconButton,
+                  mode === "light" && styles.lightIconButton,
+                ]}
                 accessibilityLabel="홈으로 이동"
               >
                 <Ionicons
@@ -136,6 +143,12 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
+  },
+  lightIconButton: {
+    borderWidth: 1,
+    borderColor: LIGHT_PASTEL.border,
+    borderRadius: 16,
+    backgroundColor: LIGHT_PASTEL.paper,
   },
   navigationTitle: {
     fontSize: 17,

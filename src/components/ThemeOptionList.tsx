@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { TranslationKey } from "../i18n/translations";
 import { useTranslation } from "../i18n/useTranslation";
 import { AppThemeMode } from "../theme/theme";
+import { LIGHT_PASTEL } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 import AnimatedPressable from "./AnimatedPressable";
 import RetroCard from "./ui/RetroCard";
@@ -27,10 +28,15 @@ export default function ThemeOptionList({
   onSelect,
 }: ThemeOptionListProps) {
   const { t } = useTranslation();
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
 
   return (
-    <RetroCard style={styles.card}>
+    <RetroCard
+      style={[
+        styles.card,
+        mode === "light" && { backgroundColor: LIGHT_PASTEL.paperWarm },
+      ]}
+    >
       {THEME_OPTIONS.map((item, index) => {
         const selected = selectedMode === item.mode;
 
@@ -39,7 +45,12 @@ export default function ThemeOptionList({
             key={item.mode}
             style={[
               styles.optionButton,
-              selected && { backgroundColor: `${theme.colors.primary}14` },
+              selected && {
+                backgroundColor:
+                  mode === "light"
+                    ? LIGHT_PASTEL.greenSoft
+                    : `${theme.colors.primary}14`,
+              },
               index < THEME_OPTIONS.length - 1 && {
                 borderBottomWidth: 1,
                 borderBottomColor: theme.colors.border,
@@ -51,7 +62,12 @@ export default function ThemeOptionList({
             <View
               style={[
                 styles.iconWrap,
-                { backgroundColor: `${theme.colors.primary}24` },
+                {
+                  backgroundColor:
+                    mode === "light"
+                      ? LIGHT_PASTEL.blue
+                      : `${theme.colors.primary}24`,
+                },
                 selected && { backgroundColor: theme.colors.primary },
               ]}
             >
@@ -91,6 +107,8 @@ const styles = StyleSheet.create({
     minHeight: 62,
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 8,
+    borderRadius: 18,
   },
   iconWrap: {
     width: 34,

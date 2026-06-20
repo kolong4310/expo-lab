@@ -1,5 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
+import { StyleSheet, View } from "react-native";
+import { LIGHT_PASTEL } from "../../theme/lightPastel";
+import { useAppTheme } from "../../theme/useAppTheme";
 
 type PixelTabIconProps = {
   name: keyof typeof Ionicons.glyphMap;
@@ -13,5 +16,29 @@ export default function PixelTabIcon({
   color,
   focused,
 }: PixelTabIconProps) {
-  return <Ionicons name={name} size={focused ? 23 : 21} color={color} />;
+  const { mode } = useAppTheme();
+
+  return (
+    <View
+      style={[
+        styles.iconWrap,
+        focused && mode === "light" && styles.lightFocused,
+      ]}
+    >
+      <Ionicons name={name} size={focused ? 22 : 20} color={color} />
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  iconWrap: {
+    width: 38,
+    height: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 15,
+  },
+  lightFocused: {
+    backgroundColor: LIGHT_PASTEL.greenSoft,
+  },
+});

@@ -7,6 +7,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { DESIGN } from "../../theme/design";
+import { LIGHT_PASTEL } from "../../theme/lightPastel";
 import { useAppTheme } from "../../theme/useAppTheme";
 
 type RetroInputProps = TextInputProps & {
@@ -19,7 +20,7 @@ export default function RetroInput({
   placeholderTextColor,
   ...props
 }: RetroInputProps) {
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
 
   return (
     <TextInput
@@ -29,10 +30,13 @@ export default function RetroInput({
       style={[
         styles.input,
         {
-          borderColor: theme.colors.border,
-          backgroundColor: theme.colors.surfaceAlt,
+          borderColor:
+            mode === "light" ? LIGHT_PASTEL.line : theme.colors.border,
+          backgroundColor:
+            mode === "light" ? LIGHT_PASTEL.paperWarm : theme.colors.surfaceAlt,
           color: theme.colors.text,
         },
+        mode === "light" && styles.lightInput,
         containerStyle,
         style,
       ]}
@@ -48,5 +52,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingHorizontal: 14,
     paddingVertical: 11,
+  },
+  lightInput: {
+    borderWidth: 1.5,
+    borderRadius: 18,
   },
 });

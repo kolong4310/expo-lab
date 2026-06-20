@@ -13,6 +13,7 @@ import { LANGUAGE_OPTIONS } from "../i18n/languages";
 import { useTranslation } from "../i18n/useTranslation";
 import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
+import { LIGHT_PASTEL } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 
 export default function SettingsScreen(
@@ -21,6 +22,8 @@ export default function SettingsScreen(
   const insets = useSafeAreaInsets();
   const { language, setLanguage, t } = useTranslation();
   const { mode, setThemeMode, theme } = useAppTheme();
+  const screenBackground =
+    mode === "light" ? LIGHT_PASTEL.background : theme.colors.background;
   const currentLanguage = LANGUAGE_OPTIONS.find(
     (item) => item.code === language,
   );
@@ -29,11 +32,15 @@ export default function SettingsScreen(
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: screenBackground }]}
     >
+      <View pointerEvents="none" style={styles.backgroundDecor}>
+        <View style={[styles.backgroundBlob, styles.backgroundBlobBlue]} />
+        <View style={[styles.backgroundBlob, styles.backgroundBlobPeach]} />
+      </View>
       <StatusBar
         barStyle={mode === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={theme.colors.background}
+        backgroundColor={screenBackground}
       />
       <ScrollView
         contentContainerStyle={[
@@ -49,7 +56,12 @@ export default function SettingsScreen(
         />
 
         <FadeInView>
-          <RetroCard style={styles.currentCard}>
+          <RetroCard
+            style={[
+              styles.currentCard,
+              mode === "light" && { backgroundColor: LIGHT_PASTEL.mint },
+            ]}
+          >
             <Text style={[styles.cardLabel, { color: theme.colors.muted }]}>
               {t("settings.currentLanguage")}
             </Text>
@@ -60,7 +72,12 @@ export default function SettingsScreen(
         </FadeInView>
 
         <FadeInView delay={60}>
-          <RetroCard style={styles.currentCard}>
+          <RetroCard
+            style={[
+              styles.currentCard,
+              mode === "light" && { backgroundColor: LIGHT_PASTEL.blue },
+            ]}
+          >
             <Text style={[styles.cardLabel, { color: theme.colors.muted }]}>
               {t("settings.currentTheme")}
             </Text>
@@ -113,6 +130,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  backgroundDecor: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: "hidden",
+  },
+  backgroundBlob: {
+    position: "absolute",
+    borderRadius: 999,
+  },
+  backgroundBlobBlue: {
+    top: 50,
+    right: -120,
+    width: 260,
+    height: 260,
+    backgroundColor: "rgba(220,233,247,0.48)",
+  },
+  backgroundBlobPeach: {
+    bottom: 100,
+    left: -120,
+    width: 250,
+    height: 250,
+    backgroundColor: "rgba(247,221,191,0.38)",
+  },
   content: {
     paddingHorizontal: 20,
     paddingTop: 12,
@@ -120,6 +159,7 @@ const styles = StyleSheet.create({
   currentCard: {
     marginBottom: 24,
     padding: 20,
+    borderRadius: 26,
   },
   cardLabel: {
     fontSize: 13,

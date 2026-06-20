@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { DESIGN } from "../theme/design";
+import { LIGHT_PASTEL, LIGHT_PASTEL_CARD_SHADOW } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 import PrimaryButton from "./PrimaryButton";
 import TinySprout from "./TinySprout";
@@ -132,10 +133,17 @@ export default function GrowthFeedbackModal({
             {
               width: cardWidth,
               opacity: cardProgress,
-              borderColor: theme.colors.borderStrong,
-              backgroundColor: theme.colors.surface,
+              borderColor:
+                theme.mode === "light"
+                  ? LIGHT_PASTEL.border
+                  : theme.colors.borderStrong,
+              backgroundColor:
+                theme.mode === "light"
+                  ? LIGHT_PASTEL.paperWarm
+                  : theme.colors.surface,
               transform: [{ translateY: cardTranslateY }],
             },
+            theme.mode === "light" && styles.lightCard,
           ]}
         >
           <View style={styles.growthStage}>
@@ -221,6 +229,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 24,
     paddingBottom: 20,
+  },
+  lightCard: {
+    borderWidth: 2,
+    borderRadius: 30,
+    ...LIGHT_PASTEL_CARD_SHADOW,
   },
   growthStage: {
     width: 112,

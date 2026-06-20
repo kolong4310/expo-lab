@@ -27,6 +27,7 @@ import { Goal } from "../database/types";
 import { goHome } from "../navigation/homeNavigation";
 import { RootStackScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
+import { LIGHT_PASTEL, LIGHT_PASTEL_CARD_SHADOW } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 
 const CATEGORIES = ["건강", "공부", "일", "생활", "성장", "기타"];
@@ -36,6 +37,8 @@ export default function GoalManageScreen({
 }: RootStackScreenProps<"GoalManage">) {
   const insets = useSafeAreaInsets();
   const { mode, theme } = useAppTheme();
+  const screenBackground =
+    mode === "light" ? LIGHT_PASTEL.background : theme.colors.background;
   const [goals, setGoals] = useState<Goal[]>([]);
   const [newTitle, setNewTitle] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("성장");
@@ -73,12 +76,22 @@ export default function GoalManageScreen({
         styles.goalRow,
         {
           borderColor: theme.colors.border,
-          backgroundColor: theme.colors.surface,
+          backgroundColor:
+            mode === "light" ? LIGHT_PASTEL.paper : theme.colors.surface,
         },
+        mode === "light" && styles.lightGoalRow,
+        item.is_active === 0 &&
+          mode === "light" && { backgroundColor: LIGHT_PASTEL.paperWarm },
       ]}
     >
       <View style={styles.goalInfo}>
-        <Text style={[styles.goalCategory, { color: theme.colors.muted }]}>
+        <Text
+          style={[
+            styles.goalCategory,
+            { color: theme.colors.muted },
+            mode === "light" && styles.lightGoalCategory,
+          ]}
+        >
           {item.category}
         </Text>
         <Text
@@ -95,9 +108,15 @@ export default function GoalManageScreen({
         onPress={() => handleToggleActive(item)}
         style={[
           styles.switchBox,
-          { backgroundColor: theme.colors.surfaceAlt },
+          {
+            backgroundColor:
+              mode === "light" ? LIGHT_PASTEL.blue : theme.colors.surfaceAlt,
+          },
           item.is_active === 1 && {
-            backgroundColor: `${theme.colors.primary}29`,
+            backgroundColor:
+              mode === "light"
+                ? LIGHT_PASTEL.greenSoft
+                : `${theme.colors.primary}29`,
           },
         ]}
       >
@@ -110,11 +129,15 @@ export default function GoalManageScreen({
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: screenBackground }]}
     >
+      <View pointerEvents="none" style={styles.backgroundDecor}>
+        <View style={[styles.backgroundBlob, styles.backgroundBlobMint]} />
+        <View style={[styles.backgroundBlob, styles.backgroundBlobYellow]} />
+      </View>
       <StatusBar
         barStyle={mode === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={theme.colors.background}
+        backgroundColor={screenBackground}
       />
       <FlatList
         data={goals}
@@ -133,7 +156,12 @@ export default function GoalManageScreen({
               onHome={() => goHome(navigation)}
             />
 
-            <RetroCard style={styles.addPanel}>
+            <RetroCard
+              style={[
+                styles.addPanel,
+                mode === "light" && styles.lightAddPanel,
+              ]}
+            >
               <PixelSectionTitle>새 반복 목표</PixelSectionTitle>
               <RetroInput
                 value={newTitle}
@@ -154,8 +182,14 @@ export default function GoalManageScreen({
                     style={[
                       styles.catChip,
                       {
-                        borderColor: theme.colors.border,
-                        backgroundColor: theme.colors.surfaceAlt,
+                        borderColor:
+                          mode === "light"
+                            ? LIGHT_PASTEL.border
+                            : theme.colors.border,
+                        backgroundColor:
+                          mode === "light"
+                            ? LIGHT_PASTEL.paper
+                            : theme.colors.surfaceAlt,
                       },
                       selectedCategory === cat && {
                         borderColor: theme.colors.primary,
@@ -184,7 +218,12 @@ export default function GoalManageScreen({
           </>
         }
         ListEmptyComponent={
-          <RetroCard style={styles.emptyCard}>
+          <RetroCard
+            style={[
+              styles.emptyCard,
+              mode === "light" && styles.lightEmptyCard,
+            ]}
+          >
             <Text style={[styles.emptyText, { color: theme.colors.muted }]}>
               등록된 반복 목표가 없습니다.
             </Text>
@@ -199,6 +238,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  backgroundDecor: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: "hidden",
+  },
+  backgroundBlob: {
+    position: "absolute",
+    borderRadius: 999,
+  },
+  backgroundBlobMint: {
+    top: 70,
+    right: -120,
+    width: 260,
+    height: 260,
+    backgroundColor: "rgba(221,242,210,0.52)",
+  },
+  backgroundBlobYellow: {
+    bottom: 80,
+    left: -120,
+    width: 250,
+    height: 250,
+    backgroundColor: "rgba(255,230,184,0.4)",
+  },
   list: {
     paddingHorizontal: 20,
     paddingTop: 12,
@@ -207,6 +268,10 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 28,
   },
+  lightAddPanel: {
+    borderRadius: 28,
+    backgroundColor: LIGHT_PASTEL.yellow,
+  },
   input: {
     marginBottom: 14,
   },
@@ -214,7 +279,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   catChip: {
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderRadius: DESIGN.radius.pill,
     paddingHorizontal: 14,
     paddingVertical: 9,
@@ -232,6 +297,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  lightGoalRow: {
+    borderWidth: 2,
+    borderColor: LIGHT_PASTEL.border,
+    borderRadius: 26,
+    ...LIGHT_PASTEL_CARD_SHADOW,
+  },
   goalInfo: {
     flex: 1,
   },
@@ -239,6 +310,14 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 12,
     marginBottom: 4,
+  },
+  lightGoalCategory: {
+    alignSelf: "flex-start",
+    overflow: "hidden",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+    backgroundColor: LIGHT_PASTEL.blue,
   },
   goalTitle: {
     fontWeight: "600",
@@ -256,6 +335,10 @@ const styles = StyleSheet.create({
   },
   emptyCard: {
     padding: 20,
+  },
+  lightEmptyCard: {
+    borderRadius: 26,
+    backgroundColor: LIGHT_PASTEL.paperWarm,
   },
   emptyText: {},
 });

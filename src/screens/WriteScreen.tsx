@@ -32,6 +32,7 @@ import { useTranslation } from "../i18n/useTranslation";
 import { goHome } from "../navigation/homeNavigation";
 import { RootStackScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
+import { LIGHT_PASTEL } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 import { formatLocalDate } from "../utils/date";
 
@@ -97,10 +98,16 @@ const InsightInput = ({
   placeholder: string;
   minHeight?: number;
 }) => {
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
 
   return (
-    <RetroCard accent="cyan" style={styles.inputCard}>
+    <RetroCard
+      accent="cyan"
+      style={[
+        styles.inputCard,
+        mode === "light" && { backgroundColor: LIGHT_PASTEL.paper },
+      ]}
+    >
       <PixelSectionTitle>{label}</PixelSectionTitle>
       <TextInput
         style={[styles.textInput, { minHeight, color: theme.colors.text }]}
@@ -127,7 +134,7 @@ const SupplementalInput = ({
   onChangeText: (text: string) => void;
   placeholder: string;
 }) => {
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
 
   return (
     <View style={styles.supplementalField}>
@@ -138,8 +145,12 @@ const SupplementalInput = ({
         style={[
           styles.supplementalInput,
           {
-            borderColor: theme.colors.border,
-            backgroundColor: theme.colors.surfaceAlt,
+            borderColor:
+              mode === "light" ? LIGHT_PASTEL.line : theme.colors.border,
+            backgroundColor:
+              mode === "light"
+                ? LIGHT_PASTEL.paperWarm
+                : theme.colors.surfaceAlt,
             color: theme.colors.text,
           },
         ]}
@@ -162,6 +173,8 @@ export default function WriteScreen({
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { mode, theme } = useAppTheme();
+  const screenBackground =
+    mode === "light" ? LIGHT_PASTEL.background : theme.colors.background;
   const logId = route.params?.logId;
   const editingLog = useMemo(
     () => (logId !== undefined ? getLogById(logId) : null),
@@ -259,18 +272,22 @@ export default function WriteScreen({
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: screenBackground }]}
     >
+      <View pointerEvents="none" style={styles.backgroundDecor}>
+        <View style={[styles.backgroundBlob, styles.backgroundBlobMint]} />
+        <View style={[styles.backgroundBlob, styles.backgroundBlobPeach]} />
+      </View>
       <StatusBar
         barStyle={mode === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={theme.colors.background}
+        backgroundColor={screenBackground}
       />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 12 : 0}
         style={[
           styles.keyboardContainer,
-          { backgroundColor: theme.colors.background },
+          { backgroundColor: screenBackground },
         ]}
       >
         <AppHeader
@@ -280,16 +297,28 @@ export default function WriteScreen({
         />
 
         <ScrollView
-          style={[styles.content, { backgroundColor: theme.colors.background }]}
+          style={[styles.content, { backgroundColor: "transparent" }]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ paddingBottom: insets.bottom + 140 }}
         >
-          <Text style={[styles.gentleHint, { color: theme.colors.muted }]}>
+          <Text
+            style={[
+              styles.gentleHint,
+              { color: theme.colors.muted },
+              mode === "light" && styles.lightGentleHint,
+            ]}
+          >
             {t("write.gentleHint")}
           </Text>
 
-          <RetroCard accent="yellow" style={styles.inputCard}>
+          <RetroCard
+            accent="yellow"
+            style={[
+              styles.inputCard,
+              mode === "light" && { backgroundColor: LIGHT_PASTEL.yellow },
+            ]}
+          >
             <PixelSectionTitle>{t("write.titleLabel")}</PixelSectionTitle>
             <RetroInput
               value={title}
@@ -321,21 +350,39 @@ export default function WriteScreen({
             placeholder={t("write.learnedPlaceholder")}
           />
 
-          <RetroCard accent="purple" style={styles.supportCard}>
+          <RetroCard
+            accent="purple"
+            style={[
+              styles.supportCard,
+              mode === "light" && { backgroundColor: LIGHT_PASTEL.paperWarm },
+            ]}
+          >
             <TouchableOpacity
               style={styles.supportHeader}
               onPress={() => setDetailsOpen((open) => !open)}
               activeOpacity={0.75}
             >
               <View>
-                <Text style={styles.supportTitle}>
+                <Text
+                  style={[styles.supportTitle, { color: theme.colors.text }]}
+                >
                   {t("write.additionalTitle")}
                 </Text>
-                <Text style={styles.supportDescription}>
+                <Text
+                  style={[
+                    styles.supportDescription,
+                    { color: theme.colors.muted },
+                  ]}
+                >
                   {t("write.additionalDescription")}
                 </Text>
               </View>
-              <Text style={styles.supportToggle}>
+              <Text
+                style={[
+                  styles.supportToggle,
+                  { color: theme.colors.secondary },
+                ]}
+              >
                 {detailsOpen ? t("write.closeDetails") : t("write.openDetails")}
               </Text>
             </TouchableOpacity>
@@ -364,7 +411,13 @@ export default function WriteScreen({
             )}
           </RetroCard>
 
-          <RetroCard accent="green" style={styles.supportCard}>
+          <RetroCard
+            accent="green"
+            style={[
+              styles.supportCard,
+              mode === "light" && { backgroundColor: LIGHT_PASTEL.mint },
+            ]}
+          >
             <PixelSectionTitle>{t("write.moodLabel")}</PixelSectionTitle>
             <View style={styles.moodRow}>
               {MOODS.map((item) => (
@@ -373,8 +426,14 @@ export default function WriteScreen({
                   style={[
                     styles.moodChip,
                     {
-                      borderColor: theme.colors.border,
-                      backgroundColor: theme.colors.surfaceAlt,
+                      borderColor:
+                        mode === "light"
+                          ? LIGHT_PASTEL.border
+                          : theme.colors.border,
+                      backgroundColor:
+                        mode === "light"
+                          ? LIGHT_PASTEL.paper
+                          : theme.colors.surfaceAlt,
                     },
                     mood === item.value && {
                       backgroundColor: theme.colors.primary,
@@ -399,7 +458,13 @@ export default function WriteScreen({
             </View>
           </RetroCard>
 
-          <RetroCard accent="purple" style={styles.supportCard}>
+          <RetroCard
+            accent="purple"
+            style={[
+              styles.supportCard,
+              mode === "light" && { backgroundColor: LIGHT_PASTEL.blue },
+            ]}
+          >
             <PixelSectionTitle>{t("write.tagsLabel")}</PixelSectionTitle>
             <View style={styles.tagRow}>
               {DEFAULT_TAGS.map((tag) => (
@@ -408,8 +473,14 @@ export default function WriteScreen({
                   style={[
                     styles.tagChip,
                     {
-                      borderColor: theme.colors.border,
-                      backgroundColor: theme.colors.surfaceAlt,
+                      borderColor:
+                        mode === "light"
+                          ? LIGHT_PASTEL.border
+                          : theme.colors.border,
+                      backgroundColor:
+                        mode === "light"
+                          ? LIGHT_PASTEL.paper
+                          : theme.colors.surfaceAlt,
                     },
                     selectedTags.includes(tag) && {
                       backgroundColor: `${theme.colors.primary}29`,
@@ -435,7 +506,7 @@ export default function WriteScreen({
               borderTopColor: theme.colors.border,
               backgroundColor:
                 mode === "light"
-                  ? "rgba(244,247,239,0.96)"
+                  ? "rgba(247,243,233,0.97)"
                   : "rgba(11,16,16,0.96)",
             },
           ]}
@@ -464,6 +535,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: DESIGN.colors.bg,
   },
+  backgroundDecor: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: "hidden",
+  },
+  backgroundBlob: {
+    position: "absolute",
+    borderRadius: 999,
+  },
+  backgroundBlobMint: {
+    top: 100,
+    right: -130,
+    width: 270,
+    height: 270,
+    backgroundColor: "rgba(221,242,210,0.48)",
+  },
+  backgroundBlobPeach: {
+    bottom: 180,
+    left: -130,
+    width: 250,
+    height: 250,
+    backgroundColor: "rgba(247,221,191,0.36)",
+  },
   keyboardContainer: {
     flex: 1,
     backgroundColor: DESIGN.colors.bg,
@@ -475,11 +568,19 @@ const styles = StyleSheet.create({
   inputCard: {
     padding: 20,
     marginTop: 12,
+    borderRadius: 26,
   },
   gentleHint: {
     marginTop: 12,
     fontSize: 13,
     lineHeight: 20,
+  },
+  lightGentleHint: {
+    overflow: "hidden",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 16,
+    backgroundColor: LIGHT_PASTEL.peach,
   },
   titleInput: {
     fontWeight: "600",
@@ -492,6 +593,7 @@ const styles = StyleSheet.create({
   supportCard: {
     marginTop: 16,
     padding: 20,
+    borderRadius: 26,
   },
   supportHeader: {
     flexDirection: "row",
@@ -583,6 +685,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   ctaButton: {
-    minHeight: 56,
+    minHeight: 60,
+    borderRadius: 26,
   },
 });

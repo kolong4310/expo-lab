@@ -8,6 +8,10 @@ import {
   ViewStyle,
 } from "react-native";
 import { DESIGN } from "../../theme/design";
+import {
+  LIGHT_PASTEL,
+  LIGHT_PASTEL_CARD_SHADOW,
+} from "../../theme/lightPastel";
 import { useAppTheme } from "../../theme/useAppTheme";
 import AnimatedPressable from "../AnimatedPressable";
 
@@ -36,10 +40,18 @@ export default function RetroButton({
         styles.button,
         {
           backgroundColor: isSecondary
-            ? theme.colors.surfaceAlt
-            : theme.colors.primary,
-          borderColor: theme.colors.borderStrong,
+            ? theme.mode === "light"
+              ? LIGHT_PASTEL.paper
+              : theme.colors.surfaceAlt
+            : theme.mode === "light"
+              ? LIGHT_PASTEL.green
+              : theme.colors.primary,
+          borderColor:
+            theme.mode === "light"
+              ? LIGHT_PASTEL.border
+              : theme.colors.borderStrong,
         },
+        theme.mode === "light" && styles.lightButton,
         isSecondary && styles.secondary,
         props.disabled && styles.disabled,
         style,
@@ -84,4 +96,9 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   secondaryText: {},
+  lightButton: {
+    borderWidth: 2,
+    borderRadius: 24,
+    ...LIGHT_PASTEL_CARD_SHADOW,
+  },
 });

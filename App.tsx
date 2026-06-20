@@ -26,6 +26,10 @@ import { useTranslation } from "./src/i18n/useTranslation";
 import { DESIGN } from "./src/theme/design";
 import { ThemeProvider } from "./src/theme/ThemeProvider";
 import { useAppTheme } from "./src/theme/useAppTheme";
+import {
+  LIGHT_PASTEL,
+  LIGHT_PASTEL_CARD_SHADOW,
+} from "./src/theme/lightPastel";
 import PixelTabIcon from "./src/components/ui/PixelTabIcon";
 import {
   BottomTabParamList,
@@ -39,7 +43,9 @@ const Tab = createBottomTabNavigator<BottomTabParamList>();
 function TabNavigator() {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
+  const screenBackground =
+    mode === "light" ? LIGHT_PASTEL.background : theme.colors.background;
 
   const getTabIcon = (
     routeName: MainTabName,
@@ -68,7 +74,7 @@ function TabNavigator() {
       screenOptions={({ route }) => ({
         headerShown: false,
         sceneStyle: {
-          backgroundColor: theme.colors.background,
+          backgroundColor: screenBackground,
         },
         tabBarIcon: ({ focused, color }) => (
           <PixelTabIcon
@@ -78,15 +84,19 @@ function TabNavigator() {
             accent={getTabAccent(route.name)}
           />
         ),
-        tabBarActiveTintColor: theme.colors.primary,
+        tabBarActiveTintColor:
+          mode === "light" ? LIGHT_PASTEL.green : theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.muted,
         tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopWidth: 1,
-          borderTopColor: theme.colors.border,
+          backgroundColor:
+            mode === "light" ? LIGHT_PASTEL.paper : theme.colors.surface,
+          borderTopWidth: mode === "light" ? 2 : 1,
+          borderTopColor:
+            mode === "light" ? LIGHT_PASTEL.border : theme.colors.border,
           height: 76 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
           paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
           paddingTop: 8,
+          ...(mode === "light" ? LIGHT_PASTEL_CARD_SHADOW : {}),
         },
         tabBarLabelStyle: {
           fontSize: 10,
@@ -127,14 +137,16 @@ function TabNavigator() {
 
 function AppNavigator() {
   const { selectedLanguage } = useTranslation();
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
+  const screenBackground =
+    mode === "light" ? LIGHT_PASTEL.background : theme.colors.background;
   const navigationTheme = {
     ...DefaultTheme,
     dark: theme.mode === "dark",
     colors: {
       ...DefaultTheme.colors,
-      background: theme.colors.background,
-      card: theme.colors.background,
+      background: screenBackground,
+      card: screenBackground,
       text: theme.colors.text,
       border: theme.colors.border,
       primary: theme.colors.primary,
@@ -147,7 +159,7 @@ function AppNavigator() {
         id="RootStack"
         screenOptions={{
           headerShown: false,
-          cardStyle: { backgroundColor: theme.colors.background },
+          cardStyle: { backgroundColor: screenBackground },
           cardOverlayEnabled: false,
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
@@ -194,10 +206,16 @@ export default function App() {
 }
 
 function ThemedAppRoot() {
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor:
+          mode === "light" ? LIGHT_PASTEL.background : theme.colors.background,
+      }}
+    >
       <AppNavigator />
     </View>
   );

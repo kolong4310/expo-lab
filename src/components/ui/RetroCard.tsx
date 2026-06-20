@@ -1,6 +1,10 @@
 import React from "react";
 import { StyleSheet, View, ViewProps } from "react-native";
 import { DESIGN } from "../../theme/design";
+import {
+  LIGHT_PASTEL,
+  LIGHT_PASTEL_CARD_SHADOW,
+} from "../../theme/lightPastel";
 import { useAppTheme } from "../../theme/useAppTheme";
 
 type RetroCardProps = ViewProps & {
@@ -13,7 +17,7 @@ export default function RetroCard({
   accent: _accent,
   ...props
 }: RetroCardProps) {
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
 
   return (
     <View
@@ -21,9 +25,12 @@ export default function RetroCard({
       style={[
         styles.card,
         {
-          borderColor: theme.colors.border,
-          backgroundColor: theme.colors.surface,
+          borderColor:
+            mode === "light" ? LIGHT_PASTEL.border : theme.colors.border,
+          backgroundColor:
+            mode === "light" ? LIGHT_PASTEL.paper : theme.colors.surface,
         },
+        mode === "light" && styles.lightCard,
         style,
       ]}
     >
@@ -38,5 +45,9 @@ const styles = StyleSheet.create({
     borderColor: DESIGN.colors.border,
     borderRadius: DESIGN.radius.card,
     backgroundColor: DESIGN.colors.surface,
+  },
+  lightCard: {
+    borderWidth: 2,
+    ...LIGHT_PASTEL_CARD_SHADOW,
   },
 });

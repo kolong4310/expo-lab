@@ -3,6 +3,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { AppLanguage, LANGUAGE_OPTIONS } from "../i18n/languages";
 import { DESIGN } from "../theme/design";
+import { LIGHT_PASTEL } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 import AnimatedPressable from "./AnimatedPressable";
 import RetroCard from "./ui/RetroCard";
@@ -23,10 +24,15 @@ export default function LanguageOptionList({
   selectedLanguage,
   onSelect,
 }: LanguageOptionListProps) {
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
 
   return (
-    <RetroCard style={styles.card}>
+    <RetroCard
+      style={[
+        styles.card,
+        mode === "light" && { backgroundColor: LIGHT_PASTEL.paperWarm },
+      ]}
+    >
       {LANGUAGE_OPTIONS.map((language, index) => {
         const selected = selectedLanguage === language.code;
 
@@ -35,7 +41,12 @@ export default function LanguageOptionList({
             key={language.code}
             style={[
               styles.languageButton,
-              selected && { backgroundColor: `${theme.colors.primary}14` },
+              selected && {
+                backgroundColor:
+                  mode === "light"
+                    ? LIGHT_PASTEL.greenSoft
+                    : `${theme.colors.primary}14`,
+              },
               index < LANGUAGE_OPTIONS.length - 1 && {
                 borderBottomWidth: 1,
                 borderBottomColor: theme.colors.border,
@@ -47,7 +58,12 @@ export default function LanguageOptionList({
             <View
               style={[
                 styles.languageIcon,
-                { backgroundColor: `${theme.colors.primary}24` },
+                {
+                  backgroundColor:
+                    mode === "light"
+                      ? LIGHT_PASTEL.yellow
+                      : `${theme.colors.primary}24`,
+                },
                 selected && { backgroundColor: theme.colors.primary },
               ]}
             >
@@ -87,6 +103,8 @@ const styles = StyleSheet.create({
     minHeight: 64,
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 8,
+    borderRadius: 18,
   },
   languageIcon: {
     width: 34,
