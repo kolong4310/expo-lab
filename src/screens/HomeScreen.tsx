@@ -10,52 +10,166 @@ import AnimatedPressable from "../components/AnimatedPressable";
 import AppHeader from "../components/AppHeader";
 import FadeInView from "../components/FadeInView";
 import PrimaryButton from "../components/PrimaryButton";
-import TinySprout from "../components/TinySprout";
 import TodoItem from "../components/TodoItem";
-import PixelProgressBar from "../components/ui/PixelProgressBar";
 import RetroCard from "../components/ui/RetroCard";
 import RetroInput from "../components/ui/RetroInput";
 import { useLogs } from "../hooks/useLogs";
 import { useStats } from "../hooks/useStats";
 import { useTodos } from "../hooks/useTodos";
+import { AppLanguage } from "../i18n/languages";
 import { useTranslation } from "../i18n/useTranslation";
 import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
 import { useAppTheme } from "../theme/useAppTheme";
 import { formatLocalDate } from "../utils/date";
 
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
+const ADVENTURE_WEEKDAYS: Record<AppLanguage, string[]> = {
+  ko: ["일", "월", "화", "수", "목", "금", "토"],
+  en: ["S", "M", "T", "W", "T", "F", "S"],
+  ja: ["日", "月", "火", "水", "木", "金", "土"],
+  zh: ["日", "一", "二", "三", "四", "五", "六"],
+};
 
-function TrendChart({ values }: { values: number[] }) {
-  const { theme } = useAppTheme();
-  const data = values.length === 7 ? values : Array(7).fill(0);
+const DATE_WEEKDAYS: Record<AppLanguage, string[]> = {
+  ko: ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"],
+  en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  ja: ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
+  zh: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
+};
+
+function SproutFriend() {
+  const { mode, theme } = useAppTheme();
+  const faceColor = mode === "dark" ? "#E9D98F" : "#F3D887";
+  const cheekColor = mode === "dark" ? "#D98E85" : "#E99B91";
 
   return (
-    <View style={styles.chart}>
+    <View style={styles.mascotStage}>
+      <Text style={[styles.mascotSparkle, { color: theme.colors.warning }]}>
+        ✦
+      </Text>
+      <Text
+        style={[
+          styles.mascotSparkle,
+          styles.mascotSparkleSmall,
+          { color: theme.colors.secondary },
+        ]}
+      >
+        ✦
+      </Text>
+      <View
+        style={[
+          styles.mascotLeaf,
+          styles.mascotLeafLeft,
+          { backgroundColor: theme.colors.success },
+        ]}
+      />
+      <View
+        style={[
+          styles.mascotLeaf,
+          styles.mascotLeafRight,
+          { backgroundColor: theme.colors.primary },
+        ]}
+      />
+      <View style={[styles.mascotBody, { backgroundColor: faceColor }]}>
+        <View style={styles.mascotEyes}>
+          <View
+            style={[styles.mascotEye, { backgroundColor: theme.colors.text }]}
+          />
+          <View
+            style={[styles.mascotEye, { backgroundColor: theme.colors.text }]}
+          />
+        </View>
+        <View style={styles.mascotCheeks}>
+          <View style={[styles.mascotCheek, { backgroundColor: cheekColor }]} />
+          <View style={[styles.mascotCheek, { backgroundColor: cheekColor }]} />
+        </View>
+        <View
+          style={[styles.mascotSmile, { borderBottomColor: theme.colors.text }]}
+        />
+      </View>
+      <View
+        style={[
+          styles.mascotGround,
+          { backgroundColor: `${theme.colors.text}14` },
+        ]}
+      />
+    </View>
+  );
+}
+
+function AdventureMap({
+  values,
+  language,
+}: {
+  values: number[];
+  language: AppLanguage;
+}) {
+  const { mode, theme } = useAppTheme();
+  const data = values.length === 7 ? values : Array(7).fill(0);
+  const labels = ADVENTURE_WEEKDAYS[language];
+
+  return (
+    <View style={styles.adventureMap}>
+      <View
+        style={[
+          styles.mapTrail,
+          { borderTopColor: `${theme.colors.warning}70` },
+        ]}
+      />
       {data.map((value, index) => {
         const date = new Date();
         date.setDate(date.getDate() - (data.length - index - 1));
+        const hillHeight = 25 + Math.min(34, Math.round(value * 0.34));
+        const isToday = index === data.length - 1;
+        const hasGrowth = value > 0;
 
         return (
-          <View key={index} style={styles.chartColumn}>
+          <View key={index} style={styles.mapStepColumn}>
             <View
               style={[
-                styles.chartTrack,
-                { backgroundColor: theme.colors.surfaceAlt },
+                styles.mapHill,
+                {
+                  height: hillHeight,
+                  backgroundColor: hasGrowth
+                    ? `${theme.colors.primary}${mode === "dark" ? "48" : "32"}`
+                    : `${theme.colors.muted}16`,
+                },
               ]}
             >
               <View
                 style={[
-                  styles.chartBar,
+                  styles.mapMarker,
                   {
-                    height: `${Math.max(8, value)}%` as `${number}%`,
-                    backgroundColor: theme.colors.secondary,
+                    borderColor: isToday
+                      ? theme.colors.warning
+                      : `${theme.colors.primary}72`,
+                    backgroundColor: hasGrowth
+                      ? theme.colors.primary
+                      : theme.colors.surface,
                   },
                 ]}
-              />
+              >
+                <Ionicons
+                  name={hasGrowth ? "leaf" : "footsteps-outline"}
+                  size={isToday ? 15 : 13}
+                  color={
+                    hasGrowth
+                      ? mode === "light"
+                        ? theme.colors.surface
+                        : theme.colors.text
+                      : theme.colors.muted
+                  }
+                />
+              </View>
             </View>
-            <Text style={[styles.chartLabel, { color: theme.colors.muted }]}>
-              {WEEKDAYS[date.getDay()]}
+            <Text
+              style={[
+                styles.mapLabel,
+                { color: isToday ? theme.colors.text : theme.colors.muted },
+                isToday && styles.mapLabelToday,
+              ]}
+            >
+              {labels[date.getDay()]}
             </Text>
           </View>
         );
@@ -68,11 +182,11 @@ export default function HomeScreen({
   navigation,
 }: BottomTabScreenProps<"Today">) {
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const { language, t } = useTranslation();
   const { mode, theme } = useAppTheme();
   const today = formatLocalDate();
   const todayDate = new Date();
-  const dateLabel = `${today.replace(/-/g, ".")} ${WEEKDAYS[todayDate.getDay()]}요일`;
+  const dateLabel = `${today.replace(/-/g, ".")} ${DATE_WEEKDAYS[language][todayDate.getDay()]}`;
   const [newTodoTitle, setNewTodoTitle] = useState("");
   const { todayLog, refreshLogs } = useLogs(today);
   const {
@@ -146,42 +260,66 @@ export default function HomeScreen({
             style={[
               styles.streakCard,
               {
-                borderColor: `${theme.colors.primary}24`,
-                backgroundColor:
-                  mode === "dark"
-                    ? `${theme.colors.surface}F2`
-                    : `${theme.colors.surface}F8`,
+                borderColor: `${theme.colors.primary}38`,
+                backgroundColor: mode === "dark" ? "#1D3930" : "#DFF2D2",
               },
             ]}
           >
             <View pointerEvents="none" style={styles.heroGarden}>
               <View
                 style={[
+                  styles.heroSun,
+                  {
+                    backgroundColor: mode === "dark" ? "#E8C878" : "#FFD985",
+                  },
+                ]}
+              />
+              <View style={[styles.heroCloud, styles.heroCloudOne]} />
+              <View style={[styles.heroCloud, styles.heroCloudTwo]} />
+              <View
+                style={[
                   styles.heroHill,
                   styles.heroHillBack,
-                  { backgroundColor: `${theme.colors.secondary}12` },
+                  {
+                    backgroundColor: mode === "dark" ? "#315B48" : "#A7D99B",
+                  },
                 ]}
               />
               <View
                 style={[
                   styles.heroHill,
                   styles.heroHillFront,
-                  { backgroundColor: `${theme.colors.primary}15` },
+                  {
+                    backgroundColor: mode === "dark" ? "#274B3B" : "#7FC78A",
+                  },
+                ]}
+              />
+              <View
+                style={[
+                  styles.heroPath,
+                  {
+                    backgroundColor: mode === "dark" ? "#A98A5A" : "#F3D6A0",
+                  },
                 ]}
               />
             </View>
             <View style={styles.heroIntro}>
               <View style={styles.heroCopy}>
-                <View style={styles.heroKicker}>
+                <View
+                  style={[
+                    styles.heroKicker,
+                    { backgroundColor: `${theme.colors.surface}B8` },
+                  ]}
+                >
                   <Ionicons
-                    name="sparkles-outline"
+                    name="compass-outline"
                     size={14}
-                    color={theme.colors.warning}
+                    color={theme.colors.primary}
                   />
                   <Text
                     style={[
                       styles.heroKickerText,
-                      { color: theme.colors.muted },
+                      { color: theme.colors.text },
                     ]}
                   >
                     {t("today.title")}
@@ -191,84 +329,106 @@ export default function HomeScreen({
                   {t("today.heroTitle")}
                 </Text>
                 <Text
-                  style={[styles.heroSubtitle, { color: theme.colors.muted }]}
+                  style={[styles.heroSubtitle, { color: theme.colors.text }]}
                 >
                   {t("today.heroSubtitle")}
                 </Text>
               </View>
-              <View
-                style={[
-                  styles.sproutBadge,
-                  {
-                    borderColor: `${theme.colors.primary}28`,
-                    backgroundColor: `${theme.colors.primary}18`,
-                  },
-                ]}
-              >
-                <TinySprout size={38} />
-              </View>
+              <SproutFriend />
             </View>
-            <View style={styles.cardHeading}>
-              <View>
-                <Text style={[styles.cardLabel, { color: theme.colors.muted }]}>
-                  {t("today.streak")}
-                </Text>
-                <View style={styles.streakValueRow}>
-                  <Text
-                    style={[styles.streakValue, { color: theme.colors.text }]}
-                  >
-                    {streak}
-                  </Text>
-                  <Text
-                    style={[styles.streakUnit, { color: theme.colors.muted }]}
-                  >
-                    {t("today.dayUnit")}
-                  </Text>
-                </View>
-              </View>
-              <View
-                style={[
-                  styles.streakIcon,
-                  { backgroundColor: `${theme.colors.primary}1C` },
-                ]}
-              >
-                <Ionicons name="leaf" size={21} color={DESIGN.colors.success} />
-              </View>
-            </View>
-            <TrendChart values={recentRates} />
           </RetroCard>
         </FadeInView>
 
-        <FadeInView delay={70}>
+        <FadeInView delay={60}>
+          <RetroCard
+            style={[
+              styles.mapCard,
+              {
+                borderColor: `${theme.colors.warning}38`,
+                backgroundColor: mode === "dark" ? "#1A2B24" : "#FFF9E8",
+              },
+            ]}
+          >
+            <View style={styles.mapHeader}>
+              <View
+                style={[
+                  styles.mapTitleIcon,
+                  { backgroundColor: `${theme.colors.warning}22` },
+                ]}
+              >
+                <Ionicons name="map" size={18} color={theme.colors.warning} />
+              </View>
+              <Text style={[styles.mapTitle, { color: theme.colors.text }]}>
+                {t("today.adventureMap")}
+              </Text>
+            </View>
+            <AdventureMap values={recentRates} language={language} />
+          </RetroCard>
+        </FadeInView>
+
+        <FadeInView delay={90}>
           <View style={styles.statsRow}>
             <RetroCard
               style={[
                 styles.statCard,
-                { backgroundColor: `${theme.colors.secondary}0E` },
+                styles.statCardMint,
+                {
+                  borderColor: `${theme.colors.primary}35`,
+                  backgroundColor: mode === "dark" ? "#24483A" : "#CEF0D2",
+                },
               ]}
             >
-              <Text style={[styles.cardLabel, { color: theme.colors.muted }]}>
-                {t("today.weeklyGrowth")}
-              </Text>
+              <Ionicons name="leaf" size={22} color={theme.colors.success} />
               <Text style={[styles.statValue, { color: theme.colors.text }]}>
                 {weeklyRate}%
               </Text>
-              <PixelProgressBar value={weeklyRate} />
+              <Text style={[styles.statLabel, { color: theme.colors.text }]}>
+                {t("today.growthSeeds")}
+              </Text>
             </RetroCard>
             <RetroCard
               style={[
                 styles.statCard,
-                { backgroundColor: `${theme.colors.warning}0C` },
+                styles.statCardGold,
+                {
+                  borderColor: `${theme.colors.warning}40`,
+                  backgroundColor: mode === "dark" ? "#4A3D26" : "#FFE7A8",
+                },
               ]}
             >
-              <Text style={[styles.cardLabel, { color: theme.colors.muted }]}>
-                {t("today.completionRate")}
-              </Text>
+              <Ionicons name="flag" size={22} color={theme.colors.warning} />
               <Text style={[styles.statValue, { color: theme.colors.text }]}>
                 {stats.rate}%
               </Text>
-              <Text style={[styles.statMeta, { color: theme.colors.success }]}>
-                {stats.completed} / {stats.total} {t("today.completed")}
+              <Text style={[styles.statLabel, { color: theme.colors.text }]}>
+                {t("today.todayQuest")}
+              </Text>
+            </RetroCard>
+            <RetroCard
+              style={[
+                styles.statCard,
+                styles.statCardSky,
+                {
+                  borderColor: `${theme.colors.secondary}40`,
+                  backgroundColor: mode === "dark" ? "#24404A" : "#CFEAF1",
+                },
+              ]}
+            >
+              <Ionicons
+                name="footsteps"
+                size={22}
+                color={theme.colors.secondary}
+              />
+              <View style={styles.statValueRow}>
+                <Text style={[styles.statValue, { color: theme.colors.text }]}>
+                  {streak}
+                </Text>
+                <Text style={[styles.statUnit, { color: theme.colors.text }]}>
+                  {t("today.dayUnit")}
+                </Text>
+              </View>
+              <Text style={[styles.statLabel, { color: theme.colors.text }]}>
+                {t("today.adventureStreak")}
               </Text>
             </RetroCard>
           </View>
@@ -283,7 +443,7 @@ export default function HomeScreen({
               ]}
             >
               <Ionicons
-                name="map-outline"
+                name="flag-outline"
                 size={17}
                 color={theme.colors.primary}
               />
@@ -311,6 +471,20 @@ export default function HomeScreen({
               },
             ]}
           >
+            <View pointerEvents="none" style={styles.questBoardPins}>
+              <View
+                style={[
+                  styles.questBoardPin,
+                  { backgroundColor: theme.colors.warning },
+                ]}
+              />
+              <View
+                style={[
+                  styles.questBoardPin,
+                  { backgroundColor: theme.colors.secondary },
+                ]}
+              />
+            </View>
             {dailyTodos.map((todo) => (
               <TodoItem
                 key={`daily-${todo.goal_id}`}
@@ -440,6 +614,8 @@ export default function HomeScreen({
       >
         <PrimaryButton
           label={todayLog ? t("today.edit") : t("today.write")}
+          style={styles.adventureCta}
+          textStyle={styles.adventureCtaText}
           onPress={() => {
             if (todayLog?.id !== undefined) {
               navigation.navigate("Write", { logId: todayLog.id });
@@ -488,7 +664,8 @@ const styles = StyleSheet.create({
   streakCard: {
     overflow: "hidden",
     marginBottom: 16,
-    padding: 24,
+    minHeight: 250,
+    padding: 22,
   },
   heroGarden: {
     ...StyleSheet.absoluteFillObject,
@@ -499,39 +676,84 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   heroHillBack: {
-    top: -54,
-    right: -52,
-    width: 210,
-    height: 126,
-    transform: [{ rotate: "-8deg" }],
+    right: -80,
+    bottom: 18,
+    width: 340,
+    height: 150,
+    transform: [{ rotate: "-5deg" }],
   },
   heroHillFront: {
-    top: 10,
-    right: -78,
-    width: 190,
-    height: 118,
-    transform: [{ rotate: "10deg" }],
+    right: 40,
+    bottom: -82,
+    width: 390,
+    height: 180,
+    transform: [{ rotate: "7deg" }],
+  },
+  heroSun: {
+    position: "absolute",
+    top: 22,
+    right: 28,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    opacity: 0.9,
+  },
+  heroCloud: {
+    position: "absolute",
+    width: 52,
+    height: 16,
+    borderRadius: 10,
+    backgroundColor: "rgba(255,255,255,0.42)",
+  },
+  heroCloudOne: {
+    top: 38,
+    right: 96,
+  },
+  heroCloudTwo: {
+    top: 72,
+    right: 20,
+    width: 34,
+    opacity: 0.7,
+  },
+  heroPath: {
+    position: "absolute",
+    right: 36,
+    bottom: -34,
+    width: 76,
+    height: 150,
+    borderRadius: 60,
+    opacity: 0.72,
+    transform: [{ rotate: "24deg" }],
   },
   heroIntro: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-end",
     justifyContent: "space-between",
-    marginBottom: 20,
+    minHeight: 202,
   },
   heroCopy: {
     flex: 1,
-    paddingRight: 12,
+    alignSelf: "flex-start",
+    paddingTop: 6,
+    paddingRight: 8,
   },
   heroTitle: {
     color: DESIGN.colors.text,
-    fontSize: 20,
-    fontWeight: "800",
+    maxWidth: 210,
+    fontSize: 28,
+    fontWeight: "900",
+    lineHeight: 34,
+    letterSpacing: -0.8,
   },
   heroKicker: {
+    alignSelf: "flex-start",
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    marginBottom: 8,
+    marginBottom: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
   },
   heroKickerText: {
     fontSize: 12,
@@ -539,106 +761,214 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   heroSubtitle: {
-    marginTop: 6,
-    color: DESIGN.colors.textDim,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  sproutBadge: {
-    width: 54,
-    height: 54,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: DESIGN.colors.border,
-    borderRadius: 27,
-    backgroundColor: "rgba(116,217,159,0.08)",
-  },
-  cardHeading: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-  },
-  cardLabel: {
-    color: DESIGN.colors.textDim,
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  streakValueRow: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    marginTop: 8,
-  },
-  streakValue: {
-    color: DESIGN.colors.text,
-    fontSize: 36,
-    fontWeight: "700",
-    letterSpacing: -1,
-  },
-  streakUnit: {
-    marginLeft: 5,
+    maxWidth: 190,
+    marginTop: 10,
     color: DESIGN.colors.textDim,
     fontSize: 14,
     fontWeight: "600",
+    lineHeight: 21,
   },
-  streakIcon: {
-    width: 42,
-    height: 42,
+  mascotStage: {
+    position: "relative",
+    width: 104,
+    height: 136,
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  mascotBody: {
+    zIndex: 3,
+    width: 76,
+    height: 76,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 21,
-    backgroundColor: "rgba(116,217,159,0.11)",
+    borderRadius: 38,
+    borderBottomRightRadius: 30,
+    transform: [{ rotate: "3deg" }],
   },
-  chart: {
-    height: 72,
+  mascotLeaf: {
+    position: "absolute",
+    zIndex: 2,
+    top: 23,
+    width: 39,
+    height: 25,
+  },
+  mascotLeafLeft: {
+    left: 19,
+    borderTopLeftRadius: 26,
+    borderBottomRightRadius: 26,
+    transform: [{ rotate: "-28deg" }],
+  },
+  mascotLeafRight: {
+    right: 18,
+    borderTopRightRadius: 26,
+    borderBottomLeftRadius: 26,
+    transform: [{ rotate: "28deg" }],
+  },
+  mascotEyes: {
+    width: 38,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 4,
+  },
+  mascotEye: {
+    width: 6,
+    height: 8,
+    borderRadius: 4,
+  },
+  mascotCheeks: {
+    position: "absolute",
+    top: 45,
+    width: 55,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  mascotCheek: {
+    width: 10,
+    height: 6,
+    borderRadius: 5,
+    opacity: 0.72,
+  },
+  mascotSmile: {
+    width: 14,
+    height: 8,
+    marginTop: 7,
+    borderBottomWidth: 2,
+    borderRadius: 8,
+  },
+  mascotGround: {
+    width: 96,
+    height: 15,
+    marginTop: -7,
+    borderRadius: 999,
+  },
+  mascotSparkle: {
+    position: "absolute",
+    zIndex: 4,
+    top: 4,
+    right: 1,
+    fontSize: 19,
+    fontWeight: "900",
+  },
+  mascotSparkleSmall: {
+    top: 46,
+    right: 0,
+    fontSize: 11,
+  },
+  mapCard: {
+    marginBottom: 14,
+    padding: 18,
+    borderRadius: 24,
+  },
+  mapHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  mapTitleIcon: {
+    width: 34,
+    height: 34,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 9,
+    borderRadius: 12,
+    transform: [{ rotate: "-5deg" }],
+  },
+  mapTitle: {
+    fontSize: 16,
+    fontWeight: "800",
+  },
+  adventureMap: {
+    position: "relative",
+    height: 100,
     flexDirection: "row",
     alignItems: "flex-end",
-    gap: 8,
-    marginTop: 18,
+    gap: 4,
+    paddingHorizontal: 2,
   },
-  chartColumn: {
+  mapTrail: {
+    position: "absolute",
+    right: 15,
+    bottom: 41,
+    left: 15,
+    borderTopWidth: 2,
+    borderStyle: "dashed",
+    transform: [{ rotate: "-2deg" }],
+  },
+  mapStepColumn: {
+    zIndex: 1,
     flex: 1,
     alignItems: "center",
-  },
-  chartTrack: {
-    width: "100%",
-    height: 52,
     justifyContent: "flex-end",
-    overflow: "hidden",
-    borderRadius: 8,
-    backgroundColor: DESIGN.colors.bgSecondary,
   },
-  chartBar: {
+  mapHill: {
     width: "100%",
-    borderRadius: 8,
-    backgroundColor: DESIGN.colors.secondary,
+    maxWidth: 38,
+    alignItems: "center",
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
   },
-  chartLabel: {
-    marginTop: 5,
+  mapMarker: {
+    width: 29,
+    height: 29,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: -12,
+    borderWidth: 2,
+    borderRadius: 15,
+  },
+  mapLabel: {
+    marginTop: 7,
     color: DESIGN.colors.textDim,
-    fontSize: 10,
+    fontSize: 11,
+    fontWeight: "600",
+  },
+  mapLabelToday: {
+    fontWeight: "900",
   },
   statsRow: {
     flexDirection: "row",
-    gap: 12,
-    marginBottom: 28,
+    gap: 8,
+    marginBottom: 30,
   },
   statCard: {
-    minHeight: 132,
+    minHeight: 116,
     flex: 1,
-    justifyContent: "space-between",
-    padding: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 7,
+    paddingVertical: 12,
+    borderRadius: 22,
+  },
+  statCardMint: {
+    transform: [{ rotate: "-2deg" }],
+  },
+  statCardGold: {
+    transform: [{ translateY: 3 }, { rotate: "1.5deg" }],
+  },
+  statCardSky: {
+    transform: [{ rotate: "-1deg" }],
   },
   statValue: {
     color: DESIGN.colors.text,
-    fontSize: 28,
-    fontWeight: "700",
-    letterSpacing: -0.8,
+    marginTop: 5,
+    fontSize: 24,
+    fontWeight: "900",
+    letterSpacing: -0.7,
   },
-  statMeta: {
-    color: DESIGN.colors.success,
-    fontSize: 12,
-    fontWeight: "600",
+  statValueRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+  },
+  statUnit: {
+    marginLeft: 2,
+    fontSize: 11,
+    fontWeight: "800",
+  },
+  statLabel: {
+    marginTop: 3,
+    fontSize: 11,
+    fontWeight: "800",
+    textAlign: "center",
   },
   sectionHeading: {
     flexDirection: "row",
@@ -669,9 +999,25 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   todoCard: {
+    position: "relative",
     paddingHorizontal: 12,
-    paddingTop: 12,
+    paddingTop: 18,
     paddingBottom: 16,
+    borderStyle: "dashed",
+  },
+  questBoardPins: {
+    position: "absolute",
+    top: 8,
+    right: 12,
+    left: 12,
+    zIndex: 2,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  questBoardPin: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   empty: {
     alignItems: "center",
@@ -744,5 +1090,13 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(11,16,16,0.96)",
     paddingHorizontal: 20,
     paddingTop: 10,
+  },
+  adventureCta: {
+    minHeight: 60,
+    borderRadius: 24,
+  },
+  adventureCtaText: {
+    fontSize: 17,
+    fontWeight: "900",
   },
 });
