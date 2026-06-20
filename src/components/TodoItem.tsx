@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTranslation } from "../i18n/useTranslation";
+import { LIGHT_PASTEL } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 import AnimatedPressable from "./AnimatedPressable";
 
@@ -74,19 +75,28 @@ export default function TodoItem({
                   : `${theme.colors.warning}3D`,
               backgroundColor:
                 theme.mode === "light"
-                  ? "#F8E8BD"
+                  ? "#FFF5DA"
                   : `${theme.colors.warning}18`,
             },
             completed && {
               borderColor: theme.colors.primary,
-              backgroundColor: theme.colors.primary,
+              backgroundColor:
+                theme.mode === "light"
+                  ? LIGHT_PASTEL.greenSoft
+                  : theme.colors.primary,
             },
           ]}
         >
           <Ionicons
             name={completed ? "checkmark" : "leaf-outline"}
             size={completed ? 21 : 19}
-            color={completed ? selectedTextColor : theme.colors.warning}
+            color={
+              completed
+                ? theme.mode === "light"
+                  ? LIGHT_PASTEL.greenText
+                  : selectedTextColor
+                : theme.colors.warning
+            }
           />
         </View>
         <View style={styles.textWrap}>
@@ -121,10 +131,12 @@ export default function TodoItem({
             styles.questStatus,
             {
               borderColor: completed
-                ? `${theme.colors.primary}60`
+                ? `${theme.colors.primary}68`
                 : theme.colors.border,
               backgroundColor: completed
-                ? `${theme.colors.primary}26`
+                ? theme.mode === "light"
+                  ? LIGHT_PASTEL.greenSoft
+                  : `${theme.colors.primary}26`
                 : theme.colors.surfaceAlt,
             },
           ]}
@@ -180,15 +192,20 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: 14,
   },
   questIcon: {
-    width: 42,
-    height: 42,
+    width: 44,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderRadius: 18,
+    borderWidth: 2,
+    borderRadius: 16,
+    shadowColor: "#B9AA8D",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 1,
     transform: [{ rotate: "-3deg" }],
   },
   textWrap: {
@@ -221,12 +238,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 2,
-    minWidth: 54,
-    maxWidth: 68,
-    paddingHorizontal: 5,
-    paddingVertical: 6,
+    minWidth: 60,
+    maxWidth: 72,
+    paddingHorizontal: 6,
+    paddingVertical: 7,
     borderWidth: 1,
-    borderRadius: 14,
+    borderRadius: 15,
   },
   questStatusText: {
     fontSize: 9,

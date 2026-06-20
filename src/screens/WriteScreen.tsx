@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -7,7 +8,6 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -98,7 +98,7 @@ const InsightInput = ({
   placeholder: string;
   minHeight?: number;
 }) => {
-  const { mode, theme } = useAppTheme();
+  const { mode } = useAppTheme();
 
   return (
     <RetroCard
@@ -109,15 +109,13 @@ const InsightInput = ({
       ]}
     >
       <PixelSectionTitle>{label}</PixelSectionTitle>
-      <TextInput
-        style={[styles.textInput, { minHeight, color: theme.colors.text }]}
+      <RetroInput
+        style={[styles.textInput, { minHeight }]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={theme.colors.muted}
         multiline
         textAlignVertical="top"
-        selectionColor={theme.colors.primary}
       />
     </RetroCard>
   );
@@ -134,33 +132,20 @@ const SupplementalInput = ({
   onChangeText: (text: string) => void;
   placeholder: string;
 }) => {
-  const { mode, theme } = useAppTheme();
+  const { theme } = useAppTheme();
 
   return (
     <View style={styles.supplementalField}>
       <Text style={[styles.supplementalLabel, { color: theme.colors.muted }]}>
         {label}
       </Text>
-      <TextInput
-        style={[
-          styles.supplementalInput,
-          {
-            borderColor:
-              mode === "light" ? LIGHT_PASTEL.line : theme.colors.border,
-            backgroundColor:
-              mode === "light"
-                ? LIGHT_PASTEL.paperWarm
-                : theme.colors.surfaceAlt,
-            color: theme.colors.text,
-          },
-        ]}
+      <RetroInput
+        style={[styles.supplementalInput]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={theme.colors.muted}
         multiline
         textAlignVertical="top"
-        selectionColor={theme.colors.primary}
       />
     </View>
   );
@@ -433,7 +418,7 @@ export default function WriteScreen({
                     {
                       borderColor:
                         mode === "light"
-                          ? LIGHT_PASTEL.border
+                          ? LIGHT_PASTEL.line
                           : theme.colors.border,
                       backgroundColor:
                         mode === "light"
@@ -441,19 +426,37 @@ export default function WriteScreen({
                           : theme.colors.surfaceAlt,
                     },
                     mood === item.value && {
-                      backgroundColor: theme.colors.primary,
-                      borderColor: theme.colors.primary,
+                      backgroundColor:
+                        mode === "light"
+                          ? LIGHT_PASTEL.greenSoft
+                          : theme.colors.primary,
+                      borderColor:
+                        mode === "light"
+                          ? LIGHT_PASTEL.greenStrong
+                          : theme.colors.primary,
                     },
                   ]}
                   onPress={() => setMood(item.value)}
                 >
+                  {mood === item.value && (
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={14}
+                      color={
+                        mode === "light"
+                          ? LIGHT_PASTEL.greenStrong
+                          : theme.colors.text
+                      }
+                      style={styles.chipIcon}
+                    />
+                  )}
                   <Text
                     style={[
                       styles.moodText,
                       { color: theme.colors.text },
                       mood === item.value && styles.moodTextSelected,
                       mood === item.value &&
-                        mode === "light" && { color: theme.colors.surface },
+                        mode === "light" && { color: LIGHT_PASTEL.greenText },
                     ]}
                   >
                     {t(item.labelKey)}
@@ -480,7 +483,7 @@ export default function WriteScreen({
                     {
                       borderColor:
                         mode === "light"
-                          ? LIGHT_PASTEL.border
+                          ? LIGHT_PASTEL.line
                           : theme.colors.border,
                       backgroundColor:
                         mode === "light"
@@ -488,12 +491,30 @@ export default function WriteScreen({
                           : theme.colors.surfaceAlt,
                     },
                     selectedTags.includes(tag) && {
-                      backgroundColor: `${theme.colors.primary}29`,
-                      borderColor: theme.colors.primary,
+                      backgroundColor:
+                        mode === "light"
+                          ? LIGHT_PASTEL.greenSoft
+                          : `${theme.colors.primary}29`,
+                      borderColor:
+                        mode === "light"
+                          ? LIGHT_PASTEL.greenStrong
+                          : theme.colors.primary,
                     },
                   ]}
                   onPress={() => toggleTag(tag)}
                 >
+                  {selectedTags.includes(tag) && (
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={14}
+                      color={
+                        mode === "light"
+                          ? LIGHT_PASTEL.greenStrong
+                          : theme.colors.surface
+                      }
+                      style={styles.chipIcon}
+                    />
+                  )}
                   <Text style={[styles.tagText, { color: theme.colors.text }]}>
                     #{tag}
                   </Text>
@@ -635,18 +656,20 @@ const styles = StyleSheet.create({
   },
   supplementalInput: {
     minHeight: 76,
-    borderWidth: 1,
     borderRadius: DESIGN.radius.input,
     fontSize: 15,
     lineHeight: 22,
-    padding: 10,
   },
   moodRow: {
     flexDirection: "row",
     flexWrap: "wrap",
   },
   moodChip: {
-    borderWidth: 1,
+    minHeight: 38,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
     borderRadius: DESIGN.radius.pill,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -659,14 +682,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   moodTextSelected: {
-    color: DESIGN.colors.text,
+    fontWeight: "700",
   },
   tagRow: {
     flexDirection: "row",
     flexWrap: "wrap",
   },
   tagChip: {
-    borderWidth: 1,
+    minHeight: 38,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
     borderRadius: DESIGN.radius.pill,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -677,6 +704,9 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: DESIGN.colors.text,
     fontWeight: "600",
+  },
+  chipIcon: {
+    marginRight: 5,
   },
   ctaDock: {
     position: "absolute",

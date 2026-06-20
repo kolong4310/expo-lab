@@ -45,6 +45,7 @@ export default function SearchScreen({
   const [keyword, setKeyword] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [results, setResults] = useState<WorkLog[]>([]);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const refreshResults = useCallback(() => {
     const query = keyword.trim();
@@ -124,14 +125,23 @@ export default function SearchScreen({
                 {
                   borderColor:
                     mode === "light"
-                      ? LIGHT_PASTEL.border
-                      : theme.colors.border,
+                      ? isSearchFocused
+                        ? LIGHT_PASTEL.greenStrong
+                        : LIGHT_PASTEL.line
+                      : isSearchFocused
+                        ? theme.colors.primary
+                        : theme.colors.border,
                   backgroundColor:
                     mode === "light"
-                      ? LIGHT_PASTEL.paper
+                      ? isSearchFocused
+                        ? LIGHT_PASTEL.paper
+                        : LIGHT_PASTEL.paperWarm
                       : theme.colors.surface,
                 },
                 mode === "light" && styles.lightSearchWrap,
+                mode === "light" &&
+                  isSearchFocused &&
+                  styles.lightSearchWrapFocused,
               ]}
             >
               <Ionicons name="search" size={19} color={theme.colors.muted} />
@@ -142,6 +152,8 @@ export default function SearchScreen({
                 placeholder={t("search.placeholder")}
                 returnKeyType="search"
                 onSubmitEditing={submitSearch}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
               />
               {keyword.length > 0 && (
                 <TouchableOpacity onPress={() => setKeyword("")} hitSlop={10}>
@@ -209,13 +221,25 @@ export default function SearchScreen({
                   style={[
                     styles.tagChip,
                     mode === "light" && {
-                      borderColor: LIGHT_PASTEL.border,
+                      borderColor: LIGHT_PASTEL.line,
                       backgroundColor:
-                        LIGHT_TAG_COLORS[index % LIGHT_TAG_COLORS.length],
+                        index % 2 === 0
+                          ? LIGHT_PASTEL.paper
+                          : LIGHT_TAG_COLORS[index % LIGHT_TAG_COLORS.length],
                     },
+                    mode === "light" && styles.lightTagChip,
                   ]}
                   onPress={() => selectKeyword(tag)}
                 >
+                  <Ionicons
+                    name="pricetag-outline"
+                    size={13}
+                    color={
+                      mode === "light"
+                        ? LIGHT_PASTEL.greenText
+                        : theme.colors.secondary
+                    }
+                  />
                   <Text
                     style={[
                       styles.tagText,
@@ -336,14 +360,19 @@ const styles = StyleSheet.create({
   searchWrap: {
     flexDirection: "row",
     alignItems: "center",
+    minHeight: 58,
     marginBottom: 28,
-    borderWidth: 1,
-    borderRadius: 26,
-    paddingHorizontal: 14,
+    borderWidth: 2,
+    borderRadius: 28,
+    paddingHorizontal: 16,
   },
   lightSearchWrap: {
     borderWidth: 2,
     ...LIGHT_PASTEL_CARD_SHADOW,
+  },
+  lightSearchWrapFocused: {
+    shadowColor: LIGHT_PASTEL.greenStrong,
+    shadowOpacity: 0.11,
   },
   searchInput: {
     flex: 1,
@@ -369,17 +398,17 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: DESIGN.colors.border,
+    borderWidth: 2,
+    borderColor: LIGHT_PASTEL.line,
     borderRadius: DESIGN.radius.pill,
-    backgroundColor: DESIGN.colors.surface,
+    backgroundColor: LIGHT_PASTEL.paper,
     paddingHorizontal: 12,
-    paddingVertical: 9,
+    paddingVertical: 10,
   },
   lightRecentChip: {
-    borderWidth: 2,
-    borderColor: LIGHT_PASTEL.border,
-    backgroundColor: LIGHT_PASTEL.paper,
+    borderColor: LIGHT_PASTEL.greenStrong,
+    backgroundColor: LIGHT_PASTEL.greenSoft,
+    ...LIGHT_PASTEL_CARD_SHADOW,
   },
   recentText: {
     flexShrink: 1,
@@ -389,14 +418,21 @@ const styles = StyleSheet.create({
   },
   tagChip: {
     maxWidth: "100%",
-    borderWidth: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: LIGHT_PASTEL.line,
     borderRadius: DESIGN.radius.pill,
-    backgroundColor: "rgba(116,217,159,0.14)",
+    backgroundColor: LIGHT_PASTEL.paper,
     paddingHorizontal: 13,
-    paddingVertical: 9,
+    paddingVertical: 10,
+  },
+  lightTagChip: {
+    ...LIGHT_PASTEL_CARD_SHADOW,
   },
   tagText: {
     flexShrink: 1,
+    marginLeft: 6,
     fontSize: 13,
     fontWeight: "600",
   },

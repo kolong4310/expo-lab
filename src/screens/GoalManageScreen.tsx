@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useCallback } from "react";
 import {
   View,
@@ -110,23 +111,45 @@ export default function GoalManageScreen({
           styles.switchBox,
           {
             backgroundColor:
-              mode === "light" ? LIGHT_PASTEL.blue : theme.colors.surfaceAlt,
+              mode === "light"
+                ? LIGHT_PASTEL.paperWarm
+                : theme.colors.surfaceAlt,
+            borderColor:
+              mode === "light" ? LIGHT_PASTEL.line : theme.colors.border,
           },
           item.is_active === 1 && {
             backgroundColor:
               mode === "light"
                 ? LIGHT_PASTEL.greenSoft
                 : `${theme.colors.primary}29`,
+            borderColor:
+              mode === "light"
+                ? LIGHT_PASTEL.greenStrong
+                : theme.colors.primary,
           },
         ]}
       >
+        <Ionicons
+          name={item.is_active === 1 ? "checkmark-circle" : "ellipse-outline"}
+          size={14}
+          color={
+            item.is_active === 1
+              ? mode === "light"
+                ? LIGHT_PASTEL.greenStrong
+                : theme.colors.success
+              : theme.colors.muted
+          }
+          style={styles.switchIcon}
+        />
         <Text
           style={[
             styles.switchText,
             {
               color:
                 mode === "light"
-                  ? LIGHT_PASTEL.greenText
+                  ? item.is_active === 1
+                    ? LIGHT_PASTEL.greenText
+                    : theme.colors.muted
                   : theme.colors.success,
             },
           ]}
@@ -194,7 +217,7 @@ export default function GoalManageScreen({
                       {
                         borderColor:
                           mode === "light"
-                            ? LIGHT_PASTEL.border
+                            ? LIGHT_PASTEL.line
                             : theme.colors.border,
                         backgroundColor:
                           mode === "light"
@@ -202,18 +225,36 @@ export default function GoalManageScreen({
                             : theme.colors.surfaceAlt,
                       },
                       selectedCategory === cat && {
-                        borderColor: theme.colors.primary,
-                        backgroundColor: theme.colors.primary,
+                        borderColor:
+                          mode === "light"
+                            ? LIGHT_PASTEL.greenStrong
+                            : theme.colors.primary,
+                        backgroundColor:
+                          mode === "light"
+                            ? LIGHT_PASTEL.greenSoft
+                            : theme.colors.primary,
                       },
                     ]}
                     onPress={() => setSelectedCategory(cat)}
                   >
+                    {selectedCategory === cat && (
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={14}
+                        color={
+                          mode === "light"
+                            ? LIGHT_PASTEL.greenStrong
+                            : theme.colors.surface
+                        }
+                        style={styles.catIcon}
+                      />
+                    )}
                     <Text
                       style={[
                         styles.catText,
                         { color: theme.colors.text },
                         selectedCategory === cat &&
-                          mode === "light" && { color: theme.colors.surface },
+                          mode === "light" && { color: LIGHT_PASTEL.greenText },
                       ]}
                     >
                       {cat}
@@ -289,8 +330,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   catChip: {
-    borderWidth: 1.5,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
     borderRadius: DESIGN.radius.pill,
+    minHeight: 38,
     paddingHorizontal: 14,
     paddingVertical: 9,
     marginRight: 8,
@@ -336,14 +381,25 @@ const styles = StyleSheet.create({
   },
   switchBox: {
     flexShrink: 0,
-    minWidth: 58,
+    minWidth: 66,
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    minHeight: 38,
+    paddingHorizontal: 11,
     paddingVertical: 8,
     borderRadius: DESIGN.radius.pill,
   },
   switchText: {
     fontWeight: "700",
     fontSize: 12,
+  },
+  switchIcon: {
+    marginRight: 4,
+  },
+  catIcon: {
+    marginRight: 5,
   },
   emptyCard: {
     padding: 20,

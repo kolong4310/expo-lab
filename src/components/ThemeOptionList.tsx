@@ -37,7 +37,7 @@ export default function ThemeOptionList({
         mode === "light" && { backgroundColor: LIGHT_PASTEL.paperWarm },
       ]}
     >
-      {THEME_OPTIONS.map((item, index) => {
+      {THEME_OPTIONS.map((item) => {
         const selected = selectedMode === item.mode;
 
         return (
@@ -45,16 +45,24 @@ export default function ThemeOptionList({
             key={item.mode}
             style={[
               styles.optionButton,
+              {
+                borderColor:
+                  mode === "light" ? LIGHT_PASTEL.line : theme.colors.border,
+                backgroundColor:
+                  mode === "light" ? LIGHT_PASTEL.paper : theme.colors.surface,
+              },
               selected && {
+                borderWidth: 2,
                 backgroundColor:
                   mode === "light"
                     ? LIGHT_PASTEL.greenSoft
                     : `${theme.colors.primary}14`,
+                borderColor:
+                  mode === "light"
+                    ? LIGHT_PASTEL.greenStrong
+                    : theme.colors.primary,
               },
-              index < THEME_OPTIONS.length - 1 && {
-                borderBottomWidth: 1,
-                borderBottomColor: theme.colors.border,
-              },
+              mode === "light" && selected && styles.lightSelectedOption,
             ]}
             pressedScale={0.98}
             onPress={() => onSelect(item.mode)}
@@ -106,12 +114,14 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   optionButton: {
-    minHeight: 62,
+    minHeight: 66,
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    borderRadius: 18,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginBottom: 8,
   },
   iconWrap: {
     width: 34,
@@ -127,5 +137,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     lineHeight: 22,
+  },
+  lightSelectedOption: {
+    shadowColor: LIGHT_PASTEL.shadow,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 1,
   },
 });

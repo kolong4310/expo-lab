@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { AppLanguage, LANGUAGE_OPTIONS } from "../i18n/languages";
-import { DESIGN } from "../theme/design";
 import { LIGHT_PASTEL } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 import AnimatedPressable from "./AnimatedPressable";
@@ -33,7 +32,7 @@ export default function LanguageOptionList({
         mode === "light" && { backgroundColor: LIGHT_PASTEL.paperWarm },
       ]}
     >
-      {LANGUAGE_OPTIONS.map((language, index) => {
+      {LANGUAGE_OPTIONS.map((language) => {
         const selected = selectedLanguage === language.code;
 
         return (
@@ -41,16 +40,24 @@ export default function LanguageOptionList({
             key={language.code}
             style={[
               styles.languageButton,
+              {
+                borderColor:
+                  mode === "light" ? LIGHT_PASTEL.line : theme.colors.border,
+                backgroundColor:
+                  mode === "light" ? LIGHT_PASTEL.paper : theme.colors.surface,
+              },
               selected && {
+                borderWidth: 2,
                 backgroundColor:
                   mode === "light"
                     ? LIGHT_PASTEL.greenSoft
                     : `${theme.colors.primary}14`,
+                borderColor:
+                  mode === "light"
+                    ? LIGHT_PASTEL.greenStrong
+                    : theme.colors.primary,
               },
-              index < LANGUAGE_OPTIONS.length - 1 && {
-                borderBottomWidth: 1,
-                borderBottomColor: theme.colors.border,
-              },
+              mode === "light" && selected && styles.lightSelectedLanguage,
             ]}
             pressedScale={0.98}
             onPress={() => onSelect(language.code)}
@@ -102,12 +109,14 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   languageButton: {
-    minHeight: 64,
+    minHeight: 66,
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    borderRadius: 18,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginBottom: 8,
   },
   languageIcon: {
     width: 34,
@@ -123,5 +132,12 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "700",
     lineHeight: 23,
+  },
+  lightSelectedLanguage: {
+    shadowColor: LIGHT_PASTEL.shadow,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 1,
   },
 });

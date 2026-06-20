@@ -8,10 +8,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { DESIGN } from "../../theme/design";
-import {
-  LIGHT_PASTEL,
-  LIGHT_PASTEL_CARD_SHADOW,
-} from "../../theme/lightPastel";
+import { LIGHT_PASTEL } from "../../theme/lightPastel";
 import { useAppTheme } from "../../theme/useAppTheme";
 import AnimatedPressable from "../AnimatedPressable";
 
@@ -48,7 +45,9 @@ export default function RetroButton({
               : theme.colors.primary,
           borderColor:
             theme.mode === "light"
-              ? LIGHT_PASTEL.border
+              ? isSecondary
+                ? LIGHT_PASTEL.line
+                : LIGHT_PASTEL.greenStrong
               : theme.colors.borderStrong,
         },
         theme.mode === "light" && styles.lightButton,
@@ -64,7 +63,9 @@ export default function RetroButton({
             color:
               theme.mode === "light" && !isSecondary
                 ? theme.colors.surface
-                : theme.colors.text,
+                : theme.mode === "light" && isSecondary
+                  ? LIGHT_PASTEL.greenText
+                  : theme.colors.text,
           },
           isSecondary && styles.secondaryText,
           textStyle,
@@ -78,15 +79,15 @@ export default function RetroButton({
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: 56,
+    minHeight: 58,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: DESIGN.radius.button,
     backgroundColor: DESIGN.colors.primary,
-    paddingHorizontal: 20,
+    paddingHorizontal: 22,
   },
   secondary: {
-    borderWidth: 1,
+    borderWidth: 2,
   },
   disabled: {
     opacity: 0.4,
@@ -94,11 +95,16 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     fontWeight: "700",
+    letterSpacing: -0.1,
   },
   secondaryText: {},
   lightButton: {
     borderWidth: 2,
     borderRadius: 24,
-    ...LIGHT_PASTEL_CARD_SHADOW,
+    shadowColor: LIGHT_PASTEL.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 2,
   },
 });

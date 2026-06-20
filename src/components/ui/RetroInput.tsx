@@ -18,25 +18,57 @@ export default function RetroInput({
   style,
   containerStyle,
   placeholderTextColor,
+  onFocus,
+  onBlur,
   ...props
 }: RetroInputProps) {
   const { mode, theme } = useAppTheme();
+  const [focused, setFocused] = React.useState(false);
+
+  const handleFocus: NonNullable<TextInputProps["onFocus"]> = (event) => {
+    setFocused(true);
+    onFocus?.(event);
+  };
+
+  const handleBlur: NonNullable<TextInputProps["onBlur"]> = (event) => {
+    setFocused(false);
+    onBlur?.(event);
+  };
 
   return (
     <TextInput
       {...props}
-      placeholderTextColor={placeholderTextColor || theme.colors.muted}
-      selectionColor={theme.colors.primary}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      placeholderTextColor={
+        placeholderTextColor ||
+        (mode === "light" ? "#8F8066" : theme.colors.muted)
+      }
+      selectionColor={
+        mode === "light" ? LIGHT_PASTEL.greenStrong : theme.colors.primary
+      }
+      underlineColorAndroid="transparent"
       style={[
         styles.input,
         {
           borderColor:
-            mode === "light" ? LIGHT_PASTEL.line : theme.colors.border,
+            mode === "light"
+              ? focused
+                ? LIGHT_PASTEL.greenStrong
+                : LIGHT_PASTEL.line
+              : focused
+                ? theme.colors.primary
+                : theme.colors.border,
           backgroundColor:
-            mode === "light" ? LIGHT_PASTEL.paperWarm : theme.colors.surfaceAlt,
+            mode === "light"
+              ? focused
+                ? LIGHT_PASTEL.paper
+                : LIGHT_PASTEL.paperWarm
+              : theme.colors.surfaceAlt,
           color: theme.colors.text,
         },
         mode === "light" && styles.lightInput,
+        mode === "light" && focused && styles.lightInputFocused,
         containerStyle,
         style,
       ]}
@@ -56,5 +88,13 @@ const styles = StyleSheet.create({
   lightInput: {
     borderWidth: 1.5,
     borderRadius: 18,
+  },
+  lightInputFocused: {
+    borderWidth: 2,
+    shadowColor: LIGHT_PASTEL.greenStrong,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 2,
   },
 });
