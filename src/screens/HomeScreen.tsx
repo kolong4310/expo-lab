@@ -70,7 +70,30 @@ function SproutFriend() {
           { backgroundColor: theme.colors.primary },
         ]}
       />
-      <View style={[styles.mascotBody, { backgroundColor: faceColor }]}>
+      <View
+        style={[
+          styles.mascotArm,
+          styles.mascotArmLeft,
+          { backgroundColor: faceColor },
+        ]}
+      />
+      <View
+        style={[
+          styles.mascotArm,
+          styles.mascotArmRight,
+          { backgroundColor: faceColor },
+        ]}
+      />
+      <View
+        style={[
+          styles.mascotBody,
+          {
+            borderColor:
+              mode === "light" ? "rgba(255,255,255,0.72)" : "transparent",
+            backgroundColor: faceColor,
+          },
+        ]}
+      >
         <View style={styles.mascotEyes}>
           <View
             style={[styles.mascotEye, { backgroundColor: theme.colors.text }]}
@@ -87,6 +110,20 @@ function SproutFriend() {
           style={[styles.mascotSmile, { borderBottomColor: theme.colors.text }]}
         />
       </View>
+      <View
+        style={[
+          styles.mascotFoot,
+          styles.mascotFootLeft,
+          { backgroundColor: faceColor },
+        ]}
+      />
+      <View
+        style={[
+          styles.mascotFoot,
+          styles.mascotFootRight,
+          { backgroundColor: faceColor },
+        ]}
+      />
       <View
         style={[
           styles.mascotGround,
@@ -150,7 +187,7 @@ function AdventureMap({
                 ]}
               >
                 <Ionicons
-                  name={hasGrowth ? "leaf" : "footsteps-outline"}
+                  name={hasGrowth ? "leaf" : "leaf-outline"}
                   size={isToday ? 15 : 13}
                   color={
                     hasGrowth
@@ -184,6 +221,7 @@ export default function HomeScreen({
   const insets = useSafeAreaInsets();
   const { language, t } = useTranslation();
   const { mode, theme } = useAppTheme();
+  const homeBackground = mode === "light" ? "#F7F3E9" : theme.colors.background;
   const today = formatLocalDate();
   const todayDate = new Date();
   const dateLabel = `${today.replace(/-/g, ".")} ${DATE_WEEKDAYS[language][todayDate.getDay()]}`;
@@ -223,7 +261,7 @@ export default function HomeScreen({
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: homeBackground }]}
     >
       <View pointerEvents="none" style={styles.backgroundGarden}>
         <View
@@ -236,6 +274,16 @@ export default function HomeScreen({
         <View
           style={[
             styles.backgroundGlow,
+            styles.backgroundGlowWarm,
+            {
+              backgroundColor:
+                mode === "light" ? "rgba(247,221,191,0.42)" : "transparent",
+            },
+          ]}
+        />
+        <View
+          style={[
+            styles.backgroundGlow,
             styles.backgroundGlowSide,
             { backgroundColor: `${theme.colors.secondary}0C` },
           ]}
@@ -243,7 +291,7 @@ export default function HomeScreen({
       </View>
       <StatusBar
         barStyle={mode === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={theme.colors.background}
+        backgroundColor={homeBackground}
       />
       <ScrollView
         style={[styles.container, styles.transparentBackground]}
@@ -261,7 +309,7 @@ export default function HomeScreen({
               styles.streakCard,
               {
                 borderColor: `${theme.colors.primary}38`,
-                backgroundColor: mode === "dark" ? "#1D3930" : "#DFF2D2",
+                backgroundColor: mode === "dark" ? "#1D3930" : "#CFEAF4",
               },
             ]}
           >
@@ -274,8 +322,13 @@ export default function HomeScreen({
                   },
                 ]}
               />
-              <View style={[styles.heroCloud, styles.heroCloudOne]} />
-              <View style={[styles.heroCloud, styles.heroCloudTwo]} />
+              <View style={[styles.heroCloud, styles.heroCloudOne]}>
+                <View style={[styles.cloudPuff, styles.cloudPuffLeft]} />
+                <View style={[styles.cloudPuff, styles.cloudPuffRight]} />
+              </View>
+              <View style={[styles.heroCloud, styles.heroCloudTwo]}>
+                <View style={[styles.cloudPuff, styles.cloudPuffSmall]} />
+              </View>
               <View
                 style={[
                   styles.heroHill,
@@ -302,6 +355,22 @@ export default function HomeScreen({
                   },
                 ]}
               />
+              <View style={[styles.gardenTree, styles.gardenTreeLeft]}>
+                <View style={styles.treeCrownSmall} />
+                <View style={styles.treeCrown} />
+                <View style={styles.treeTrunk} />
+              </View>
+              <View style={[styles.gardenTree, styles.gardenTreeRight]}>
+                <View style={styles.treeCrownSmall} />
+                <View style={styles.treeCrown} />
+                <View style={styles.treeTrunk} />
+              </View>
+              <View style={[styles.gardenFlower, styles.gardenFlowerOne]}>
+                <View style={styles.flowerCenter} />
+              </View>
+              <View style={[styles.gardenFlower, styles.gardenFlowerTwo]}>
+                <View style={styles.flowerCenter} />
+              </View>
             </View>
             <View style={styles.heroIntro}>
               <View style={styles.heroCopy}>
@@ -312,7 +381,7 @@ export default function HomeScreen({
                   ]}
                 >
                   <Ionicons
-                    name="compass-outline"
+                    name="leaf-outline"
                     size={14}
                     color={theme.colors.primary}
                   />
@@ -345,7 +414,7 @@ export default function HomeScreen({
               styles.mapCard,
               {
                 borderColor: `${theme.colors.warning}38`,
-                backgroundColor: mode === "dark" ? "#1A2B24" : "#FFF9E8",
+                backgroundColor: mode === "dark" ? "#1A2B24" : "#FFFDF7",
               },
             ]}
           >
@@ -356,7 +425,11 @@ export default function HomeScreen({
                   { backgroundColor: `${theme.colors.warning}22` },
                 ]}
               >
-                <Ionicons name="map" size={18} color={theme.colors.warning} />
+                <Ionicons
+                  name="calendar-outline"
+                  size={18}
+                  color={theme.colors.warning}
+                />
               </View>
               <Text style={[styles.mapTitle, { color: theme.colors.text }]}>
                 {t("today.adventureMap")}
@@ -374,7 +447,7 @@ export default function HomeScreen({
                 styles.statCardMint,
                 {
                   borderColor: `${theme.colors.primary}35`,
-                  backgroundColor: mode === "dark" ? "#24483A" : "#CEF0D2",
+                  backgroundColor: mode === "dark" ? "#24483A" : "#DDF2D2",
                 },
               ]}
             >
@@ -392,11 +465,15 @@ export default function HomeScreen({
                 styles.statCardGold,
                 {
                   borderColor: `${theme.colors.warning}40`,
-                  backgroundColor: mode === "dark" ? "#4A3D26" : "#FFE7A8",
+                  backgroundColor: mode === "dark" ? "#4A3D26" : "#FFE6B8",
                 },
               ]}
             >
-              <Ionicons name="flag" size={22} color={theme.colors.warning} />
+              <Ionicons
+                name="checkmark-circle"
+                size={22}
+                color={theme.colors.warning}
+              />
               <Text style={[styles.statValue, { color: theme.colors.text }]}>
                 {stats.rate}%
               </Text>
@@ -410,15 +487,11 @@ export default function HomeScreen({
                 styles.statCardSky,
                 {
                   borderColor: `${theme.colors.secondary}40`,
-                  backgroundColor: mode === "dark" ? "#24404A" : "#CFEAF1",
+                  backgroundColor: mode === "dark" ? "#24404A" : "#DCE9F7",
                 },
               ]}
             >
-              <Ionicons
-                name="footsteps"
-                size={22}
-                color={theme.colors.secondary}
-              />
+              <Ionicons name="heart" size={22} color={theme.colors.secondary} />
               <View style={styles.statValueRow}>
                 <Text style={[styles.statValue, { color: theme.colors.text }]}>
                   {streak}
@@ -443,7 +516,7 @@ export default function HomeScreen({
               ]}
             >
               <Ionicons
-                name="flag-outline"
+                name="checkmark-circle-outline"
                 size={17}
                 color={theme.colors.primary}
               />
@@ -467,7 +540,8 @@ export default function HomeScreen({
               styles.todoCard,
               {
                 borderColor: `${theme.colors.primary}1F`,
-                backgroundColor: `${theme.colors.primary}08`,
+                backgroundColor:
+                  mode === "light" ? "#FFF8EE" : `${theme.colors.primary}08`,
               },
             ]}
           >
@@ -607,14 +681,17 @@ export default function HomeScreen({
             borderTopColor: theme.colors.border,
             backgroundColor:
               mode === "light"
-                ? "rgba(244,247,239,0.96)"
+                ? "rgba(247,243,233,0.97)"
                 : "rgba(11,16,16,0.96)",
           },
         ]}
       >
         <PrimaryButton
           label={todayLog ? t("today.edit") : t("today.write")}
-          style={styles.adventureCta}
+          style={[
+            styles.adventureCta,
+            mode === "light" && styles.adventureCtaLight,
+          ]}
           textStyle={styles.adventureCtaText}
           onPress={() => {
             if (todayLog?.id !== undefined) {
@@ -657,6 +734,12 @@ const styles = StyleSheet.create({
     width: 260,
     height: 260,
   },
+  backgroundGlowWarm: {
+    right: -80,
+    bottom: 120,
+    width: 230,
+    height: 230,
+  },
   content: {
     paddingHorizontal: 20,
     paddingTop: 12,
@@ -666,6 +749,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     minHeight: 250,
     padding: 22,
+    borderWidth: 2,
+    borderColor: "rgba(255,255,255,0.72)",
+    shadowColor: "#66836F",
+    shadowOffset: { width: 0, height: 7 },
+    shadowOpacity: 0.14,
+    shadowRadius: 16,
+    elevation: 3,
   },
   heroGarden: {
     ...StyleSheet.absoluteFillObject,
@@ -703,7 +793,30 @@ const styles = StyleSheet.create({
     width: 52,
     height: 16,
     borderRadius: 10,
-    backgroundColor: "rgba(255,255,255,0.42)",
+    backgroundColor: "rgba(255,255,255,0.68)",
+  },
+  cloudPuff: {
+    position: "absolute",
+    backgroundColor: "rgba(255,255,255,0.68)",
+    borderRadius: 999,
+  },
+  cloudPuffLeft: {
+    top: -8,
+    left: 8,
+    width: 22,
+    height: 22,
+  },
+  cloudPuffRight: {
+    top: -5,
+    right: 6,
+    width: 17,
+    height: 17,
+  },
+  cloudPuffSmall: {
+    top: -7,
+    left: 8,
+    width: 18,
+    height: 18,
   },
   heroCloudOne: {
     top: 38,
@@ -725,6 +838,75 @@ const styles = StyleSheet.create({
     opacity: 0.72,
     transform: [{ rotate: "24deg" }],
   },
+  gardenTree: {
+    position: "absolute",
+    width: 38,
+    height: 62,
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  gardenTreeLeft: {
+    bottom: 42,
+    left: 12,
+    transform: [{ scale: 0.82 }],
+  },
+  gardenTreeRight: {
+    right: 108,
+    bottom: 56,
+    transform: [{ scale: 0.68 }],
+  },
+  treeCrownSmall: {
+    position: "absolute",
+    zIndex: 2,
+    top: 0,
+    width: 24,
+    height: 34,
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    backgroundColor: "#4F9E6B",
+  },
+  treeCrown: {
+    position: "absolute",
+    zIndex: 1,
+    top: 16,
+    width: 38,
+    height: 34,
+    borderRadius: 20,
+    backgroundColor: "#70B981",
+  },
+  treeTrunk: {
+    width: 8,
+    height: 18,
+    borderRadius: 5,
+    backgroundColor: "#A77D55",
+  },
+  gardenFlower: {
+    position: "absolute",
+    width: 12,
+    height: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 6,
+    backgroundColor: "#F4B6B0",
+  },
+  gardenFlowerOne: {
+    right: 95,
+    bottom: 25,
+  },
+  gardenFlowerTwo: {
+    right: 18,
+    bottom: 38,
+    backgroundColor: "#F8D37E",
+    transform: [{ scale: 0.8 }],
+  },
+  flowerCenter: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: "#FFF9E8",
+  },
   heroIntro: {
     flexDirection: "row",
     alignItems: "flex-end",
@@ -744,6 +926,9 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     lineHeight: 34,
     letterSpacing: -0.8,
+    textShadowColor: "rgba(255,255,255,0.48)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 5,
   },
   heroKicker: {
     alignSelf: "flex-start",
@@ -761,12 +946,18 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   heroSubtitle: {
+    alignSelf: "flex-start",
     maxWidth: 190,
     marginTop: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
     color: DESIGN.colors.textDim,
     fontSize: 14,
     fontWeight: "600",
     lineHeight: 21,
+    borderRadius: 13,
+    backgroundColor: "rgba(255,255,255,0.58)",
+    overflow: "hidden",
   },
   mascotStage: {
     position: "relative",
@@ -781,6 +972,7 @@ const styles = StyleSheet.create({
     height: 76,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 2,
     borderRadius: 38,
     borderBottomRightRadius: 30,
     transform: [{ rotate: "3deg" }],
@@ -803,6 +995,22 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 26,
     borderBottomLeftRadius: 26,
     transform: [{ rotate: "28deg" }],
+  },
+  mascotArm: {
+    position: "absolute",
+    zIndex: 2,
+    bottom: 31,
+    width: 22,
+    height: 11,
+    borderRadius: 9,
+  },
+  mascotArmLeft: {
+    left: 5,
+    transform: [{ rotate: "-24deg" }],
+  },
+  mascotArmRight: {
+    right: 5,
+    transform: [{ rotate: "24deg" }],
   },
   mascotEyes: {
     width: 38,
@@ -835,6 +1043,22 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderRadius: 8,
   },
+  mascotFoot: {
+    position: "absolute",
+    zIndex: 4,
+    bottom: 7,
+    width: 23,
+    height: 12,
+    borderRadius: 12,
+  },
+  mascotFootLeft: {
+    left: 22,
+    transform: [{ rotate: "-8deg" }],
+  },
+  mascotFootRight: {
+    right: 22,
+    transform: [{ rotate: "8deg" }],
+  },
   mascotGround: {
     width: 96,
     height: 15,
@@ -857,7 +1081,13 @@ const styles = StyleSheet.create({
   mapCard: {
     marginBottom: 14,
     padding: 18,
-    borderRadius: 24,
+    borderRadius: 28,
+    borderWidth: 2,
+    shadowColor: "#8B8068",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.09,
+    shadowRadius: 12,
+    elevation: 2,
   },
   mapHeader: {
     flexDirection: "row",
@@ -937,7 +1167,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 7,
     paddingVertical: 12,
-    borderRadius: 22,
+    borderWidth: 2,
+    borderColor: "rgba(255,255,255,0.78)",
+    borderRadius: 24,
+    shadowColor: "#847A68",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
   },
   statCardMint: {
     transform: [{ rotate: "-2deg" }],
@@ -1003,7 +1240,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingTop: 18,
     paddingBottom: 16,
-    borderStyle: "dashed",
+    borderStyle: "solid",
+    borderRadius: 28,
+    shadowColor: "#8B8068",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 2,
   },
   questBoardPins: {
     position: "absolute",
@@ -1094,6 +1337,17 @@ const styles = StyleSheet.create({
   adventureCta: {
     minHeight: 60,
     borderRadius: 24,
+  },
+  adventureCtaLight: {
+    borderWidth: 2,
+    borderColor: "rgba(255,255,255,0.72)",
+    borderRadius: 28,
+    backgroundColor: "#62AA78",
+    shadowColor: "#477B58",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.22,
+    shadowRadius: 8,
+    elevation: 4,
   },
   adventureCtaText: {
     fontSize: 17,

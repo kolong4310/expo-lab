@@ -30,12 +30,16 @@ export default function TodoItem({
       style={[
         styles.row,
         {
-          borderColor: `${theme.colors.secondary}24`,
-          backgroundColor: theme.colors.surface,
+          borderColor:
+            theme.mode === "light" ? "#E8DFC9" : `${theme.colors.secondary}24`,
+          backgroundColor:
+            theme.mode === "light" ? "#FFFDF8" : theme.colors.surface,
         },
         completed && {
-          borderColor: `${theme.colors.primary}70`,
-          backgroundColor: `${theme.colors.primary}1A`,
+          borderColor:
+            theme.mode === "light" ? "#9DCDA8" : `${theme.colors.primary}70`,
+          backgroundColor:
+            theme.mode === "light" ? "#E4F3DD" : `${theme.colors.primary}1A`,
         },
       ]}
     >
@@ -64,8 +68,14 @@ export default function TodoItem({
           style={[
             styles.questIcon,
             {
-              borderColor: `${theme.colors.warning}3D`,
-              backgroundColor: `${theme.colors.warning}18`,
+              borderColor:
+                theme.mode === "light"
+                  ? "#EBCF9B"
+                  : `${theme.colors.warning}3D`,
+              backgroundColor:
+                theme.mode === "light"
+                  ? "#F8E8BD"
+                  : `${theme.colors.warning}18`,
             },
             completed && {
               borderColor: theme.colors.primary,
@@ -120,7 +130,7 @@ export default function TodoItem({
           ]}
         >
           <Ionicons
-            name={completed ? "sparkles" : "footsteps-outline"}
+            name={completed ? "checkmark-circle" : "ellipse-outline"}
             size={13}
             color={completed ? theme.colors.success : theme.colors.muted}
           />
@@ -158,8 +168,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 12,
     borderWidth: 1.5,
-    borderRadius: 23,
+    borderRadius: 25,
     overflow: "hidden",
+    shadowColor: "#8B8068",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.07,
+    shadowRadius: 7,
+    elevation: 1,
   },
   toggleArea: {
     flex: 1,
@@ -173,7 +188,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderRadius: 16,
+    borderRadius: 18,
     transform: [{ rotate: "-3deg" }],
   },
   textWrap: {
