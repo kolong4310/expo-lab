@@ -20,6 +20,7 @@ import { AppLanguage } from "../i18n/languages";
 import { useTranslation } from "../i18n/useTranslation";
 import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
+import { LIGHT_PASTEL } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 import { formatLocalDate } from "../utils/date";
 
@@ -398,7 +399,16 @@ export default function HomeScreen({
                   {t("today.heroTitle")}
                 </Text>
                 <Text
-                  style={[styles.heroSubtitle, { color: theme.colors.text }]}
+                  style={[
+                    styles.heroSubtitle,
+                    {
+                      color: theme.colors.text,
+                      backgroundColor:
+                        mode === "light"
+                          ? "rgba(255,255,255,0.58)"
+                          : "rgba(11,16,16,0.52)",
+                    },
+                  ]}
                 >
                   {t("today.heroSubtitle")}
                 </Text>
@@ -527,7 +537,15 @@ export default function HomeScreen({
           </View>
           <AnimatedPressable onPress={() => navigation.navigate("GoalManage")}>
             <Text
-              style={[styles.sectionAction, { color: theme.colors.secondary }]}
+              style={[
+                styles.sectionAction,
+                {
+                  color:
+                    mode === "light"
+                      ? LIGHT_PASTEL.greenText
+                      : theme.colors.secondary,
+                },
+              ]}
             >
               {t("today.manageRepeatGoals")}
             </Text>
@@ -956,7 +974,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     lineHeight: 21,
     borderRadius: 13,
-    backgroundColor: "rgba(255,255,255,0.58)",
     overflow: "hidden",
   },
   mascotStage: {
@@ -1214,6 +1231,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitleRow: {
+    flex: 1,
+    minWidth: 0,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -1226,11 +1245,13 @@ const styles = StyleSheet.create({
     borderRadius: 17,
   },
   sectionTitle: {
+    flexShrink: 1,
     color: DESIGN.colors.text,
     fontSize: 19,
     fontWeight: "700",
   },
   sectionAction: {
+    marginLeft: 8,
     color: DESIGN.colors.primaryLight,
     fontSize: 13,
     fontWeight: "600",
@@ -1342,7 +1363,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "rgba(255,255,255,0.72)",
     borderRadius: 28,
-    backgroundColor: "#62AA78",
+    backgroundColor: "#397D54",
     shadowColor: "#477B58",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.22,

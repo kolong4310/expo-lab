@@ -1,5 +1,5 @@
 import React from "react";
-import { StatusBar, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FadeInView from "../components/FadeInView";
 import LanguageOptionList from "../components/LanguageOptionList";
@@ -35,7 +35,10 @@ export default function LanguageSelectScreen(
         barStyle={mode === "dark" ? "light-content" : "dark-content"}
         backgroundColor={screenBackground}
       />
-      <View style={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.header}>
           <View
             style={[
@@ -61,7 +64,7 @@ export default function LanguageSelectScreen(
         <FadeInView delay={80}>
           <LanguageOptionList onSelect={handleSelect} />
         </FadeInView>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -93,9 +96,10 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,230,184,0.46)",
   },
   content: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "center",
     paddingHorizontal: 24,
+    paddingVertical: 24,
   },
   header: {
     marginBottom: 28,

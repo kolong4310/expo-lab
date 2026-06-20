@@ -217,7 +217,15 @@ export default function SearchScreen({
                   onPress={() => selectKeyword(tag)}
                 >
                   <Text
-                    style={[styles.tagText, { color: theme.colors.secondary }]}
+                    style={[
+                      styles.tagText,
+                      {
+                        color:
+                          mode === "light"
+                            ? LIGHT_PASTEL.greenText
+                            : theme.colors.secondary,
+                      },
+                    ]}
                   >
                     #{tag}
                   </Text>
@@ -358,6 +366,7 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   recentChip: {
+    maxWidth: "100%",
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
@@ -373,11 +382,13 @@ const styles = StyleSheet.create({
     backgroundColor: LIGHT_PASTEL.paper,
   },
   recentText: {
+    flexShrink: 1,
     marginLeft: 6,
     fontSize: 13,
     fontWeight: "500",
   },
   tagChip: {
+    maxWidth: "100%",
     borderWidth: 1,
     borderRadius: DESIGN.radius.pill,
     backgroundColor: "rgba(116,217,159,0.14)",
@@ -385,6 +396,7 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
   },
   tagText: {
+    flexShrink: 1,
     fontSize: 13,
     fontWeight: "600",
   },

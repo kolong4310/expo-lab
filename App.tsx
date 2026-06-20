@@ -85,7 +85,7 @@ function TabNavigator() {
           />
         ),
         tabBarActiveTintColor:
-          mode === "light" ? LIGHT_PASTEL.green : theme.colors.primary,
+          mode === "light" ? LIGHT_PASTEL.greenText : theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.muted,
         tabBarStyle: {
           backgroundColor:
@@ -93,8 +93,8 @@ function TabNavigator() {
           borderTopWidth: mode === "light" ? 2 : 1,
           borderTopColor:
             mode === "light" ? LIGHT_PASTEL.border : theme.colors.border,
-          height: 76 + (insets.bottom > 0 ? insets.bottom - 10 : 0),
-          paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
+          height: 76 + insets.bottom,
+          paddingBottom: Math.max(insets.bottom, 8),
           paddingTop: 8,
           ...(mode === "light" ? LIGHT_PASTEL_CARD_SHADOW : {}),
         },

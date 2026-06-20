@@ -79,7 +79,9 @@ export default function ThemeOptionList({
                     ? theme.mode === "light"
                       ? theme.colors.surface
                       : theme.colors.text
-                    : theme.colors.secondary
+                    : mode === "light"
+                      ? LIGHT_PASTEL.greenText
+                      : theme.colors.secondary
                 }
               />
             </View>
@@ -107,6 +109,7 @@ const styles = StyleSheet.create({
     minHeight: 62,
     flexDirection: "row",
     alignItems: "center",
+    paddingVertical: 8,
     paddingHorizontal: 8,
     borderRadius: 18,
   },
@@ -120,7 +123,9 @@ const styles = StyleSheet.create({
   },
   optionLabel: {
     flex: 1,
+    minWidth: 0,
     fontSize: 16,
     fontWeight: "700",
+    lineHeight: 22,
   },
 });

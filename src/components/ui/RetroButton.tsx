@@ -44,7 +44,7 @@ export default function RetroButton({
               ? LIGHT_PASTEL.paper
               : theme.colors.surfaceAlt
             : theme.mode === "light"
-              ? LIGHT_PASTEL.green
+              ? LIGHT_PASTEL.greenStrong
               : theme.colors.primary,
           borderColor:
             theme.mode === "light"

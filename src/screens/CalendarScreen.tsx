@@ -106,7 +106,7 @@ export default function CalendarScreen({
       ...marks[selectedDate],
       selected: true,
       selectedColor:
-        mode === "light" ? LIGHT_PASTEL.green : theme.colors.primary,
+        mode === "light" ? LIGHT_PASTEL.greenStrong : theme.colors.primary,
       selectedTextColor:
         mode === "light" ? theme.colors.surface : theme.colors.text,
     };
@@ -198,7 +198,7 @@ export default function CalendarScreen({
                     textSectionTitleColor: theme.colors.muted,
                     selectedDayBackgroundColor:
                       mode === "light"
-                        ? LIGHT_PASTEL.green
+                        ? LIGHT_PASTEL.greenStrong
                         : theme.colors.primary,
                     selectedDayTextColor:
                       mode === "light"
@@ -206,7 +206,7 @@ export default function CalendarScreen({
                         : theme.colors.text,
                     todayTextColor:
                       mode === "light"
-                        ? LIGHT_PASTEL.green
+                        ? LIGHT_PASTEL.greenText
                         : theme.colors.secondary,
                     dayTextColor: theme.colors.text,
                     textDisabledColor: mode === "light" ? "#B8C6BC" : "#424A58",

@@ -283,7 +283,7 @@ export default function WriteScreen({
         backgroundColor={screenBackground}
       />
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={Platform.OS === "ios" ? 12 : 0}
         style={[
           styles.keyboardContainer,
@@ -380,7 +380,12 @@ export default function WriteScreen({
               <Text
                 style={[
                   styles.supportToggle,
-                  { color: theme.colors.secondary },
+                  {
+                    color:
+                      mode === "light"
+                        ? LIGHT_PASTEL.greenText
+                        : theme.colors.secondary,
+                  },
                 ]}
               >
                 {detailsOpen ? t("write.closeDetails") : t("write.openDetails")}

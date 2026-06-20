@@ -120,7 +120,17 @@ export default function GoalManageScreen({
           },
         ]}
       >
-        <Text style={[styles.switchText, { color: theme.colors.success }]}>
+        <Text
+          style={[
+            styles.switchText,
+            {
+              color:
+                mode === "light"
+                  ? LIGHT_PASTEL.greenText
+                  : theme.colors.success,
+            },
+          ]}
+        >
           {item.is_active === 1 ? "ON" : "OFF"}
         </Text>
       </TouchableOpacity>
@@ -305,6 +315,7 @@ const styles = StyleSheet.create({
   },
   goalInfo: {
     flex: 1,
+    minWidth: 0,
   },
   goalCategory: {
     fontWeight: "600",
@@ -324,6 +335,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   switchBox: {
+    flexShrink: 0,
     minWidth: 58,
     alignItems: "center",
     paddingVertical: 8,

@@ -4,6 +4,8 @@ export const LIGHT_PASTEL = {
   paperWarm: "#FFF8EE",
   mint: "#DDF2D2",
   green: "#62AA78",
+  greenStrong: "#397D54",
+  greenText: "#2D6F4D",
   greenSoft: "#E4F3DD",
   yellow: "#FFE6B8",
   blue: "#DCE9F7",

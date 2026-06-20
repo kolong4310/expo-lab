@@ -61,6 +61,7 @@ export default function AppHeader({
             { color: theme.colors.text },
             titleStyle,
           ]}
+          numberOfLines={2}
         >
           {title}
         </Text>
@@ -129,10 +130,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   side: {
-    width: 116,
+    minWidth: 40,
   },
   right: {
     alignItems: "flex-end",
+    marginLeft: 8,
   },
   rightActions: {
     flexDirection: "row",
@@ -151,7 +153,12 @@ const styles = StyleSheet.create({
     backgroundColor: LIGHT_PASTEL.paper,
   },
   navigationTitle: {
+    flex: 1,
+    flexShrink: 1,
+    marginHorizontal: 8,
     fontSize: 17,
     fontWeight: "700",
+    lineHeight: 22,
+    textAlign: "center",
   },
 });

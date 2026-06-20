@@ -193,6 +193,7 @@ const styles = StyleSheet.create({
   },
   textWrap: {
     flex: 1,
+    minWidth: 0,
     marginLeft: 12,
     marginRight: 8,
   },
@@ -216,6 +217,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   questStatus: {
+    flexShrink: 0,
     alignItems: "center",
     justifyContent: "center",
     gap: 2,

@@ -485,7 +485,7 @@ function StatRow({
   highlighted?: boolean;
   showBorder: boolean;
 }) {
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
 
   return (
     <View
@@ -500,7 +500,13 @@ function StatRow({
       <Text
         style={[
           styles.rowLabel,
-          { color: highlighted ? theme.colors.secondary : theme.colors.text },
+          {
+            color: highlighted
+              ? mode === "light"
+                ? LIGHT_PASTEL.greenText
+                : theme.colors.secondary
+              : theme.colors.text,
+          },
         ]}
         numberOfLines={1}
       >
@@ -585,8 +591,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   summaryItem: {
-    minWidth: 136,
-    flexBasis: "47%",
+    minWidth: 120,
+    flexBasis: "46%",
   },
   summaryCard: {
     flex: 1,
