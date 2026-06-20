@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleProp, StyleSheet, Text, ViewStyle } from "react-native";
 import { DESIGN } from "../theme/design";
+import { LIGHT_PASTEL, LIGHT_PASTEL_CARD_SHADOW } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 import RetroCard from "./ui/RetroCard";
 
@@ -11,11 +12,34 @@ interface StatCardProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export default function StatCard({ label, value, style }: StatCardProps) {
-  const { theme } = useAppTheme();
+const LIGHT_ACCENTS = {
+  cyan: LIGHT_PASTEL.blue,
+  pink: LIGHT_PASTEL.pink,
+  green: LIGHT_PASTEL.mint,
+  yellow: LIGHT_PASTEL.yellow,
+  purple: "#E7DDF4",
+} as const;
+
+export default function StatCard({
+  label,
+  value,
+  accent = "green",
+  style,
+}: StatCardProps) {
+  const { mode, theme } = useAppTheme();
 
   return (
-    <RetroCard style={[styles.card, style]}>
+    <RetroCard
+      style={[
+        styles.card,
+        mode === "light" && {
+          borderColor: LIGHT_PASTEL.border,
+          backgroundColor: LIGHT_ACCENTS[accent],
+        },
+        mode === "light" && styles.lightCard,
+        style,
+      ]}
+    >
       <Text style={[styles.label, { color: theme.colors.muted }]}>{label}</Text>
       <Text style={[styles.value, { color: theme.colors.text }]}>{value}</Text>
     </RetroCard>
@@ -28,6 +52,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
     padding: 20,
+  },
+  lightCard: {
+    borderWidth: 2,
+    borderRadius: 24,
+    ...LIGHT_PASTEL_CARD_SHADOW,
   },
   label: {
     fontSize: 13,

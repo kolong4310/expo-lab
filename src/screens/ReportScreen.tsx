@@ -28,6 +28,7 @@ import {
 import { useTranslation } from "../i18n/useTranslation";
 import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
+import { LIGHT_PASTEL, LIGHT_PASTEL_CARD_SHADOW } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 
 const EMPTY_REPORT: ReportStats = {
@@ -139,6 +140,8 @@ export default function ReportScreen({
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { mode, theme } = useAppTheme();
+  const screenBackground =
+    mode === "light" ? LIGHT_PASTEL.background : theme.colors.background;
   const [report, setReport] = useState<ReportStats>(EMPTY_REPORT);
   const reportSnapshotRef = useRef(JSON.stringify(EMPTY_REPORT));
   const reportSubtitle =
@@ -168,11 +171,15 @@ export default function ReportScreen({
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: screenBackground }]}
     >
+      <View pointerEvents="none" style={styles.backgroundDecor}>
+        <View style={[styles.backgroundBlob, styles.backgroundBlobBlue]} />
+        <View style={[styles.backgroundBlob, styles.backgroundBlobMint]} />
+      </View>
       <StatusBar
         barStyle={mode === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={theme.colors.background}
+        backgroundColor={screenBackground}
       />
       <ScrollView
         contentContainerStyle={[
@@ -241,7 +248,13 @@ function SummaryGrid({ report }: { report: ReportStats }) {
           <StatCard
             label={item.label}
             value={item.value}
-            style={styles.summaryCard}
+            accent={(["green", "yellow", "cyan", "pink"] as const)[index]}
+            style={[
+              styles.summaryCard,
+              index % 2 === 0
+                ? styles.summaryCardLeft
+                : styles.summaryCardRight,
+            ]}
           />
         </FadeInView>
       ))}
@@ -251,13 +264,18 @@ function SummaryGrid({ report }: { report: ReportStats }) {
 
 function InsightSection({ insights }: { insights: ReportInsight[] }) {
   const { t } = useTranslation();
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
   if (insights.length === 0) return null;
 
   return (
     <ReportSection title={t("report.insightsTitle")}>
       <FadeInView delay={120}>
-        <RetroCard style={styles.insightCard}>
+        <RetroCard
+          style={[
+            styles.insightCard,
+            mode === "light" && styles.lightInsightCard,
+          ]}
+        >
           <View style={styles.insightHeader}>
             <TinySprout size={34} />
             <Text
@@ -296,9 +314,12 @@ function InsightSection({ insights }: { insights: ReportInsight[] }) {
 
 function TagStats({ tags }: { tags: TagStat[] }) {
   const { t } = useTranslation();
+  const { mode } = useAppTheme();
   return (
     <ReportSection title={t("report.topTagsTitle")}>
-      <RetroCard style={styles.listCard}>
+      <RetroCard
+        style={[styles.listCard, mode === "light" && styles.lightListCard]}
+      >
         {tags.length > 0 ? (
           tags.map((item, index) => (
             <StatRow
@@ -319,12 +340,14 @@ function TagStats({ tags }: { tags: TagStat[] }) {
 
 function MonthlyLogChart({ months }: { months: MonthlyLogStat[] }) {
   const { t } = useTranslation();
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
   const maxMonthlyCount = Math.max(1, ...months.map((item) => item.count));
 
   return (
     <ReportSection title={t("report.recentMonthsTitle")}>
-      <RetroCard style={styles.chartCard}>
+      <RetroCard
+        style={[styles.chartCard, mode === "light" && styles.lightChartCard]}
+      >
         <View style={styles.chart}>
           {months.map((item, index) => (
             <View key={item.month} style={styles.chartColumn}>
@@ -363,7 +386,7 @@ function AnimatedMonthlyBar({
   delay: number;
   maxCount: number;
 }) {
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
   const progress = useRef(new Animated.Value(0)).current;
   const targetHeight = count === 0 ? 4 : Math.max(14, (count / maxCount) * 108);
 
@@ -386,7 +409,11 @@ function AnimatedMonthlyBar({
     <Animated.View
       style={[
         styles.chartBar,
-        { height, backgroundColor: theme.colors.primary },
+        {
+          height,
+          backgroundColor:
+            mode === "light" ? LIGHT_PASTEL.green : theme.colors.primary,
+        },
       ]}
     />
   );
@@ -394,9 +421,12 @@ function AnimatedMonthlyBar({
 
 function MoodStats({ moods }: { moods: MoodStat[] }) {
   const { t } = useTranslation();
+  const { mode } = useAppTheme();
   return (
     <ReportSection title={t("report.moodStatsTitle")}>
-      <RetroCard style={styles.listCard}>
+      <RetroCard
+        style={[styles.listCard, mode === "light" && styles.lightListCard]}
+      >
         {moods.length > 0 ? (
           moods.map((item, index) => (
             <StatRow
@@ -421,13 +451,24 @@ function ReportSection({
   title: string;
   children: React.ReactNode;
 }) {
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
 
   return (
     <View style={styles.section}>
-      <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-        {title}
-      </Text>
+      <View style={styles.sectionHeading}>
+        <View
+          style={[
+            styles.sectionDot,
+            {
+              backgroundColor:
+                mode === "light" ? LIGHT_PASTEL.green : theme.colors.secondary,
+            },
+          ]}
+        />
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+          {title}
+        </Text>
+      </View>
       {children}
     </View>
   );
@@ -484,11 +525,13 @@ function SectionEmptyText({ text }: { text: string }) {
 
 function EmptyReportState({ onWrite }: { onWrite: () => void }) {
   const { t } = useTranslation();
-  const { theme } = useAppTheme();
+  const { mode, theme } = useAppTheme();
 
   return (
     <FadeInView>
-      <RetroCard style={styles.emptyCard}>
+      <RetroCard
+        style={[styles.emptyCard, mode === "light" && styles.lightEmptyCard]}
+      >
         <TinySprout size={58} />
         <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
           {t("report.emptyTitle")}
@@ -510,6 +553,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  backgroundDecor: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: "hidden",
+  },
+  backgroundBlob: {
+    position: "absolute",
+    borderRadius: 999,
+  },
+  backgroundBlobBlue: {
+    top: 70,
+    right: -120,
+    width: 270,
+    height: 270,
+    backgroundColor: "rgba(220,233,247,0.62)",
+  },
+  backgroundBlobMint: {
+    top: 620,
+    left: -140,
+    width: 280,
+    height: 280,
+    backgroundColor: "rgba(221,242,210,0.5)",
+  },
   content: {
     paddingHorizontal: 20,
     paddingTop: 12,
@@ -526,18 +591,41 @@ const styles = StyleSheet.create({
   summaryCard: {
     flex: 1,
   },
+  summaryCardLeft: {
+    transform: [{ rotate: "-1deg" }],
+  },
+  summaryCardRight: {
+    transform: [{ rotate: "1deg" }],
+  },
   section: {
     marginTop: 22,
   },
-  sectionTitle: {
+  sectionHeading: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 12,
+  },
+  sectionDot: {
+    width: 10,
+    height: 10,
+    marginRight: 9,
+    borderRadius: 5,
+  },
+  sectionTitle: {
     fontSize: 17,
-    fontWeight: "700",
+    fontWeight: "800",
   },
   insightCard: {
     paddingHorizontal: 18,
     paddingTop: 16,
     paddingBottom: 8,
+  },
+  lightInsightCard: {
+    borderWidth: 2,
+    borderColor: LIGHT_PASTEL.border,
+    borderRadius: 28,
+    backgroundColor: LIGHT_PASTEL.paperWarm,
+    ...LIGHT_PASTEL_CARD_SHADOW,
   },
   insightHeader: {
     flexDirection: "row",
@@ -573,6 +661,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 6,
   },
+  lightListCard: {
+    borderWidth: 2,
+    borderColor: LIGHT_PASTEL.border,
+    borderRadius: 26,
+    backgroundColor: LIGHT_PASTEL.paper,
+    ...LIGHT_PASTEL_CARD_SHADOW,
+  },
   listRow: {
     minHeight: 52,
     flexDirection: "row",
@@ -598,6 +693,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 22,
     paddingBottom: 18,
+  },
+  lightChartCard: {
+    borderWidth: 2,
+    borderColor: LIGHT_PASTEL.border,
+    borderRadius: 28,
+    backgroundColor: LIGHT_PASTEL.blue,
+    ...LIGHT_PASTEL_CARD_SHADOW,
   },
   chart: {
     height: 168,
@@ -633,6 +735,13 @@ const styles = StyleSheet.create({
   emptyCard: {
     alignItems: "center",
     padding: 24,
+  },
+  lightEmptyCard: {
+    borderWidth: 2,
+    borderColor: LIGHT_PASTEL.border,
+    borderRadius: 30,
+    backgroundColor: LIGHT_PASTEL.paperWarm,
+    ...LIGHT_PASTEL_CARD_SHADOW,
   },
   emptyTitle: {
     marginTop: 14,

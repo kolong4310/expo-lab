@@ -23,9 +23,16 @@ import { useTranslation } from "../i18n/useTranslation";
 import { goHome } from "../navigation/homeNavigation";
 import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
+import { LIGHT_PASTEL, LIGHT_PASTEL_CARD_SHADOW } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 
 const POPULAR_TAGS = ["ReactNative", "SQLite", "UI", "공부", "운동", "개발"];
+const LIGHT_TAG_COLORS = [
+  LIGHT_PASTEL.mint,
+  LIGHT_PASTEL.yellow,
+  LIGHT_PASTEL.blue,
+  LIGHT_PASTEL.pink,
+];
 
 export default function SearchScreen({
   navigation,
@@ -33,6 +40,8 @@ export default function SearchScreen({
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { mode, theme } = useAppTheme();
+  const screenBackground =
+    mode === "light" ? LIGHT_PASTEL.background : theme.colors.background;
   const [keyword, setKeyword] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [results, setResults] = useState<WorkLog[]>([]);
@@ -69,11 +78,15 @@ export default function SearchScreen({
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: screenBackground }]}
     >
+      <View pointerEvents="none" style={styles.backgroundDecor}>
+        <View style={[styles.backgroundBlob, styles.backgroundBlobMint]} />
+        <View style={[styles.backgroundBlob, styles.backgroundBlobBlue]} />
+      </View>
       <StatusBar
         barStyle={mode === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={theme.colors.background}
+        backgroundColor={screenBackground}
       />
       <FlatList
         data={results}
@@ -109,9 +122,16 @@ export default function SearchScreen({
               style={[
                 styles.searchWrap,
                 {
-                  borderColor: theme.colors.border,
-                  backgroundColor: theme.colors.surface,
+                  borderColor:
+                    mode === "light"
+                      ? LIGHT_PASTEL.border
+                      : theme.colors.border,
+                  backgroundColor:
+                    mode === "light"
+                      ? LIGHT_PASTEL.paper
+                      : theme.colors.surface,
                 },
+                mode === "light" && styles.lightSearchWrap,
               ]}
             >
               <Ionicons name="search" size={19} color={theme.colors.muted} />
@@ -154,7 +174,10 @@ export default function SearchScreen({
                   {recentSearches.map((item) => (
                     <AnimatedPressable
                       key={item}
-                      style={styles.recentChip}
+                      style={[
+                        styles.recentChip,
+                        mode === "light" && styles.lightRecentChip,
+                      ]}
                       onPress={() => selectKeyword(item)}
                     >
                       <Ionicons
@@ -180,10 +203,17 @@ export default function SearchScreen({
               {t("search.popularTags")}
             </Text>
             <View style={styles.chipGrid}>
-              {POPULAR_TAGS.map((tag) => (
+              {POPULAR_TAGS.map((tag, index) => (
                 <AnimatedPressable
                   key={tag}
-                  style={styles.tagChip}
+                  style={[
+                    styles.tagChip,
+                    mode === "light" && {
+                      borderColor: LIGHT_PASTEL.border,
+                      backgroundColor:
+                        LIGHT_TAG_COLORS[index % LIGHT_TAG_COLORS.length],
+                    },
+                  ]}
                   onPress={() => selectKeyword(tag)}
                 >
                   <Text
@@ -206,14 +236,62 @@ export default function SearchScreen({
               )}
             </View>
             {keyword.length === 0 && (
-              <Text style={[styles.emptyText, { color: theme.colors.muted }]}>
-                {t("search.emptyPrompt")}
-              </Text>
+              <View
+                style={[
+                  styles.emptyCard,
+                  mode === "light" && styles.lightEmptyCard,
+                ]}
+              >
+                <View
+                  style={[
+                    styles.emptyIcon,
+                    {
+                      backgroundColor:
+                        mode === "light"
+                          ? LIGHT_PASTEL.yellow
+                          : theme.colors.surfaceAlt,
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name="search-outline"
+                    size={22}
+                    color={theme.colors.warning}
+                  />
+                </View>
+                <Text style={[styles.emptyText, { color: theme.colors.muted }]}>
+                  {t("search.emptyPrompt")}
+                </Text>
+              </View>
             )}
             {keyword.length > 0 && results.length === 0 && (
-              <Text style={[styles.emptyText, { color: theme.colors.muted }]}>
-                {t("search.emptyResult")}
-              </Text>
+              <View
+                style={[
+                  styles.emptyCard,
+                  mode === "light" && styles.lightEmptyCard,
+                ]}
+              >
+                <View
+                  style={[
+                    styles.emptyIcon,
+                    {
+                      backgroundColor:
+                        mode === "light"
+                          ? LIGHT_PASTEL.blue
+                          : theme.colors.surfaceAlt,
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name="document-text-outline"
+                    size={22}
+                    color={theme.colors.secondary}
+                  />
+                </View>
+                <Text style={[styles.emptyText, { color: theme.colors.muted }]}>
+                  {t("search.emptyResult")}
+                </Text>
+              </View>
             )}
           </>
         }
@@ -224,14 +302,40 @@ export default function SearchScreen({
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  backgroundDecor: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: "hidden",
+  },
+  backgroundBlob: {
+    position: "absolute",
+    borderRadius: 999,
+  },
+  backgroundBlobMint: {
+    top: 40,
+    right: -120,
+    width: 260,
+    height: 260,
+    backgroundColor: "rgba(221,242,210,0.58)",
+  },
+  backgroundBlobBlue: {
+    bottom: 80,
+    left: -120,
+    width: 250,
+    height: 250,
+    backgroundColor: "rgba(220,233,247,0.52)",
+  },
   list: { paddingHorizontal: 20, paddingTop: 12 },
   searchWrap: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 28,
     borderWidth: 1,
-    borderRadius: 18,
+    borderRadius: 26,
     paddingHorizontal: 14,
+  },
+  lightSearchWrap: {
+    borderWidth: 2,
+    ...LIGHT_PASTEL_CARD_SHADOW,
   },
   searchInput: {
     flex: 1,
@@ -263,12 +367,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 9,
   },
+  lightRecentChip: {
+    borderWidth: 2,
+    borderColor: LIGHT_PASTEL.border,
+    backgroundColor: LIGHT_PASTEL.paper,
+  },
   recentText: {
     marginLeft: 6,
     fontSize: 13,
     fontWeight: "500",
   },
   tagChip: {
+    borderWidth: 1,
     borderRadius: DESIGN.radius.pill,
     backgroundColor: "rgba(116,217,159,0.14)",
     paddingHorizontal: 13,
@@ -286,8 +396,30 @@ const styles = StyleSheet.create({
   },
   count: { fontSize: 12, fontWeight: "600" },
   emptyText: {
-    marginBottom: 20,
     fontSize: 13,
     lineHeight: 20,
+    textAlign: "center",
+  },
+  emptyCard: {
+    alignItems: "center",
+    marginBottom: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderRadius: 26,
+  },
+  lightEmptyCard: {
+    borderWidth: 2,
+    borderColor: LIGHT_PASTEL.border,
+    backgroundColor: LIGHT_PASTEL.paperWarm,
+    ...LIGHT_PASTEL_CARD_SHADOW,
+  },
+  emptyIcon: {
+    width: 48,
+    height: 48,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+    borderRadius: 18,
+    transform: [{ rotate: "-3deg" }],
   },
 });

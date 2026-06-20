@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useRef, useState } from "react";
 import {
@@ -30,6 +31,7 @@ import { useTranslation } from "../i18n/useTranslation";
 import { goHome } from "../navigation/homeNavigation";
 import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
+import { LIGHT_PASTEL, LIGHT_PASTEL_CARD_SHADOW } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 import { formatLocalDate } from "../utils/date";
 
@@ -82,6 +84,8 @@ export default function CalendarScreen({
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { mode, theme } = useAppTheme();
+  const screenBackground =
+    mode === "light" ? LIGHT_PASTEL.background : theme.colors.background;
   const fade = useRef(new Animated.Value(1)).current;
   const [selectedDate, setSelectedDate] = useState(formatLocalDate());
   const [markedDates, setMarkedDates] = useState<
@@ -92,12 +96,17 @@ export default function CalendarScreen({
   const loadData = useCallback(() => {
     const marks: NonNullable<CalendarProps["markedDates"]> = {};
     getLoggedDates().forEach((date) => {
-      marks[date] = { marked: true, dotColor: theme.colors.secondary };
+      marks[date] = {
+        marked: true,
+        dotColor:
+          mode === "light" ? LIGHT_PASTEL.green : theme.colors.secondary,
+      };
     });
     marks[selectedDate] = {
       ...marks[selectedDate],
       selected: true,
-      selectedColor: theme.colors.primary,
+      selectedColor:
+        mode === "light" ? LIGHT_PASTEL.green : theme.colors.primary,
       selectedTextColor:
         mode === "light" ? theme.colors.surface : theme.colors.text,
     };
@@ -125,11 +134,15 @@ export default function CalendarScreen({
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: screenBackground }]}
     >
+      <View pointerEvents="none" style={styles.backgroundDecor}>
+        <View style={[styles.backgroundBlob, styles.backgroundBlobMint]} />
+        <View style={[styles.backgroundBlob, styles.backgroundBlobPeach]} />
+      </View>
       <StatusBar
         barStyle={mode === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={theme.colors.background}
+        backgroundColor={screenBackground}
       />
       <FlatList
         data={logs}
@@ -161,7 +174,12 @@ export default function CalendarScreen({
               onHome={() => goHome(navigation)}
             />
             <Animated.View style={{ opacity: fade }}>
-              <RetroCard style={styles.calendarCard}>
+              <RetroCard
+                style={[
+                  styles.calendarCard,
+                  mode === "light" && styles.lightCalendarCard,
+                ]}
+              >
                 <Calendar
                   onDayPress={(day: DateData) =>
                     setSelectedDate(day.dateString)
@@ -169,18 +187,33 @@ export default function CalendarScreen({
                   onMonthChange={animateMonth}
                   markedDates={markedDates}
                   theme={{
-                    backgroundColor: theme.colors.surface,
-                    calendarBackground: theme.colors.surface,
+                    backgroundColor:
+                      mode === "light"
+                        ? LIGHT_PASTEL.paper
+                        : theme.colors.surface,
+                    calendarBackground:
+                      mode === "light"
+                        ? LIGHT_PASTEL.paper
+                        : theme.colors.surface,
                     textSectionTitleColor: theme.colors.muted,
-                    selectedDayBackgroundColor: theme.colors.primary,
+                    selectedDayBackgroundColor:
+                      mode === "light"
+                        ? LIGHT_PASTEL.green
+                        : theme.colors.primary,
                     selectedDayTextColor:
                       mode === "light"
                         ? theme.colors.surface
                         : theme.colors.text,
-                    todayTextColor: theme.colors.secondary,
+                    todayTextColor:
+                      mode === "light"
+                        ? LIGHT_PASTEL.green
+                        : theme.colors.secondary,
                     dayTextColor: theme.colors.text,
                     textDisabledColor: mode === "light" ? "#B8C6BC" : "#424A58",
-                    dotColor: theme.colors.secondary,
+                    dotColor:
+                      mode === "light"
+                        ? LIGHT_PASTEL.green
+                        : theme.colors.secondary,
                     monthTextColor: theme.colors.text,
                     arrowColor: theme.colors.muted,
                     textDayFontWeight: "500",
@@ -194,15 +227,49 @@ export default function CalendarScreen({
               </RetroCard>
             </Animated.View>
             <View style={styles.sectionHeading}>
-              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  { color: theme.colors.text },
+                  mode === "light" && styles.lightDateBadge,
+                ]}
+              >
                 {selectedDate.replace(/-/g, ".")}
               </Text>
-              <Text style={[styles.count, { color: theme.colors.muted }]}>
+              <Text
+                style={[
+                  styles.count,
+                  { color: theme.colors.muted },
+                  mode === "light" && styles.lightCountBadge,
+                ]}
+              >
                 {t("archive.count", { count: logs.length })}
               </Text>
             </View>
             {logs.length === 0 && (
-              <RetroCard style={styles.emptyCard}>
+              <RetroCard
+                style={[
+                  styles.emptyCard,
+                  mode === "light" && styles.lightEmptyCard,
+                ]}
+              >
+                <View
+                  style={[
+                    styles.emptyIcon,
+                    {
+                      backgroundColor:
+                        mode === "light"
+                          ? LIGHT_PASTEL.yellow
+                          : theme.colors.surfaceAlt,
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name="book-outline"
+                    size={22}
+                    color={theme.colors.warning}
+                  />
+                </View>
                 <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
                   {t("archive.emptyTitle")}
                 </Text>
@@ -220,8 +287,37 @@ export default function CalendarScreen({
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  backgroundDecor: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: "hidden",
+  },
+  backgroundBlob: {
+    position: "absolute",
+    borderRadius: 999,
+  },
+  backgroundBlobMint: {
+    top: 40,
+    right: -110,
+    width: 260,
+    height: 260,
+    backgroundColor: "rgba(221,242,210,0.62)",
+  },
+  backgroundBlobPeach: {
+    bottom: 90,
+    left: -120,
+    width: 240,
+    height: 240,
+    backgroundColor: "rgba(247,221,191,0.42)",
+  },
   list: { paddingHorizontal: 20, paddingTop: 12 },
   calendarCard: { marginBottom: 28, padding: 10 },
+  lightCalendarCard: {
+    borderWidth: 2,
+    borderColor: LIGHT_PASTEL.border,
+    borderRadius: 30,
+    backgroundColor: LIGHT_PASTEL.paper,
+    ...LIGHT_PASTEL_CARD_SHADOW,
+  },
   sectionHeading: {
     flexDirection: "row",
     alignItems: "center",
@@ -229,12 +325,44 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   sectionTitle: { fontSize: 18, fontWeight: "700" },
+  lightDateBadge: {
+    overflow: "hidden",
+    paddingHorizontal: 13,
+    paddingVertical: 8,
+    borderRadius: 14,
+    backgroundColor: LIGHT_PASTEL.mint,
+  },
   count: { fontSize: 12, fontWeight: "600" },
+  lightCountBadge: {
+    overflow: "hidden",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: LIGHT_PASTEL.blue,
+  },
   emptyCard: { padding: 24 },
+  lightEmptyCard: {
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: LIGHT_PASTEL.border,
+    borderRadius: 26,
+    backgroundColor: LIGHT_PASTEL.paperWarm,
+    ...LIGHT_PASTEL_CARD_SHADOW,
+  },
+  emptyIcon: {
+    width: 48,
+    height: 48,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+    borderRadius: 18,
+    transform: [{ rotate: "-3deg" }],
+  },
   emptyTitle: { fontSize: 15, fontWeight: "700" },
   emptyText: {
     marginTop: 6,
     fontSize: 13,
     lineHeight: 20,
+    textAlign: "center",
   },
 });
