@@ -25,7 +25,19 @@ export default function TodoItem({
     theme.mode === "light" ? theme.colors.surface : theme.colors.text;
 
   return (
-    <View style={[styles.row, { borderBottomColor: theme.colors.border }]}>
+    <View
+      style={[
+        styles.row,
+        {
+          borderColor: theme.colors.border,
+          backgroundColor: theme.colors.surface,
+        },
+        completed && {
+          borderColor: `${theme.colors.primary}38`,
+          backgroundColor: `${theme.colors.primary}12`,
+        },
+      ]}
+    >
       <AnimatedPressable
         style={styles.toggleArea}
         onPress={onToggle}
@@ -42,7 +54,7 @@ export default function TodoItem({
           ]}
         >
           {completed && (
-            <Ionicons name="checkmark" size={15} color={selectedTextColor} />
+            <Ionicons name="checkmark" size={18} color={selectedTextColor} />
           )}
         </View>
         <View style={styles.textWrap}>
@@ -57,12 +69,27 @@ export default function TodoItem({
             {title}
           </Text>
           {meta && (
-            <Text style={[styles.meta, { color: theme.colors.muted }]}>
-              {meta}
-            </Text>
+            <View
+              style={[
+                styles.metaBadge,
+                { backgroundColor: `${theme.colors.secondary}10` },
+              ]}
+            >
+              <Text style={[styles.meta, { color: theme.colors.muted }]}>
+                {meta}
+              </Text>
+            </View>
           )}
         </View>
       </AnimatedPressable>
+      {completed && !onDelete && (
+        <Ionicons
+          name="leaf"
+          size={18}
+          color={theme.colors.success}
+          style={styles.completionLeaf}
+        />
+      )}
       {onDelete && (
         <TouchableOpacity onPress={onDelete} hitSlop={10}>
           <Ionicons name="close" size={19} color={theme.colors.muted} />
@@ -74,10 +101,13 @@ export default function TodoItem({
 
 const styles = StyleSheet.create({
   row: {
-    minHeight: 62,
+    minHeight: 68,
     flexDirection: "row",
     alignItems: "center",
-    borderBottomWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderRadius: 20,
   },
   toggleArea: {
     flex: 1,
@@ -86,17 +116,17 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   check: {
-    width: 22,
-    height: 22,
+    width: 28,
+    height: 28,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1.5,
-    borderRadius: 11,
+    borderRadius: 14,
   },
   checkDone: {},
   textWrap: {
     flex: 1,
-    marginLeft: 13,
+    marginLeft: 12,
   },
   title: {
     fontSize: 15,
@@ -107,7 +137,17 @@ const styles = StyleSheet.create({
     textDecorationLine: "line-through",
   },
   meta: {
-    marginTop: 2,
     fontSize: 12,
+    fontWeight: "600",
+  },
+  metaBadge: {
+    alignSelf: "flex-start",
+    marginTop: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+  },
+  completionLeaf: {
+    marginLeft: 8,
   },
 });

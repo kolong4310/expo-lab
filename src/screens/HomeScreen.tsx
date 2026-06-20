@@ -111,12 +111,28 @@ export default function HomeScreen({
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
+      <View pointerEvents="none" style={styles.backgroundGarden}>
+        <View
+          style={[
+            styles.backgroundGlow,
+            styles.backgroundGlowTop,
+            { backgroundColor: `${theme.colors.primary}12` },
+          ]}
+        />
+        <View
+          style={[
+            styles.backgroundGlow,
+            styles.backgroundGlowSide,
+            { backgroundColor: `${theme.colors.secondary}0C` },
+          ]}
+        />
+      </View>
       <StatusBar
         barStyle={mode === "dark" ? "light-content" : "dark-content"}
         backgroundColor={theme.colors.background}
       />
       <ScrollView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        style={[styles.container, styles.transparentBackground]}
         contentContainerStyle={[
           styles.content,
           { paddingBottom: insets.bottom + 120 },
@@ -126,9 +142,51 @@ export default function HomeScreen({
         <AppHeader title={t("today.title")} subtitle={dateLabel} compact />
 
         <FadeInView>
-          <RetroCard style={styles.streakCard}>
+          <RetroCard
+            style={[
+              styles.streakCard,
+              {
+                borderColor: `${theme.colors.primary}24`,
+                backgroundColor:
+                  mode === "dark"
+                    ? `${theme.colors.surface}F2`
+                    : `${theme.colors.surface}F8`,
+              },
+            ]}
+          >
+            <View pointerEvents="none" style={styles.heroGarden}>
+              <View
+                style={[
+                  styles.heroHill,
+                  styles.heroHillBack,
+                  { backgroundColor: `${theme.colors.secondary}12` },
+                ]}
+              />
+              <View
+                style={[
+                  styles.heroHill,
+                  styles.heroHillFront,
+                  { backgroundColor: `${theme.colors.primary}15` },
+                ]}
+              />
+            </View>
             <View style={styles.heroIntro}>
-              <View>
+              <View style={styles.heroCopy}>
+                <View style={styles.heroKicker}>
+                  <Ionicons
+                    name="sparkles-outline"
+                    size={14}
+                    color={theme.colors.warning}
+                  />
+                  <Text
+                    style={[
+                      styles.heroKickerText,
+                      { color: theme.colors.muted },
+                    ]}
+                  >
+                    {t("today.title")}
+                  </Text>
+                </View>
                 <Text style={[styles.heroTitle, { color: theme.colors.text }]}>
                   {t("today.heroTitle")}
                 </Text>
@@ -142,8 +200,8 @@ export default function HomeScreen({
                 style={[
                   styles.sproutBadge,
                   {
-                    borderColor: theme.colors.border,
-                    backgroundColor: `${theme.colors.primary}14`,
+                    borderColor: `${theme.colors.primary}28`,
+                    backgroundColor: `${theme.colors.primary}18`,
                   },
                 ]}
               >
@@ -183,7 +241,12 @@ export default function HomeScreen({
 
         <FadeInView delay={70}>
           <View style={styles.statsRow}>
-            <RetroCard style={styles.statCard}>
+            <RetroCard
+              style={[
+                styles.statCard,
+                { backgroundColor: `${theme.colors.secondary}0E` },
+              ]}
+            >
               <Text style={[styles.cardLabel, { color: theme.colors.muted }]}>
                 {t("today.weeklyGrowth")}
               </Text>
@@ -192,7 +255,12 @@ export default function HomeScreen({
               </Text>
               <PixelProgressBar value={weeklyRate} />
             </RetroCard>
-            <RetroCard style={styles.statCard}>
+            <RetroCard
+              style={[
+                styles.statCard,
+                { backgroundColor: `${theme.colors.warning}0C` },
+              ]}
+            >
               <Text style={[styles.cardLabel, { color: theme.colors.muted }]}>
                 {t("today.completionRate")}
               </Text>
@@ -207,9 +275,23 @@ export default function HomeScreen({
         </FadeInView>
 
         <View style={styles.sectionHeading}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            {t("today.goals")}
-          </Text>
+          <View style={styles.sectionTitleRow}>
+            <View
+              style={[
+                styles.sectionIcon,
+                { backgroundColor: `${theme.colors.primary}18` },
+              ]}
+            >
+              <Ionicons
+                name="map-outline"
+                size={17}
+                color={theme.colors.primary}
+              />
+            </View>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              {t("today.goals")}
+            </Text>
+          </View>
           <AnimatedPressable onPress={() => navigation.navigate("GoalManage")}>
             <Text
               style={[styles.sectionAction, { color: theme.colors.secondary }]}
@@ -220,7 +302,15 @@ export default function HomeScreen({
         </View>
 
         <FadeInView delay={120}>
-          <RetroCard style={styles.todoCard}>
+          <RetroCard
+            style={[
+              styles.todoCard,
+              {
+                borderColor: `${theme.colors.primary}1F`,
+                backgroundColor: `${theme.colors.primary}08`,
+              },
+            ]}
+          >
             {dailyTodos.map((todo) => (
               <TodoItem
                 key={`daily-${todo.goal_id}`}
@@ -259,6 +349,18 @@ export default function HomeScreen({
             ))}
             {stats.total === 0 && (
               <View style={styles.empty}>
+                <View
+                  style={[
+                    styles.emptyIcon,
+                    { backgroundColor: `${theme.colors.warning}16` },
+                  ]}
+                >
+                  <Ionicons
+                    name="leaf-outline"
+                    size={22}
+                    color={theme.colors.warning}
+                  />
+                </View>
                 <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
                   {t("today.emptyTitle")}
                 </Text>
@@ -294,7 +396,10 @@ export default function HomeScreen({
                   onSubmitEditing={handleAddTodo}
                 />
                 <AnimatedPressable
-                  style={styles.addButton}
+                  style={[
+                    styles.addButton,
+                    { backgroundColor: theme.colors.primary },
+                  ]}
                   pressedScale={0.97}
                   onPress={handleAddTodo}
                 >
@@ -353,13 +458,59 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: DESIGN.colors.bg,
   },
+  backgroundGarden: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: "hidden",
+  },
+  transparentBackground: {
+    backgroundColor: "transparent",
+  },
+  backgroundGlow: {
+    position: "absolute",
+    borderRadius: 999,
+  },
+  backgroundGlowTop: {
+    top: -110,
+    right: -90,
+    width: 280,
+    height: 280,
+  },
+  backgroundGlowSide: {
+    top: 360,
+    left: -130,
+    width: 260,
+    height: 260,
+  },
   content: {
     paddingHorizontal: 20,
     paddingTop: 12,
   },
   streakCard: {
+    overflow: "hidden",
     marginBottom: 16,
     padding: 24,
+  },
+  heroGarden: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: "hidden",
+  },
+  heroHill: {
+    position: "absolute",
+    borderRadius: 999,
+  },
+  heroHillBack: {
+    top: -54,
+    right: -52,
+    width: 210,
+    height: 126,
+    transform: [{ rotate: "-8deg" }],
+  },
+  heroHillFront: {
+    top: 10,
+    right: -78,
+    width: 190,
+    height: 118,
+    transform: [{ rotate: "10deg" }],
   },
   heroIntro: {
     flexDirection: "row",
@@ -367,10 +518,25 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 20,
   },
+  heroCopy: {
+    flex: 1,
+    paddingRight: 12,
+  },
   heroTitle: {
     color: DESIGN.colors.text,
     fontSize: 20,
     fontWeight: "800",
+  },
+  heroKicker: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 8,
+  },
+  heroKickerText: {
+    fontSize: 12,
+    fontWeight: "700",
+    letterSpacing: 0.3,
   },
   heroSubtitle: {
     marginTop: 6,
@@ -480,6 +646,18 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 12,
   },
+  sectionTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  sectionIcon: {
+    width: 34,
+    height: 34,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 10,
+    borderRadius: 17,
+  },
   sectionTitle: {
     color: DESIGN.colors.text,
     fontSize: 19,
@@ -491,13 +669,21 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   todoCard: {
-    paddingHorizontal: 18,
-    paddingTop: 4,
+    paddingHorizontal: 12,
+    paddingTop: 12,
     paddingBottom: 16,
   },
   empty: {
     alignItems: "center",
     paddingVertical: 28,
+  },
+  emptyIcon: {
+    width: 46,
+    height: 46,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 13,
+    borderRadius: 23,
   },
   emptyTitle: {
     color: DESIGN.colors.text,
