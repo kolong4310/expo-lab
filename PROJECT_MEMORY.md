@@ -1,22 +1,22 @@
 # Project Memory - Tiny Growth
 
-Last updated: 2026-06-18
+Last updated: 2026-06-20
 Branch: `dev`
 Repository: `https://github.com/kolong4310/expo-lab`
 
 ## Product Direction
 
-Tiny Growth is a premium dark productivity app for developers to manage daily
-goals and write work logs. It should feel closer to Linear, Raycast, Notion
-Calendar, and Apple productivity tools than a game.
+Tiny Growth 1.0.0 is a light pastel productivity app with a warm garden / note
+tone. It should feel closer to a cozy growth journal than a dark developer
+tool or game.
 
 Do not reintroduce:
 
 - Pixel or arcade UI
 - Neon or multi-color borders
-- Game terminology
 - Heavy shadows or decorative corner elements
 - Complex color combinations
+- Overly childish or game-like UI
 
 Reference image: `docs/c1.png`
 
@@ -128,6 +128,20 @@ implementation is modern and minimal.
 - Added `getLogById()` to support ID-based editing and detail flows.
 - Split SQLite initialization SQL into migration files and a migration runner.
 - Kept the existing design system and database schema intact.
+- Expanded the UI into a warm light pastel system:
+  - HomeScreen, CalendarScreen, ReportScreen, SearchScreen
+  - WriteScreen, DetailScreen, GoalManageScreen, SettingsScreen,
+    LanguageSelectScreen
+  - shared light pastel tokens, `LogCard`, `StatCard`, and bottom tab styling
+- Added the light pastel affordance pass so inputs, chips, check rows, and
+  buttons read more clearly as interactive controls.
+- Locked 1.0.0 release theme to light mode:
+  - `app.json` now uses `userInterfaceStyle: "light"`
+  - `ThemeProvider` normalizes any stored dark selection back to light
+  - Settings theme UI is hidden/retained in code for future reuse
+- Confirmed the release policy is light-mode-first and dark mode is not exposed
+  in the shipped 1.0.0 flow.
+- Verified the release build path with Android Expo export and local QA checks.
 
 ## Work Completed on 2026-06-16
 
@@ -295,13 +309,15 @@ implementation is modern and minimal.
 
 - `npm.cmd run typecheck`
 - `npm.cmd run format:check`
-- `npx expo export --platform android --output-dir .expo-export-check`
 - `git diff --check`
+- `npx.cmd expo export --platform android`
+- `npx expo export --platform android --output-dir .expo-export-check`
 - `npx expo config --type public`
 - `npx --yes eas-cli --version`
 
 ## Latest Commits
 
+- `7d670be` Refine light pastel affordances
 - `29293e6` Add dark and light appearance settings
 - `00e03c7` Polish Tiny Growth visual tone
 - `dc36d4a` Add subtle micro interactions
