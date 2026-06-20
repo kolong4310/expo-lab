@@ -45,7 +45,9 @@ export const lightTheme: AppTheme = {
   colors: lightThemeColors,
 };
 
-export const DEFAULT_THEME_MODE: AppThemeMode = "dark";
+// Tiny Growth 1.0.0 ships with the light pastel experience only.
+export const RELEASE_THEME_MODE: AppThemeMode = "light";
+export const DEFAULT_THEME_MODE: AppThemeMode = RELEASE_THEME_MODE;
 
 export const isAppThemeMode = (value: string | null): value is AppThemeMode =>
   value === "dark" || value === "light";

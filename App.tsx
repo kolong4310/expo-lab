@@ -191,7 +191,9 @@ export default function App() {
   }, []);
 
   if (!databaseReady) {
-    return <View style={{ flex: 1, backgroundColor: DESIGN.colors.bg }} />;
+    return (
+      <View style={{ flex: 1, backgroundColor: LIGHT_PASTEL.background }} />
+    );
   }
 
   return (

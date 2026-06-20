@@ -5,8 +5,8 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
-    "backgroundColor": "#0B0F14",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F7F3E9",
     "ios": {
       "supportsTablet": true
     },
@@ -24,7 +24,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0B0F14"
+      "backgroundColor": "#F7F3E9"
     },
     "web": {
       "favicon": "./assets/favicon.png"

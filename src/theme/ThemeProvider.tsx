@@ -1,4 +1,10 @@
-import React, { createContext, ReactNode, useMemo, useState } from "react";
+import React, {
+  createContext,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   getSelectedThemeMode,
   setSelectedThemeMode as saveSelectedThemeMode,
@@ -8,6 +14,7 @@ import {
   AppThemeMode,
   DEFAULT_THEME_MODE,
   getThemeByMode,
+  RELEASE_THEME_MODE,
 } from "./theme";
 
 interface ThemeContextValue {
@@ -19,17 +26,23 @@ interface ThemeContextValue {
 export const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<AppThemeMode>(
-    () => getSelectedThemeMode() ?? DEFAULT_THEME_MODE,
-  );
+  const [mode, setMode] = useState<AppThemeMode>(DEFAULT_THEME_MODE);
+
+  useEffect(() => {
+    // Preserve the setting schema while normalizing pre-release dark values.
+    if (getSelectedThemeMode() !== RELEASE_THEME_MODE) {
+      saveSelectedThemeMode(RELEASE_THEME_MODE);
+    }
+    setMode(RELEASE_THEME_MODE);
+  }, []);
 
   const value = useMemo<ThemeContextValue>(
     () => ({
       mode,
       theme: getThemeByMode(mode),
-      setThemeMode: (nextMode) => {
-        saveSelectedThemeMode(nextMode);
-        setMode(nextMode);
+      setThemeMode: (_nextMode) => {
+        saveSelectedThemeMode(RELEASE_THEME_MODE);
+        setMode(RELEASE_THEME_MODE);
       },
     }),
     [mode],
