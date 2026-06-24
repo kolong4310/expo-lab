@@ -1,14 +1,14 @@
 # Project Memory - Tiny Growth
 
-Last updated: 2026-06-20
+Last updated: 2026-06-24
 Branch: `dev`
 Repository: `https://github.com/kolong4310/expo-lab`
 
 ## Product Direction
 
-Tiny Growth 1.0.0 is a light pastel productivity app with a warm garden / note
-tone. It should feel closer to a cozy growth journal than a dark developer
-tool or game.
+Tiny Growth 1.0.0 is a light pastel growth and productivity journal with a warm
+garden / note tone. It should feel closer to a cozy journal than a dark
+developer tool or game.
 
 Do not reintroduce:
 
@@ -22,16 +22,20 @@ Reference image: `docs/c1.png`
 
 ## Technical Constraints
 
-- Keep Expo SDK 54.
+- Keep Expo SDK 54. `package.json` is the source of truth for the Expo version.
 - Keep the existing SQLite schema and migrations.
 - Preserve log create, update, delete, search, calendar, and goal behavior.
 - Work on `dev`.
-- Run `npm run typecheck` and `npm run format:check` before pushing.
-- After completing requested code or documentation changes, commit and push to
-  `origin/dev` automatically unless the user explicitly says not to push.
-- Prefer `node push.js "Meaningful commit message"` only when all modified files
-  should be included. If unrelated local changes exist, stage the intended files
-  explicitly, then `git commit` and `git push origin dev`.
+- Run `npm run typecheck` and `npm run format:check` before an approved push when
+  they are relevant to the changed files.
+- Do not stage, commit, or push until the user explicitly approves the exact
+  operation. If another document or memory conflicts, the Git approval rules in
+  `AGENTS.md` take precedence.
+- `push.js` runs broad staging, commit, and push in sequence. Do not run it
+  without explicit user approval. Before any approved use, run `git status` and
+  confirm that no unrelated changes or untracked files would be included.
+- If unrelated local changes exist, do not use broad staging. Stage only the
+  intended files after approval and leave unrelated changes untouched.
 
 ## Current Navigation
 
@@ -51,29 +55,32 @@ Primary files:
 
 - `src/theme/theme.ts`
 - `src/theme/design.ts`
+- `src/theme/lightPastel.ts`
 - `DESIGN.md`
 
-Core palette:
+Tiny Growth 1.0.0 release palette:
 
-- Background `#0B1010`
-- Card `#151C1A`
-- Elevated surface `#1D2723`
-- Primary `#74D99F`
-- Secondary `#8AD7C1`
-- Success `#5FD38D`
-- Warm seed accent `#E6B86A`
-- Text `#F7FBF7`
-- Subtext `#9BAEA4`
-- Border `rgba(247,251,247,0.055)`
+- Background `#F7F3E9`
+- Paper `#FFFDF8`
+- Warm paper `#FFF8EE`
+- Mint `#DDF2D2`
+- Primary green `#62AA78`
+- Strong green `#397D54`
+- Green text `#2D6F4D`
+- Soft green `#E4F3DD`
+- Warm accents: yellow `#FFE6B8`, blue `#DCE9F7`, peach `#F7DDBF`, pink `#F5D9D5`
+- Line `#E8DFC9`
 
-Compatibility component filenames such as `RetroCard` remain, but their visual
-implementation is modern and minimal.
+Compatibility component filenames such as `Pixel*` and `Retro*` remain to
+avoid import churn. Their names do not authorize reintroducing pixel, arcade,
+or retro visuals; their current implementation follows the light pastel system.
 
 ## Current Code Structure
 
 - Navigation is typed in `src/navigation/types.ts`.
 - Bottom tabs are `Today`, `Archive`, `Report`, `Search`, and `Settings`.
-- Root stack screens are `Main`, `Write`, `Detail`, and `GoalManage`.
+- Root stack screens are conditional `LanguageSelect`, plus `Main`, `Write`,
+  `Detail`, and `GoalManage` after a language is selected.
 - Navigation helpers live in `src/navigation/homeNavigation.ts`.
 - SQLite access is split into repositories under `src/database/repositories/`.
 - SQLite schema setup and migration runner live in `src/database/db.ts` and
@@ -87,8 +94,11 @@ implementation is modern and minimal.
 - Shared entrance motion lives in `src/components/FadeInView.tsx`.
 - Shared code-drawn seed/sprout motif lives in `src/components/TinySprout.tsx`.
 - App appearance state lives in `src/theme/ThemeProvider.tsx` and
-  `src/theme/useAppTheme.ts`.
-- Theme mode is stored in SQLite `app_settings` with key `selectedThemeMode`.
+  `src/theme/useAppTheme.ts`. Tiny Growth 1.0.0 is fixed to light mode.
+- `selectedThemeMode` remains in SQLite `app_settings` for compatibility, but
+  `ThemeProvider` normalizes it to `light` and ignores dark selections.
+- Dark theme tokens and `ThemeOptionList` remain for possible future reuse, but
+  `SettingsScreen` does not expose appearance controls in the current UI.
 
 ## Database Structure
 
@@ -246,6 +256,10 @@ implementation is modern and minimal.
 
 ## Visual Polish on 2026-06-18
 
+Historical note: this work preceded the light-only 1.0.0 release decision.
+Statements below about keeping the app dark are superseded by the current light
+pastel release policy.
+
 - Refined Tiny Growth from a plain dark productivity tone toward a soft growth
   tone while keeping the app dark, minimal, and adult-friendly.
 - Updated theme tokens from purple/cyan accents to mint, sage, and warm seed
@@ -274,6 +288,10 @@ implementation is modern and minimal.
 - No DB, migration, navigation, external asset, Lottie/GIF, or library changes.
 
 ## Appearance Work on 2026-06-18
+
+Historical note: this section records the earlier dual-theme implementation.
+The later 1.0.0 release policy fixes the runtime to light mode, normalizes stored
+theme values to `light`, and hides the Settings appearance controls.
 
 - Added app theme mode support:
   - `AppThemeMode = "dark" | "light"`.
@@ -315,30 +333,10 @@ implementation is modern and minimal.
 - `npx expo config --type public`
 - `npx --yes eas-cli --version`
 
-## Latest Commits
+## Recent Commit History
 
-- `7d670be` Refine light pastel affordances
-- `29293e6` Add dark and light appearance settings
-- `00e03c7` Polish Tiny Growth visual tone
-- `dc36d4a` Add subtle micro interactions
-- `09adf67` Add animated growth feedback modal
-- `4a992d9` Add growth feedback after saving logs
-- `5d61498` Add settings language switcher
-- `05931b7` Add first-run language selection
-- `f9daecb` Update Play Store privacy submission docs
-- `3087e00` Expand Play Store submission docs
-- `b02747e` Add Play Store release drafts
-- `1f9d7d8` Polish Android QA flows
-- `a5ac61f` Add EAS Android build profiles
-- `732b597` Prepare Android app stability settings
-- `9a75f77` Polish report tab UX flow
-- `67ba59f` Add report growth insights
-- `f249ade` Stabilize report tab UI
-- `526cd84` Fix write screen edit update loop
-- `e89788f` Prevent report focus update loop
-- `37054d9` Add growth report tab
-- `e903dfa` Separate SQLite migrations
-- `ab80cbd` Add type-safe navigation routes
+Commit hashes and ordering become stale quickly. Use `git log` as the source of
+truth for recent project history.
 
 ## Resume Notes
 
@@ -360,10 +358,12 @@ implementation is modern and minimal.
 - Keep `slug` as `grow-day` unless EAS/Play Console implications are reviewed.
 - `PROJECT_MEMORY.md` is user/project memory. Commit it only when the user asks
   to update memory.
-- The user asked on 2026-06-18 to keep `PROJECT_MEMORY.md` updated with the
-  rule that future completed work should be committed and pushed automatically.
-- When pushing with local unrelated changes present, do not use broad staging;
-  stage the intended files explicitly and leave unrelated changes alone.
+- Do not automatically stage, commit, or push completed work. Obtain explicit
+  user approval and follow `AGENTS.md` when this memory or historical guidance
+  conflicts with current Git rules.
+- Before an approved commit or push, inspect `git status`. When unrelated or
+  untracked files are present, do not use `push.js` or broad staging; stage only
+  the intended files.
 - Before Play Store submission:
   - Confirm the Privacy Policy URL opens in a private/incognito browser.
   - Update Play Console app name to Tiny Growth.
