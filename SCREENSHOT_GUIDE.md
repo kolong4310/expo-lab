@@ -7,9 +7,10 @@ This guide describes store screenshot capture goals for the current Android app.
 - Use a real Android device or emulator with a clean, readable screen size.
 - Use realistic but non-sensitive sample data.
 - Avoid showing private personal information.
-- Keep the dark minimal visual style visible.
-- Show the soft growth tone where possible: small sprout details, mint accents,
-  rounded cards, and calm empty-state copy.
+- Capture the current light-only release with its warm paper background and
+  light pastel surfaces.
+- Show the soft growth tone where possible: small sprout details, mint and warm
+  pastel accents, rounded cards, and calm empty-state copy.
 - Avoid screenshot states that make the app look like a game, toy, or mascot app.
 - Prefer Korean app UI screenshots if the store listing is Korean; use English overlay copy only if the listing is English.
 - Make sure the status bar and navigation area do not distract from the main content.
@@ -143,14 +144,13 @@ Watch-outs:
 Capture purpose:
 
 - Show that users can change the app language after setup.
-- Optionally show that users can switch between dark and light appearance.
 
 Good screen state:
 
 - Current language is visible.
 - All four language options are visible if possible.
 - The selected language state is clear.
-- If capturing appearance, the selected dark/light mode state is clear.
+- Text and selected states remain readable against the light pastel surfaces.
 
 Recommended overlay copy:
 
@@ -168,9 +168,9 @@ Recommended overlay copy:
 
 Optional screenshot candidates:
 
-- Light mode Today screen to show the soft garden theme.
-- Settings appearance section showing dark/light mode selection.
-- Light mode Report screen if chart contrast looks strong and polished.
+- First-run LanguageSelect screen with all language options visible.
+- GrowthFeedbackModal after saving a realistic sample record.
+- Report detail state if chart contrast looks strong and polished.
 
 ## Sample Data Suggestions
 

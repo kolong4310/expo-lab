@@ -19,7 +19,8 @@ https://app.notion.com/p/3813fa1a756d8053bfaed38be72f1a2e?source=copy_link
 - Photos, videos, files, or documents accessed: No.
 - Advertising ID used: No.
 - User-created records are stored only in the device's local SQLite database.
-- Backup/sync is not currently provided.
+- Tiny Growth does not provide an in-app backup or sync feature. Android system
+  backup behavior must be verified separately before submission.
 
 ## Account Creation
 
@@ -72,7 +73,9 @@ Recommended answer:
 Notes:
 
 - Work logs, goals, tags, mood values, and report-related records remain on the device.
-- There is currently no backup, sync, or server database feature.
+- There is currently no app-provided backup, sync, or server database feature.
+- Android operating-system backup behavior is a separate release check and must
+  not be assumed from the absence of an in-app backup feature.
 
 ## Sensitive Data Categories
 
@@ -136,7 +139,8 @@ Based on the current implementation:
 - Contacts used: No.
 - Photos/files access used: No.
 - Local storage: Yes, user-created records are stored on-device using SQLite.
-- Backup/sync: No.
+- App-provided backup/sync: No.
+- Android system backup: Pending final build and configuration verification.
 - Ads/advertising ID: No.
 
 ## Items to Recheck Before Submission
@@ -146,4 +150,8 @@ Based on the current implementation:
 - Confirm no advertising SDK has been added.
 - Confirm no cloud backup or sync feature has been added.
 - Confirm permissions in app config remain minimal.
+- Inspect the final Android build or Play Console App Bundle details and confirm
+  every declared permission matches the app's documented behavior.
+- Confirm the final Android system backup configuration and observed behavior,
+  then align the privacy policy and Play Console Data safety answers with it.
 - Confirm the published privacy policy URL matches the current app behavior.

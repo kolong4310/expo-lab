@@ -32,11 +32,10 @@
 - [ ] Settings tab opens correctly.
 - [ ] Settings language change updates app text immediately.
 - [ ] Settings language change persists after app relaunch.
-- [ ] Settings dark/light mode change updates the app immediately.
-- [ ] Selected dark/light mode persists after app relaunch.
-- [ ] Theme setting copy is checked in ko/en/ja/zh.
-- [ ] Major screens are checked in both dark and light mode.
-- [ ] Light mode screenshots are reviewed for contrast and Tiny Growth tone.
+- [ ] Major screens preserve readable contrast in the light pastel theme.
+- [ ] Text, cards, inputs, chips, and buttons remain legible in normal, focused, selected, pressed, disabled, and error states where applicable.
+- [ ] Layouts do not clip or overlap on a small Android screen.
+- [ ] Store screenshot candidates preserve the Tiny Growth light pastel tone.
 - [ ] Report tab opens correctly.
 - [ ] Report statistics update after create, edit, and delete.
 - [ ] Empty states look natural for Today, Archive, Search, Report, and Settings.
@@ -50,8 +49,10 @@
 - [ ] App name confirmed: Tiny Growth.
 - [ ] Package name confirmed: com.kolong4310.growday.
 - [ ] Version confirmed in app.json.
-- [ ] android.versionCode confirmed in app.json.
-- [ ] android.versionCode will be increased before each production release.
+- [ ] Baseline android.versionCode confirmed in app.json.
+- [ ] Production profile confirmed to use `autoIncrement: true` in eas.json.
+- [ ] Highest versionCode already uploaded to Play Console is checked before the production build.
+- [ ] Final production AAB versionCode is confirmed to be greater than every versionCode already uploaded to Play Console.
 - [ ] App icon checked on device.
 - [ ] Adaptive icon checked on device.
 - [ ] Splash screen checked on device.

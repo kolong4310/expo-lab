@@ -20,7 +20,7 @@ In Today, you can focus on today's goals and write a daily work log. In Archive,
 
 Tiny Growth does not require account sign-up or login. Your records are stored locally on your device using SQLite. The app is designed as a private, local-first space for daily reflection and lightweight productivity tracking.
 
-Tiny Growth is intentionally quiet and minimal. It is made for repeated daily use, not noisy dashboards or gamified productivity.
+Tiny Growth uses a warm light pastel garden-and-note style. It is made for repeated daily use, not noisy dashboards or gamified productivity.
 
 ## Key Features
 
@@ -32,7 +32,7 @@ Tiny Growth is intentionally quiet and minimal. It is made for repeated daily us
 - Language settings for Korean, English, Japanese, and Simplified Chinese
 - Local SQLite storage on the device
 - No account sign-up required
-- Dark minimal interface designed for daily use
+- Warm light pastel interface designed for calm daily use
 
 ## Recommended Search Keywords
 
