@@ -20,17 +20,26 @@ import {
   getTodayOnlyGoals,
 } from "../database/repositories/goalsRepository";
 import { deleteLog, getLogById } from "../database/repositories/logsRepository";
+import { TranslationKey } from "../i18n/translations";
+import { useTranslation } from "../i18n/useTranslation";
 import { goHome, goToMainTab } from "../navigation/homeNavigation";
 import { RootStackScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
 import { LIGHT_PASTEL, LIGHT_PASTEL_CARD_SHADOW } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 
-const MOOD_MAP: Record<string, string> = {
-  best: "최고",
-  good: "좋음",
-  normal: "보통",
-  hard: "힘듦",
+type Translate = ReturnType<typeof useTranslation>["t"];
+
+const MOOD_LABEL_KEYS: Record<string, TranslationKey> = {
+  best: "mood.best",
+  good: "mood.good",
+  normal: "mood.normal",
+  hard: "mood.hard",
+};
+
+const getMoodLabel = (mood: string, t: Translate): string => {
+  const key = MOOD_LABEL_KEYS[mood];
+  return key ? t(key) : mood;
 };
 
 function ContentSection({
@@ -71,6 +80,7 @@ export default function DetailScreen({
 }: RootStackScreenProps<"Detail">) {
   const insets = useSafeAreaInsets();
   const { mode, theme } = useAppTheme();
+  const { t } = useTranslation();
   const screenBackground =
     mode === "light" ? LIGHT_PASTEL.background : theme.colors.background;
   const { logId, returnTo } = route.params;
@@ -82,23 +92,23 @@ export default function DetailScreen({
       id: `daily-${goal.goal_id}`,
       title: goal.title,
       isDone: goal.is_done === 1,
-      type: "반복 목표",
+      type: t("detail.goalTypeRecurring"),
     })),
     ...getTodayOnlyGoals(log.date).map((goal) => ({
       id: `once-${goal.id}`,
       title: goal.title,
       isDone: goal.is_done === 1,
-      type: "오늘만 목표",
+      type: t("detail.goalTypeTodayOnly"),
     })),
   ];
   const completedGoals = goals.filter((goal) => goal.isDone);
   const pendingGoals = goals.filter((goal) => !goal.isDone);
 
   const handleDelete = () => {
-    Alert.alert("기록 삭제", "이 기록을 삭제하시겠습니까?", [
-      { text: "취소", style: "cancel" },
+    Alert.alert(t("detail.deleteAlertTitle"), t("detail.deleteAlertMessage"), [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "삭제",
+        text: t("common.delete"),
         style: "destructive",
         onPress: () => {
           if (log.id) {
@@ -127,12 +137,13 @@ export default function DetailScreen({
         backgroundColor={screenBackground}
       />
       <AppHeader
-        title="기록 상세"
+        title={t("detail.title")}
         onBack={() => navigation.goBack()}
         onHome={() => goHome(navigation)}
         right={
           <View style={styles.headerActions}>
             <TouchableOpacity
+              accessibilityLabel={t("detail.editActionLabel")}
               onPress={() => navigation.navigate("Write", { logId })}
               style={[
                 styles.iconButton,
@@ -146,6 +157,7 @@ export default function DetailScreen({
               />
             </TouchableOpacity>
             <TouchableOpacity
+              accessibilityLabel={t("detail.deleteActionLabel")}
               onPress={handleDelete}
               style={[
                 styles.iconButton,
@@ -187,7 +199,7 @@ export default function DetailScreen({
                   mode === "light" && styles.lightMoodChip,
                 ]}
               >
-                {MOOD_MAP[log.mood] ?? log.mood}
+                {getMoodLabel(log.mood, t)}
               </Text>
             )}
             {log.tags
@@ -216,12 +228,15 @@ export default function DetailScreen({
           >
             <View style={styles.goalSummaryRow}>
               <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
-                그날 목표
+                {t("detail.goalsTitle")}
               </Text>
               <Text
                 style={[styles.goalSummary, { color: theme.colors.success }]}
               >
-                {completedGoals.length} / {goals.length} 완료
+                {t("detail.goalProgress", {
+                  completed: completedGoals.length,
+                  total: goals.length,
+                })}
               </Text>
             </View>
             {completedGoals.length > 0 && (
@@ -229,7 +244,7 @@ export default function DetailScreen({
                 <Text
                   style={[styles.goalGroupTitle, { color: theme.colors.muted }]}
                 >
-                  완료
+                  {t("detail.goalCompleted")}
                 </Text>
                 {completedGoals.map((goal) => (
                   <View key={goal.id} style={styles.goalRow}>
@@ -259,7 +274,7 @@ export default function DetailScreen({
                 <Text
                   style={[styles.goalGroupTitle, { color: theme.colors.muted }]}
                 >
-                  미완료
+                  {t("detail.goalPending")}
                 </Text>
                 {pendingGoals.map((goal) => (
                   <View key={goal.id} style={styles.goalRow}>
@@ -291,11 +306,14 @@ export default function DetailScreen({
           </RetroCard>
         )}
 
-        <ContentSection label="상세 내용" content={log.content} />
-        <ContentSection label="배운 점" content={log.learned} />
-        <ContentSection label="이슈" content={log.issue} />
-        <ContentSection label="해결 방법" content={log.solution} />
-        <ContentSection label="메모" content={log.memo} />
+        <ContentSection label={t("write.contentLabel")} content={log.content} />
+        <ContentSection label={t("write.learnedLabel")} content={log.learned} />
+        <ContentSection label={t("write.issueLabel")} content={log.issue} />
+        <ContentSection
+          label={t("write.solutionLabel")}
+          content={log.solution}
+        />
+        <ContentSection label={t("write.memoLabel")} content={log.memo} />
       </ScrollView>
     </SafeAreaView>
   );
