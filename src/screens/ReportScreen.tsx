@@ -25,6 +25,7 @@ import {
   ReportStats,
   TagStat,
 } from "../database/types";
+import { TranslationKey } from "../i18n/translations";
 import { useTranslation } from "../i18n/useTranslation";
 import { BottomTabScreenProps } from "../navigation/types";
 import { DESIGN } from "../theme/design";
@@ -42,11 +43,13 @@ const EMPTY_REPORT: ReportStats = {
   moodStats: [],
 };
 
-const MOOD_LABELS: Record<string, string> = {
-  best: "최고",
-  good: "좋음",
-  normal: "보통",
-  hard: "힘듦",
+type Translate = ReturnType<typeof useTranslation>["t"];
+
+const MOOD_LABEL_KEYS: Record<string, TranslationKey> = {
+  best: "mood.best",
+  good: "mood.good",
+  normal: "mood.normal",
+  hard: "mood.hard",
 };
 
 type ReportInsight = {
@@ -54,25 +57,31 @@ type ReportInsight = {
   text: string;
 };
 
-const getMoodLabel = (mood: string): string => MOOD_LABELS[mood] ?? mood;
+const getMoodLabel = (mood: string, t: Translate): string => {
+  const key = MOOD_LABEL_KEYS[mood];
+  return key ? t(key) : mood;
+};
 
-const buildReportSubtitle = (report: ReportStats): string => {
+const buildReportSubtitle = (report: ReportStats, t: Translate): string => {
   if (report.totalLogCount === 0) {
-    return "기록이 쌓이면 성장 흐름을 보여드릴게요.";
+    return t("report.emptySubtitle");
   }
 
   if (report.logStreak >= 2) {
-    return `${report.logStreak}일째 기록 흐름을 이어가고 있어요.`;
+    return t("report.streakSubtitle", { count: report.logStreak });
   }
 
   if (report.currentMonthLogCount > 0) {
-    return `이번 달 ${report.currentMonthLogCount}개의 기록이 쌓였어요.`;
+    return t("report.monthSubtitle", { count: report.currentMonthLogCount });
   }
 
-  return "최근 기록을 바탕으로 성장 흐름을 정리했어요.";
+  return t("report.defaultSubtitle");
 };
 
-const buildReportInsights = (report: ReportStats): ReportInsight[] => {
+const buildReportInsights = (
+  report: ReportStats,
+  t: Translate,
+): ReportInsight[] => {
   if (report.totalLogCount === 0) return [];
 
   const insights: ReportInsight[] = [];
@@ -84,50 +93,56 @@ const buildReportInsights = (report: ReportStats): ReportInsight[] => {
       id: "month-log-count",
       text:
         report.currentMonthLogCount === 1
-          ? "이번 달 첫 기록을 남겼어요."
-          : `이번 달 ${report.currentMonthLogCount}개의 기록을 남겼어요.`,
+          ? t("report.insight.monthFirst")
+          : t("report.insight.monthCount", {
+              count: report.currentMonthLogCount,
+            }),
     });
   }
 
   if (report.logStreak >= 2) {
     insights.push({
       id: "streak",
-      text: `${report.logStreak}일 연속 기록 중이에요. 차분히 이어가고 있어요.`,
+      text: t("report.insight.streak", { count: report.logStreak }),
     });
   }
 
   if (report.recentAverageGrowthRate >= 50) {
     insights.push({
       id: "goal-rate-good",
-      text: `최근 7일 목표 흐름이 좋아요. 평균 완료율은 ${report.recentAverageGrowthRate}%예요.`,
+      text: t("report.insight.goalRateGood", {
+        rate: report.recentAverageGrowthRate,
+      }),
     });
   } else if (report.recentAverageGrowthRate > 0) {
     insights.push({
       id: "goal-rate-started",
-      text: `최근 7일 목표 완료율은 ${report.recentAverageGrowthRate}%예요. 기록이 쌓이면 흐름이 더 선명해져요.`,
+      text: t("report.insight.goalRateStarted", {
+        rate: report.recentAverageGrowthRate,
+      }),
     });
   }
 
   if (topTag) {
     insights.push({
       id: "top-tag",
-      text: `요즘 가장 자주 남긴 태그는 '${topTag.tag}'예요.`,
+      text: t("report.insight.topTagOverall", { tag: topTag.tag }),
     });
   }
 
   if (topMood) {
     insights.push({
       id: "top-mood",
-      text: `최근 기록에서 가장 많이 나타난 기분은 '${getMoodLabel(
-        topMood.mood,
-      )}'이에요.`,
+      text: t("report.insight.topMoodOverall", {
+        mood: getMoodLabel(topMood.mood, t),
+      }),
     });
   }
 
   if (insights.length === 1 && report.totalLogCount === 1) {
     insights.push({
       id: "first-baseline",
-      text: "이 기록이 앞으로의 성장 변화를 비교할 기준점이 될 거예요.",
+      text: t("report.insight.firstBaseline"),
     });
   }
 
@@ -144,14 +159,7 @@ export default function ReportScreen({
     mode === "light" ? LIGHT_PASTEL.background : theme.colors.background;
   const [report, setReport] = useState<ReportStats>(EMPTY_REPORT);
   const reportSnapshotRef = useRef(JSON.stringify(EMPTY_REPORT));
-  const reportSubtitle =
-    report.totalLogCount === 0
-      ? t("report.emptySubtitle")
-      : report.logStreak >= 2
-        ? t("report.streakSubtitle", { count: report.logStreak })
-        : report.currentMonthLogCount > 0
-          ? t("report.monthSubtitle", { count: report.currentMonthLogCount })
-          : t("report.defaultSubtitle");
+  const reportSubtitle = buildReportSubtitle(report, t);
 
   const reloadReport = useCallback(() => {
     const nextReport = getReportStats();
@@ -205,10 +213,12 @@ export default function ReportScreen({
 }
 
 function ReportContent({ report }: { report: ReportStats }) {
+  const { t } = useTranslation();
+
   return (
     <>
       <SummaryGrid report={report} />
-      <InsightSection insights={buildReportInsights(report)} />
+      <InsightSection insights={buildReportInsights(report, t)} />
       <TagStats tags={report.topTags} />
       <MonthlyLogChart months={report.recentMonthlyLogs} />
       <MoodStats moods={report.moodStats} />
@@ -367,7 +377,9 @@ function MonthlyLogChart({ months }: { months: MonthlyLogStat[] }) {
                 />
               </View>
               <Text style={[styles.chartLabel, { color: theme.colors.muted }]}>
-                {Number(item.month.slice(5))}월
+                {t("report.monthLabel", {
+                  month: Number(item.month.slice(5)),
+                })}
               </Text>
             </View>
           ))}
@@ -431,7 +443,7 @@ function MoodStats({ moods }: { moods: MoodStat[] }) {
           moods.map((item, index) => (
             <StatRow
               key={item.mood}
-              label={getMoodLabel(item.mood)}
+              label={getMoodLabel(item.mood, t)}
               value={`${item.count}${t("report.countUnit")}`}
               showBorder={index < moods.length - 1}
             />

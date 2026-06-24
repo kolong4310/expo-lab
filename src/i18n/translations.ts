@@ -84,11 +84,26 @@ const ko = {
   "report.emptySubtitle": "기록이 쌓이면 나만의 성장 흐름이 보여요.",
   "report.streakSubtitle": "{count}일째 기록 흐름이 이어지고 있어요.",
   "report.monthSubtitle": "이번 달 {count}개의 작은 성장이 쌓였어요.",
-  "report.defaultSubtitle": "최근 기록을 바탕으로 성장 흐름을 정리했어요.",
+  "report.defaultSubtitle": "전체 기록을 바탕으로 성장 흐름을 정리했어요.",
   "report.emptyTitle": "아직 첫 씨앗을 기다리고 있어요",
   "report.emptyText": "오늘의 작은 기록부터 남기면 흐름이 보이기 시작해요.",
   "report.writeToday": "첫 씨앗 남기기",
-  "report.insightsTitle": "이번 달의 작은 성장들",
+  "report.insightsTitle": "성장 인사이트",
+  "report.insight.monthFirst": "이번 달 첫 기록을 남겼어요.",
+  "report.insight.monthCount": "이번 달 {count}개의 기록을 남겼어요.",
+  "report.insight.streak":
+    "{count}일 연속 기록 중이에요. 차분히 이어가고 있어요.",
+  "report.insight.goalRateGood":
+    "최근 7일 목표 흐름이 좋아요. 평균 완료율은 {rate}%예요.",
+  "report.insight.goalRateStarted":
+    "최근 7일 목표 완료율은 {rate}%예요. 기록이 쌓이면 흐름이 더 선명해져요.",
+  "report.insight.topTagOverall":
+    "전체 기록에서 가장 자주 남긴 태그는 '{tag}'예요.",
+  "report.insight.topMoodOverall":
+    "전체 기록에서 가장 많이 나타난 기분은 '{mood}'이에요.",
+  "report.insight.firstBaseline":
+    "이 기록이 앞으로의 성장 변화를 비교할 기준점이 될 거예요.",
+  "report.monthLabel": "{month}월",
   "report.monthlyLogs": "이번 달 기록",
   "report.weeklyLogs": "이번 주 기록",
   "report.logStreak": "연속 기록",
@@ -220,12 +235,27 @@ export const translations: Record<AppLanguage, TranslationMap> = {
     "report.emptySubtitle": "Your growth flow will appear as notes gather.",
     "report.streakSubtitle": "Your log streak has continued for {count} days.",
     "report.monthSubtitle": "You grew {count} small notes this month.",
-    "report.defaultSubtitle": "Your recent logs are shaped into a growth flow.",
+    "report.defaultSubtitle": "Your logs are shaped into a growth flow.",
     "report.emptyTitle": "Waiting for the first seed",
     "report.emptyText":
       "Leave a small note today, and your flow will begin to show.",
     "report.writeToday": "Plant first note",
-    "report.insightsTitle": "This month's small growth",
+    "report.insightsTitle": "Growth insights",
+    "report.insight.monthFirst": "You added your first log this month.",
+    "report.insight.monthCount": "You added {count} logs this month.",
+    "report.insight.streak":
+      "You have logged for {count} days in a row. Keep the steady flow going.",
+    "report.insight.goalRateGood":
+      "Your goal flow has been strong over the last 7 days, with an average completion rate of {rate}%.",
+    "report.insight.goalRateStarted":
+      "Your average goal completion rate over the last 7 days is {rate}%. The pattern will become clearer as records build.",
+    "report.insight.topTagOverall":
+      "Your most-used tag across all logs is '{tag}'.",
+    "report.insight.topMoodOverall":
+      "Your most common mood across all logs is '{mood}'.",
+    "report.insight.firstBaseline":
+      "This log will become a baseline for comparing your growth over time.",
+    "report.monthLabel": "{month}",
     "report.monthlyLogs": "Logs this month",
     "report.weeklyLogs": "Logs this week",
     "report.logStreak": "Log streak",
@@ -351,11 +381,26 @@ export const translations: Record<AppLanguage, TranslationMap> = {
       "記録が集まると、自分だけの成長の流れが見えてきます。",
     "report.streakSubtitle": "{count}日連続で記録が続いています。",
     "report.monthSubtitle": "今月は{count}件の小さな成長が残りました。",
-    "report.defaultSubtitle": "最近の記録をもとに成長の流れを整理しました。",
+    "report.defaultSubtitle": "すべての記録から成長の流れを整理しました。",
     "report.emptyTitle": "最初の種を待っています",
     "report.emptyText": "今日の小さな記録から、流れが少しずつ見えてきます。",
     "report.writeToday": "最初の種を残す",
-    "report.insightsTitle": "今月の小さな成長",
+    "report.insightsTitle": "成長インサイト",
+    "report.insight.monthFirst": "今月最初の記録を残しました。",
+    "report.insight.monthCount": "今月は{count}件の記録を残しました。",
+    "report.insight.streak":
+      "{count}日連続で記録しています。落ち着いて続けられています。",
+    "report.insight.goalRateGood":
+      "直近7日間の目標達成の流れは良好です。平均達成率は{rate}%です。",
+    "report.insight.goalRateStarted":
+      "直近7日間の目標平均達成率は{rate}%です。記録が増えると流れがより明確になります。",
+    "report.insight.topTagOverall":
+      "すべての記録で最もよく使ったタグは「{tag}」です。",
+    "report.insight.topMoodOverall":
+      "すべての記録で最も多かった気分は「{mood}」です。",
+    "report.insight.firstBaseline":
+      "この記録が、これからの成長を比べる基準になります。",
+    "report.monthLabel": "{month}月",
     "report.monthlyLogs": "今月の記録",
     "report.weeklyLogs": "今週の記録",
     "report.logStreak": "連続記録",
@@ -477,11 +522,22 @@ export const translations: Record<AppLanguage, TranslationMap> = {
     "report.emptySubtitle": "记录积累后，这里会显现你的成长节奏。",
     "report.streakSubtitle": "你已经连续记录 {count} 天。",
     "report.monthSubtitle": "本月留下了 {count} 个小成长。",
-    "report.defaultSubtitle": "根据最近记录整理你的成长节奏。",
+    "report.defaultSubtitle": "根据全部记录整理你的成长节奏。",
     "report.emptyTitle": "正在等第一颗种子",
     "report.emptyText": "从今天的一条小记录开始，成长节奏会慢慢出现。",
     "report.writeToday": "留下第一颗种子",
-    "report.insightsTitle": "本月的小成长",
+    "report.insightsTitle": "成长洞察",
+    "report.insight.monthFirst": "你留下了本月第一条记录。",
+    "report.insight.monthCount": "你本月留下了 {count} 条记录。",
+    "report.insight.streak": "你已经连续记录 {count} 天，正在稳步保持节奏。",
+    "report.insight.goalRateGood":
+      "最近7天的目标进展良好，平均完成率为 {rate}%。",
+    "report.insight.goalRateStarted":
+      "最近7天的目标平均完成率为 {rate}%。随着记录增加，趋势会更加清晰。",
+    "report.insight.topTagOverall": "全部记录中最常使用的标签是“{tag}”。",
+    "report.insight.topMoodOverall": "全部记录中最常出现的状态是“{mood}”。",
+    "report.insight.firstBaseline": "这条记录会成为今后比较成长变化的基准。",
+    "report.monthLabel": "{month}月",
     "report.monthlyLogs": "本月记录",
     "report.weeklyLogs": "本周记录",
     "report.logStreak": "连续记录",
