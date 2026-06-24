@@ -27,6 +27,7 @@ import {
   getLogsByDate,
 } from "../database/repositories/logsRepository";
 import { WorkLog } from "../database/types";
+import { AppLanguage } from "../i18n/languages";
 import { useTranslation } from "../i18n/useTranslation";
 import { goHome } from "../navigation/homeNavigation";
 import { BottomTabScreenProps } from "../navigation/types";
@@ -35,55 +36,195 @@ import { LIGHT_PASTEL, LIGHT_PASTEL_CARD_SHADOW } from "../theme/lightPastel";
 import { useAppTheme } from "../theme/useAppTheme";
 import { formatLocalDate } from "../utils/date";
 
-LocaleConfig.locales.ko = {
-  monthNames: [
-    "1월",
-    "2월",
-    "3월",
-    "4월",
-    "5월",
-    "6월",
-    "7월",
-    "8월",
-    "9월",
-    "10월",
-    "11월",
-    "12월",
-  ],
-  monthNamesShort: [
-    "1월",
-    "2월",
-    "3월",
-    "4월",
-    "5월",
-    "6월",
-    "7월",
-    "8월",
-    "9월",
-    "10월",
-    "11월",
-    "12월",
-  ],
-  dayNames: [
-    "일요일",
-    "월요일",
-    "화요일",
-    "수요일",
-    "목요일",
-    "금요일",
-    "토요일",
-  ],
-  dayNamesShort: ["일", "월", "화", "수", "목", "금", "토"],
-  today: "오늘",
-};
+interface CalendarLocaleDefinition {
+  monthNames: string[];
+  monthNamesShort: string[];
+  dayNames: string[];
+  dayNamesShort: string[];
+  today: string;
+}
+
+const CALENDAR_LOCALES = {
+  ko: {
+    monthNames: [
+      "1월",
+      "2월",
+      "3월",
+      "4월",
+      "5월",
+      "6월",
+      "7월",
+      "8월",
+      "9월",
+      "10월",
+      "11월",
+      "12월",
+    ],
+    monthNamesShort: [
+      "1월",
+      "2월",
+      "3월",
+      "4월",
+      "5월",
+      "6월",
+      "7월",
+      "8월",
+      "9월",
+      "10월",
+      "11월",
+      "12월",
+    ],
+    dayNames: [
+      "일요일",
+      "월요일",
+      "화요일",
+      "수요일",
+      "목요일",
+      "금요일",
+      "토요일",
+    ],
+    dayNamesShort: ["일", "월", "화", "수", "목", "금", "토"],
+    today: "오늘",
+  },
+  en: {
+    monthNames: [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ],
+    monthNamesShort: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ],
+    dayNames: [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ],
+    dayNamesShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    today: "Today",
+  },
+  ja: {
+    monthNames: [
+      "1月",
+      "2月",
+      "3月",
+      "4月",
+      "5月",
+      "6月",
+      "7月",
+      "8月",
+      "9月",
+      "10月",
+      "11月",
+      "12月",
+    ],
+    monthNamesShort: [
+      "1月",
+      "2月",
+      "3月",
+      "4月",
+      "5月",
+      "6月",
+      "7月",
+      "8月",
+      "9月",
+      "10月",
+      "11月",
+      "12月",
+    ],
+    dayNames: [
+      "日曜日",
+      "月曜日",
+      "火曜日",
+      "水曜日",
+      "木曜日",
+      "金曜日",
+      "土曜日",
+    ],
+    dayNamesShort: ["日", "月", "火", "水", "木", "金", "土"],
+    today: "今日",
+  },
+  zh: {
+    monthNames: [
+      "一月",
+      "二月",
+      "三月",
+      "四月",
+      "五月",
+      "六月",
+      "七月",
+      "八月",
+      "九月",
+      "十月",
+      "十一月",
+      "十二月",
+    ],
+    monthNamesShort: [
+      "1月",
+      "2月",
+      "3月",
+      "4月",
+      "5月",
+      "6月",
+      "7月",
+      "8月",
+      "9月",
+      "10月",
+      "11月",
+      "12月",
+    ],
+    dayNames: [
+      "星期日",
+      "星期一",
+      "星期二",
+      "星期三",
+      "星期四",
+      "星期五",
+      "星期六",
+    ],
+    dayNamesShort: ["日", "一", "二", "三", "四", "五", "六"],
+    today: "今天",
+  },
+} satisfies Record<AppLanguage, CalendarLocaleDefinition>;
+
+LocaleConfig.locales.ko = CALENDAR_LOCALES.ko;
+LocaleConfig.locales.en = CALENDAR_LOCALES.en;
+LocaleConfig.locales.ja = CALENDAR_LOCALES.ja;
+LocaleConfig.locales.zh = CALENDAR_LOCALES.zh;
+
 LocaleConfig.defaultLocale = "ko";
 
 export default function CalendarScreen({
   navigation,
 }: BottomTabScreenProps<"Archive">) {
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const { language, t } = useTranslation();
   const { mode, theme } = useAppTheme();
+  LocaleConfig.defaultLocale = language;
   const screenBackground =
     mode === "light" ? LIGHT_PASTEL.background : theme.colors.background;
   const fade = useRef(new Animated.Value(1)).current;
@@ -181,6 +322,8 @@ export default function CalendarScreen({
                 ]}
               >
                 <Calendar
+                  key={language}
+                  current={selectedDate}
                   onDayPress={(day: DateData) =>
                     setSelectedDate(day.dateString)
                   }
